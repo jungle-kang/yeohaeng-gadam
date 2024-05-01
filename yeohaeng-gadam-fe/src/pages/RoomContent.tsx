@@ -11,13 +11,15 @@ const RoomContent = () => {
   // const {roomId} = useParams<{roomId:string}>();
 
   // liveblocks에 새로운 shape를 추가
-  const insertRectangle = useMutation(({ storage, setMyPresence }, cardTitle) => {
+  const insertRectangle = useMutation(({ storage, setMyPresence }, data) => {
     const shapeId = Date.now().toString();
     const shape = new LiveObject({
       x: 300,
       y: 300,
       fill: "rgb(147, 197, 253)",
-      text: cardTitle,
+      placeName: data.place_name,
+      placeX: data.x,
+      placeY: data.y,
     });
     storage.get("shapes").set(shapeId, shape);
     setMyPresence({ selectedShape: shapeId }, { addToHistory: true });

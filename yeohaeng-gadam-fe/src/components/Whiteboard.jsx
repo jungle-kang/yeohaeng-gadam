@@ -29,6 +29,9 @@ const TRANS_METHOD_CAR = 2;
 // const [canvasPos, setCanvasPos] = useState({x: 0, y: 0});
 
 
+const API_KEY = import.meta.env.VITE_GOOGLE_MAP_API // calculateTime 전용
+const WALK_SPEED = 1 / 900; // 걷기 속도 4km/h (0.001km/s)
+
 export default function Whiteboard() {
   const shapes = useStorage((root) => root.shapes);
 
@@ -60,6 +63,8 @@ function Canvas() {
       shape2Id: shape2,
       isChoosingTrans: true,
       transportMethod: null,
+      distance: 0,
+      duration: 0,
     });
     storage.get("lines").set(lineId, cardLine);
   }, []);
@@ -77,13 +82,98 @@ function Canvas() {
     }
   }, []);
 
+  // 두 지점 사이의 이동 거리 업데이트
+  const updateLineTime = useMutation(({ storage }, line, duration) => {
+    // const line = storage.get("lines").get(lineId);
+    line.update({
+      duration: duration,
+    })
+  }, []);
+
+  // 두 지점 사이의 이동 거리 계산
+  const calculateLineTime = async (line, transportMethod, shape1, shape2) => {
+    console.log("calculateTime(", line, transportMethod, shape1, shape2, ")"); ////////
+
+    // let transportString = "";
+    // switch (transportMethod) {
+    //   case TRANS_METHOD_RUN:
+    //     transportString = "walking";
+    //     break;
+    //   case TRANS_METHOD_BUS:
+    //     // 버스: 구글 Directions API
+    //     transportString = "transit";
+    //     break;
+    //   case TRANS_METHOD_CAR:
+    //     transportString = "driving";
+    //     break;
+    // }
+
+    // console.log(transportString); //////////
+
+    // 구글 API
+    // const res = await fetch(
+    //   `/maps/api/directions/json?destination=${destCord}&origin=${originCord}&mode=${transportString}&key=${API_KEY}`
+    // );
+    // const result = await res.json();
+    // const distance = result.routes.length > 0
+    //   ? result.routes[0].legs[0].distance.value
+    //   : 0;
+    // const duration = result.routes.length > 0
+    //   ? result.routes[0].legs[0].duration.value
+    //   : 0;
+
+
+    let duration = 0;
+    switch (transportMethod) {
+      case TRANS_METHOD_RUN:
+        // 걷기: 직선거리 기반 시간 계산
+        // console.log("line distance: ",line.get("distance") ); ///////////
+        duration = line.get("distance") / WALK_SPEED;
+        break;
+      case TRANS_METHOD_BUS:
+        // 버스: 구글 Directions API
+        const res = await fetch(
+          `/maps/api/directions/json?destination=${shape2.get("placeName")}&origin=${shape1.get("placeName")}&departure_time=1714532400&mode=transit&key=${API_KEY}`
+        );
+        const result = await res.json();
+        duration = result.routes.length > 0
+          ? result.routes[0].legs[0].duration.value
+          : 0;
+        // console.log(result); ///////////////////////
+        break;
+      case TRANS_METHOD_CAR:
+        break;
+    }
+
+    // console.log(duration); /////////////////
+
+    updateLineTime(line, duration);
+  };
+
   const onTransportButtonDown = useMutation(({ storage }, lineId, transportMethod) => {
     const line = storage.get("lines").get(lineId);
+
     if (line) {
+      const shape1Id = line.get("shape1Id");
+      const shape2Id = line.get("shape2Id");
+
+      const shape1 = storage.get("shapes").get(shape1Id);
+      const shape2 = storage.get("shapes").get(shape2Id);
+
+      const dist = getDistFromCord(
+        shape1.get("placeX"),
+        shape1.get("placeY"),
+        shape2.get("placeX"),
+        shape2.get("placeY"),
+      );
+
       line.update({
         isChoosingTrans: false,
         transportMethod: transportMethod,
+        distance: dist,
       })
+
+      calculateLineTime(line, transportMethod, shape1, shape2);
     }
   }, []);
 
@@ -118,7 +208,9 @@ function Canvas() {
       x: getRandomInt(300),
       y: 200 + getRandomInt(300),
       fill: "rgb(147, 197, 253)",
-      text: memoInputRef.current.value,
+      // text: memoInputRef.current.value,
+      placeName: memoInputRef.current.value,
+      placeCord: "0,0",
     });
     storage.get("shapes").set(shapeId, shape);
     setMyPresence({ selectedShape: shapeId }, { addToHistory: true });
@@ -279,7 +371,7 @@ function Canvas() {
 
 
 function Rectangle({ id, onShapePointerDown, onLineButtonDown, updateMemo }) {
-  const { x, y, fill, text, memo } = useStorage((root) => root.shapes.get(id)) ?? {};
+  const { x, y, fill, placeName, memo } = useStorage((root) => root.shapes.get(id)) ?? {};
 
   const selectedAsLineStart = useSelf((me) => me.presence.lineStartShape === id);
   const selectedByMe = useSelf((me) => me.presence.selectedShape === id);
@@ -311,8 +403,8 @@ function Rectangle({ id, onShapePointerDown, onLineButtonDown, updateMemo }) {
     >
       <div className="flex items-center">
         <div className="w-2/3 h-[100px]" >
-          <div className="rounded-lg bg-blue-400">
-            {text}
+          <div className="logo-font rounded-lg bg-blue-400">
+            {placeName}
           </div>
           {selectedByMe
             ? <textarea className="w-full h-auto resize-none" onChange={(e) => updateMemo(e, id)} value={memo}></textarea>
@@ -372,7 +464,7 @@ function CardLineChoosing({ id, onTransportButtonDown }) {
   );
 }
 
-function CardLineChosen({ id, deleteLine, transportMethod }) {
+function CardLineChosen({ id, deleteLine, transportMethod, distance, duration }) {
   let transportIcon = "";
   switch (transportMethod) {
     case TRANS_METHOD_RUN:
@@ -389,7 +481,12 @@ function CardLineChosen({ id, deleteLine, transportMethod }) {
   return (
     <>
       <img src={transportIcon} className="w-6 mt-2" />
-      <div className="text-xs">0 km</div>
+      <div className="text-xs">
+        {distance > 0 ? formatDist(distance) : "- km"}
+      </div>
+      <div className="text-xs">
+        {duration > 0 ? formatDur(duration) : "- min"}
+      </div>
       <button className="bg-black font-bold text-white text-xs rounded-full w-4 z-[2000]"
         onClick={() => deleteLine(id)}
       >
@@ -400,7 +497,7 @@ function CardLineChosen({ id, deleteLine, transportMethod }) {
 }
 
 function CardLine({ id, onTransportButtonDown, deleteLine }) {
-  const { shape1Id, shape2Id, isChoosingTrans, transportMethod } = useStorage((root) => root.lines.get(id)) ?? {};
+  const { shape1Id, shape2Id, isChoosingTrans, transportMethod, distance, duration } = useStorage((root) => root.lines.get(id)) ?? {};
   const shape1 = useStorage((root) => root.shapes.get(shape1Id)) ?? {};
   const shape2 = useStorage((root) => root.shapes.get(shape2Id)) ?? {};
 
@@ -409,11 +506,11 @@ function CardLine({ id, onTransportButtonDown, deleteLine }) {
   const y = (shape1.y + shape2.y) / 2;
   const theta = Math.atan((shape2.y - shape1.y) / (shape2.x - shape1.x));
 
-  const infoSize = isChoosingTrans ? "80px" : "58px";
+  const infoSize = isChoosingTrans ? "80px" : "75px";
 
   const infoBody = isChoosingTrans
     ? <CardLineChoosing id={id} onTransportButtonDown={onTransportButtonDown} />
-    : <CardLineChosen id={id} deleteLine={deleteLine} transportMethod={transportMethod} />;
+    : <CardLineChosen id={id} deleteLine={deleteLine} transportMethod={transportMethod} distance={distance} duration={duration} />;
 
   return (
     <>
@@ -432,13 +529,13 @@ function CardLine({ id, onTransportButtonDown, deleteLine }) {
           backgroundColor: "gold",
           borderColor: "black",
           borderStyle: "solid",
-        
+
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-        
+
           transition: "width 0.5s, height 0.5s",
-        
+
           position: "absolute",
           zIndex: "2000",
 
@@ -463,4 +560,44 @@ function getRandomInt(max) {
 
 function getRandomColor() {
   return `rgb(${getRandomInt(255)}, ${getRandomInt(255)}, ${getRandomInt(255)})`;
+}
+
+
+// 위도, 경도로부터 거리 계산 (km)
+function getDistFromCord(x1, y1, x2, y2) {
+  const r = 6371;
+  const dx = deg2rad(x2 - x1);
+  const dy = deg2rad(y2 - y1);
+  const a = Math.sin(dx / 2) ** 2 +
+    Math.cos(deg2rad(x1)) * Math.cos(deg2rad(x2)) *
+    Math.sin(dy / 2) ** 2;
+  const dist = 2 * r * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return dist;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180);
+}
+
+// km로 받은 거리를 적절하게 변환
+function formatDist(dist) {
+  if (dist < 1) {
+    return Math.round(dist * 1000) + " m";
+  }
+  if (dist < 10) {
+    return Math.round(dist * 10) / 10 + " km";
+  }
+  return Math.round(dist) + " km";
+}
+
+// s로 받은 시간을 적절하게 변환
+function formatDur(dur) {
+  const hr = 3600;
+  if (dur < hr) {
+    return Math.round(dur / 60) + " min";
+  }
+  if (dur < 10 * hr) {
+    return Math.round(dur / hr * 10) / 10 + " hr";
+  }
+  return Math.round(dur / hr) + " hr";
 }

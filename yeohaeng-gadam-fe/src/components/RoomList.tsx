@@ -1,6 +1,8 @@
 import React, {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 
 const RoomList = ()=>{
+    const navigate = useNavigate()
     const [post, setPost] = React.useState([{
         id: '',
         title: '',
@@ -42,6 +44,7 @@ const RoomList = ()=>{
                             </div>
                             <div className="w-1/6 min-w-32 h-full">
                                 <button
+                                    onClick={()=>navigate(`/${id}`)}
                                     className="bg-white ring-1 ring-gray-300 w-full h-1/3 rounded-lg hover:bg-gray-200 font-bold">
                                     참가하기
                                 </button>

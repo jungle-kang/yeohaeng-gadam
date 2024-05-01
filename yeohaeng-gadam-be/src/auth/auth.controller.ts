@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthCredentialsDto } from './dto/auth-credential.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { GoogleRequest } from './dto/auth.googleuser.dto';
 
 @ApiTags('Auth-JWT')
 @Controller('auth')
@@ -62,6 +63,24 @@ export class AuthController {
   authTest(@Req() req) {
     console.log(req);
   }
+
+  /* google login */
+  @Get('/google')
+  @UseGuards(AuthGuard('google'))
+  async googleLogin(@Req() req: Request) {
+  }
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  googleLoginCallback(@Req() req: GoogleRequest) {
+    return this.authService.googleLogin(req)
+  }
+
+  // @Get('/protected')
+  // @UseGuards(AuthGuard('jwt'))
+  // protectedResource() {
+  //   return 'JWT is working!';
+  // }
 
 
 }

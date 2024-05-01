@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react'
-import MapContainer from './map'
+import MapContainer from './MapContainer'
 
 
 
-function SearchForm() {
+function SearchForm({ insertRectangle }) {
     const [InputText, setInputText] = useState('')
     const [Place, setPlace] = useState('')
     const [isClicked, setIsClicked] = useState(false);
@@ -26,7 +26,7 @@ function SearchForm() {
                 <button onClick={onClickHandler} type="submit">검색</button>
             </form>
             {/* <MapContainer searchPlace={Place} /> */}
-            {<MapContainer searchPlace={Place} />}
+            {<MapContainer searchPlace={Place} insertRectangle={insertRectangle}/>}
         </>
     )
 }

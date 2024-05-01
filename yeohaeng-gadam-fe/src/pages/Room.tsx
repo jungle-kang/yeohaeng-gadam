@@ -19,6 +19,7 @@ const Room = () => {
           id="react-whiteboard-app"
           initialPresence={{
             cursor: null,
+            selectedShape: null,
             lineStartShape: null,
           }}
           initialStorage={{

@@ -26,6 +26,7 @@ const MapContainer = ({ searchPlace, insertRectangle }) => {
           bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
         }
         map.setBounds(bounds);
+
         setPlaces(data);
       }
     }
@@ -65,14 +66,14 @@ const MapContainer = ({ searchPlace, insertRectangle }) => {
               <div><a href={res.place_url}>{res.place_url}</a></div>
               <button
                 className="bg-white border-black border-2 m-1"
-                onClick={() => insertRectangle(res.place_name)}
+                onClick={() => insertRectangle(res)}
               >
                 추가하기
               </button>
             </div>
           </div>
         ))}
-        {places.length > 0 && <SearchDetail places={places} />}
+        {/* {places.length > 0 && <SearchDetail places={places} />} */}
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import SearchDetail from './map/SearchDetail.jsx';
 import FindWay from './map/FindWay.jsx';
 import GoogleOauth from './login/GoogleLogin.tsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import GoogleLoginButton from './login/jwtgoogle.tsx';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
     {
         path: "/googleLogin",
         element: <GoogleOauth />
+    },
+    {
+        path: "/gOauth",
+        element: <GoogleLoginButton />
     }
 ])
 

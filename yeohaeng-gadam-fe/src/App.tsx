@@ -1,5 +1,6 @@
 import './App.css'
 import SearchBar from "./components/SearchBar.tsx";
+import RoomList from "./components/RoomList.tsx";
 
 function App() {
 
@@ -11,6 +12,7 @@ function App() {
                    alt="main image"/>
           </div>
           <SearchBar/>
+          <RoomList/>
       </main>
   )
 }

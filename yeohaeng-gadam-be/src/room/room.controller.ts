@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -16,11 +17,11 @@ export class RoomController {
     })
   async save(@Body() roomDTO: CreateRoomDto) {
     await this.roomService.save(roomDTO);
-    return Object.assign({
+    return {
       data: { roomDTO },
-      statusCode: 201,
+      statusCode: HttpStatus.CREATED,
       statusMsg: `데이터 저장 성공`,
-    });
+    };
   }
   
   @Get('/all')
@@ -28,11 +29,31 @@ export class RoomController {
     const roomList = await this.roomService.findAll();
     return Object.assign({
       data: roomList,
-      statusCode: 200,
+      statusCode: HttpStatus.OK,
       statusMsg: `데이터 조회 성공`,
     });
   }
 
+  // @Get('/')
+  // async findOne(
+  //   @Query('id') id: number,
+  //   @Query('title') title: string,
+  //   @Query('location') location: string,
+  //   @Query('hcMax') hcMax?: number,
+  //   @Query('startDate') startDate?: string,
+  //   @Query('endDate') endDate?: string,
+  // ): Promise<Room[] | undefined> {
+  //   const queryParameters = {
+  //     id,
+  //     title,
+  //     location,
+  //     ...(hcMax !== undefined && { hcMax }),  // hcMax가 존재할 경우에만 포함
+  //     ...(startDate !== undefined && { startDate }),
+  //     ...(endDate !== undefined && { endDate }),
+  //   };
+  //   return this.roomService.find(queryParameters);
+  // }
+  
   @Get('/')
   async findOne(
     @Query('id') id: number,
@@ -41,7 +62,7 @@ export class RoomController {
     @Query('hcMax') hcMax?: number,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
-  ): Promise<Room[] | undefined> {
+  ): Promise<{ data: Room[] | undefined; statusCode: HttpStatus; statusMsg: string; }> {
     const queryParameters = {
       id,
       title,
@@ -50,15 +71,20 @@ export class RoomController {
       ...(startDate !== undefined && { startDate }),
       ...(endDate !== undefined && { endDate }),
     };
-    return this.roomService.find(queryParameters);
+    const data = await this.roomService.find(queryParameters);
+    return {
+      data,
+      statusCode: HttpStatus.OK,
+      statusMsg: '데이터 조회 성공',
+    };
   }
-  
+
   @Delete(':id')
   async remove(@Param('id') id: number): Promise<void> {
     await this.roomService.remove(id);
     return Object.assign({
       data: { id },
-      statusCode: 201,
+      statusCode: HttpStatus.NO_CONTENT,
       statusMsg: `데이터 삭제 성공`,
     });
   }

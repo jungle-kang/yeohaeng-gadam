@@ -1,18 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsOptional, IsString, IsDate } from 'class-validator';
 
-export class CreateRoomDto {
+export class SearchRoomDto {
   @ApiProperty({ description: '방 기본키' })
   @IsInt()
+  @IsOptional()
   id?: string;
 
   @ApiProperty({ description: '방 제목' })
   @IsString()
-  title: string;
+  @IsOptional()
+  title?: string;
 
   @ApiProperty({ description: '목적지' })
   @IsString()
-  location: string;
+  @IsOptional()
+  location?: string;
 
   @ApiProperty({ description: '최대 인원 수' })
   @IsInt()
@@ -29,7 +32,8 @@ export class CreateRoomDto {
   @IsOptional()
   endDate?: string | null;
 
-  constructor(partial: Partial<CreateRoomDto>) {
-    Object.assign(this, partial);
-  }
+  @ApiProperty({ description: '태그' })
+  @IsString()
+  @IsOptional()
+  tag?: string | null;
 }

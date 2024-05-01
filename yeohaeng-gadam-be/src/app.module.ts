@@ -8,12 +8,19 @@ import { RoomModule } from './room/room.module';
 import { BoardModule } from './board/board.module';
 import { AuthModule } from './auth/auth.module';
 
+import * as Joi from 'joi';
+import { ChatModule } from './chat/chat.module';
+
 
 dotenv.config();
 
 @Module({
     imports: [
+        ChatModule,
         ConfigModule.forRoot({
+            validationSchema: Joi.object({
+                FRONTEND_URL: Joi.string().required(),
+            }),
             isGlobal: true,
         }),
         TypeOrmModule.forRoot({

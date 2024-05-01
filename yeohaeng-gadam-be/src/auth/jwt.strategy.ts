@@ -13,7 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     ) {
         // passes two important options
         super({
-            secretOrKey: 'process.env.JWT_SECRET_KEY', //secret text
+            secretOrKey: process.env.JWT_SECRET_KEY, //secret text
             // This configures the secret key that JWT strategy will use
             // to decrypt the JWT token in order to validate it
             // and access its payload

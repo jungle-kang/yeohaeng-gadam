@@ -6,6 +6,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RoomModule } from './room/room.module';
 import { BoardModule } from './board/board.module';
+import { AuthModule } from './auth/auth.module';
+
 
 dotenv.config();
 
@@ -28,8 +30,9 @@ dotenv.config();
         }),
         RoomModule,
         BoardModule,
+        AuthModule,
     ],
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

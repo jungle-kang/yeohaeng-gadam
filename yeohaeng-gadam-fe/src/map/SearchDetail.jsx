@@ -13,7 +13,7 @@ function SearchDetail({ places }) {
         async function getPlaceDetail() {
             try {
                 // 비동기 요청을 시작하고, 응답을 기다림
-                const response = await fetch(`/maps/api/place/findplacefromtext/json?fields=photos%2Cformatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&input=${places[0].place_name}&inputtype=textquery&key=AIzaSyBBYPfZtATYodCUWXrs3nS0e0YcTkcUDXY`);
+                const response = await fetch(`/maps/api/place/findplacefromtext/json?fields=photos%2Cformatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&input=${places[0].place_name}&inputtype=textquery&key=${API_KEY}`);
 
                 // 응답이 성공적이라면, JSON 형태로 데이터를 파싱
                 if (!response.ok) {

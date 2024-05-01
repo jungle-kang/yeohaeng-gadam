@@ -8,6 +8,10 @@ import Home from "./pages/Home.tsx";
 import SearchForm from './map/SearchForm.jsx';
 import SearchDetail from './map/SearchDetail.jsx';
 import FindWay from './map/FindWay.jsx';
+import GoogleOauth from './login/GoogleLogin.tsx';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const router = createBrowserRouter([
     {
@@ -36,11 +40,17 @@ const router = createBrowserRouter([
     {
         path: "/findway",
         element: <FindWay />,
+    },
+    {
+        path: "/googleLogin",
+        element: <GoogleOauth />
     }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode>
-        <RouterProvider router={router} />
-    </React.StrictMode>,
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <React.StrictMode>
+            <RouterProvider router={router} />
+        </React.StrictMode>
+    </GoogleOAuthProvider>,
 )

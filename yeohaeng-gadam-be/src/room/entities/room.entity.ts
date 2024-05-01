@@ -5,7 +5,7 @@ import { Tag } from "./tag.entity";
 @Entity("room", { schema: "yeohaeng_gadam" })
 export class Room {
   @PrimaryGeneratedColumn({ type: "bigint", name: "id" })
-  id: string;
+  id: number;
 
   @Column("varchar", { name: "title", comment: "방 제목", length: 64 })
   title: string;

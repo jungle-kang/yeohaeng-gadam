@@ -33,26 +33,6 @@ export class RoomController {
       statusMsg: `데이터 조회 성공`,
     });
   }
-
-  // @Get('/')
-  // async findOne(
-  //   @Query('id') id: number,
-  //   @Query('title') title: string,
-  //   @Query('location') location: string,
-  //   @Query('hcMax') hcMax?: number,
-  //   @Query('startDate') startDate?: string,
-  //   @Query('endDate') endDate?: string,
-  // ): Promise<Room[] | undefined> {
-  //   const queryParameters = {
-  //     id,
-  //     title,
-  //     location,
-  //     ...(hcMax !== undefined && { hcMax }),  // hcMax가 존재할 경우에만 포함
-  //     ...(startDate !== undefined && { startDate }),
-  //     ...(endDate !== undefined && { endDate }),
-  //   };
-  //   return this.roomService.find(queryParameters);
-  // }
   
   @Get('/')
   async findOne(

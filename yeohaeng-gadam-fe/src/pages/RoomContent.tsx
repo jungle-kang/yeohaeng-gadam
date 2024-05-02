@@ -33,9 +33,9 @@ const RoomContent = () => {
       <div className="w-7/12 h-4/5">
           <Whiteboard />
       </div>
-      <div className="w-2/12 h-4/5 bg-blue-600">
+      {/* <div className="w-2/12 h-4/5 bg-blue-600">
         TODO: 채팅 패널
-      </div>
+      </div> */}
     </div>
   )
 }

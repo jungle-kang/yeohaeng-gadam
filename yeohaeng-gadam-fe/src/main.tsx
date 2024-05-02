@@ -52,7 +52,7 @@ const router = createBrowserRouter([
         element: <GoogleLoginButton />
     },
     {
-        path: "/stream/:roomId",
+        path: "video-chat-room/:roomName",
         element: <Stream />
     }
 ])

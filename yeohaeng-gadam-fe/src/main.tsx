@@ -53,13 +53,13 @@ const router = createBrowserRouter([
         element: <GoogleLoginButton />
     },
     {
+        path: "video-chat-room/:roomName",
+        element: <Stream />
+    },
+    {
         path: "/KakaoLogin",
         element: <KakaoLogin/>
     },
-    {
-        path: "/stream/:roomId",
-        element: <Stream />
-    }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

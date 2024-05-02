@@ -18,6 +18,7 @@ export function useChatConnection(peerConnection: RTCPeerConnection) {
     const handleConnection = useCallback(() => {
         socket.emit('join_room', roomName);
     }, [roomName]);
+    console.log('joinroom', roomName);
 
     const handleReceiveCandidate = useCallback(
         ({ candidate }: { candidate: RTCIceCandidate }) => {
@@ -28,6 +29,7 @@ export function useChatConnection(peerConnection: RTCPeerConnection) {
 
     useEffect(() => {
         socket.connect();
+        // console.log('socket', socket);
         socket.on('answer', handleOfferAnswer);
         socket.on('send_connection_offer', handleConnectionOffer);
         socket.on('another_person_ready', sendOffer);

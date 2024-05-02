@@ -9,13 +9,15 @@ function classNames(...classes: string[]) {
 interface SelectBoxProps {
     selectList:string[],
     defaultValue:string,
+    onSelectChange: (item: string) =>void;
 }
 
-export default function SelectBox({selectList,defaultValue}: SelectBoxProps) {
+export default function SelectBox({selectList,defaultValue,onSelectChange}: SelectBoxProps) {
     const [selectedItem, setSelectedItem] = useState("");
 
     const handleMenuItemClick = (item: string) => {
         setSelectedItem(item);
+        onSelectChange(item);
     }
 
     return (

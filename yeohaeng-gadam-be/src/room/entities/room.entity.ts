@@ -1,11 +1,10 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Board } from "../../board/entities/board.entity";
 import { Tag } from "./tag.entity";
 
 @Entity("room", { schema: "yeohaeng_gadam" })
 export class Room {
   @PrimaryGeneratedColumn({ type: "bigint", name: "id" })
-  id: number;
+  id: string;
 
   @Column("varchar", { name: "title", comment: "방 제목", length: 64 })
   title: string;
@@ -35,9 +34,6 @@ export class Room {
     default: () => "CURRENT_TIMESTAMP",
   })
   modDate: Date | null;
-
-  @OneToMany(() => Board, (board) => board.room)
-  boards: Board[];
 
   @OneToMany(() => Tag, (tag) => tag.room)
   tags: Tag[];

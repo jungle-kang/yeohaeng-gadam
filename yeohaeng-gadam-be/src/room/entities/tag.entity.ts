@@ -17,13 +17,14 @@ export class Tag {
   @Column("bigint", { name: "room_id" })
   roomId: string;
 
-  @Column("int", { name: "tag", comment: "테마 번호" })
-  tag: number;
+  @Column("varchar", { name: "tag", comment: "테마명", length: 20 })
+  tag: string;
 
   @ManyToOne(() => Room, (room) => room.tags, {
     onDelete: "NO ACTION",
     onUpdate: "NO ACTION",
   })
+  
   @JoinColumn([{ name: "room_id", referencedColumnName: "id" }])
   room: Room;
 }

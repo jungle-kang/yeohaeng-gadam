@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsOptional, IsString, IsDate } from 'class-validator';
 
-export class CreateRoomDto {
+export class CreateRoomTagDto {
   @ApiProperty({ description: '방 기본키' })
   @IsInt()
   id?: string;
@@ -29,7 +29,12 @@ export class CreateRoomDto {
   @IsOptional()
   endDate?: string | null;
 
-  constructor(partial: Partial<CreateRoomDto>) {
+  @ApiProperty({ description: '태그' })
+  @IsInt()
+  @IsOptional()
+  tag?: string  | null;
+
+  constructor(partial: Partial<CreateRoomTagDto>) {
     Object.assign(this, partial);
   }
 }

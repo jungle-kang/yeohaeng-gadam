@@ -1,21 +1,35 @@
 // import {useParams} from "react-router-dom";
+import React from "react";
+import { createClient } from "@liveblocks/client";
+import { LiveMap, LiveObject } from "@liveblocks/client";
+import { RoomProvider, useMutation } from "/liveblocks.config";
 
-const Room = () =>{
-    // const {roomId} = useParams<{roomId:string}>();
+import RoomContent from "./RoomContent";
 
-    return (
-        <div className="flex h-screen bg-blue-200">
-            <div className="bg-blue-300 h-4/5 w-3/12">
 
-            </div>
-            <div className="w-7/12 h-4/5 bg-blue-400">
+const client = createClient({
+  publicApiKey: "pk_dev_D0wfBLYE808M7fX_lLoN_qZ9LaSNWrITw1rZc5ruC63IiaVpIczKB6NG_XCCVFjA",
+});
 
-            </div>
-            <div className="w-2/12 h-4/5 bg-blue-600">
+const Room = () => {
+  // const {roomId} = useParams<{roomId:string}>();
 
-            </div>
-        </div>
-    )
+  return (
+        <RoomProvider
+          id="react-whiteboard-app"
+          initialPresence={{
+            cursor: null,
+            selectedShape: null,
+            lineStartShape: null,
+          }}
+          initialStorage={{
+            shapes: new LiveMap(),
+            lines: new LiveMap(),
+          }}
+        >
+          <RoomContent />
+        </RoomProvider>
+  )
 }
 
 export default Room

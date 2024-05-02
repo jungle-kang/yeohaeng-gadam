@@ -5,7 +5,6 @@ import * as dotenv from 'dotenv';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RoomModule } from './room/room.module';
-import { BoardModule } from './board/board.module';
 import { AuthModule } from './auth/auth.module';
 
 import * as Joi from 'joi';
@@ -36,7 +35,6 @@ dotenv.config();
             synchronize: true,
         }),
         RoomModule,
-        BoardModule,
         AuthModule,
     ],
     controllers: [AppController],

@@ -14,7 +14,7 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Post('/')
-  @ApiOperation({ summary: '방 생성' })
+  @ApiOperation({ summary: '방 생성', description: 'room 테이블에 데이터 저장 후 [\"tag1\", \"tag2\", \"tag3\"] ... 형식으로 전달받은 데이터를 tag 테이블에 room 테이블의 id와 tag의 개별 값을 매핑하여 저장' })
   async save(@Body() RoomTagDTO: CreateRoomTagDto) {
     await this.roomService.save(RoomTagDTO);
 
@@ -38,7 +38,7 @@ export class RoomController {
   }
 
   @Get('/tags')
-  @ApiOperation({ summary: '태그를 그룹화하여 방 전체 조회', description: 'room 테이블과 tag 테이블을 room 테이블의 id를 기준으로 join후 tag 테이블의 tag를 기준으로 group by하여 전체 조회' })
+  @ApiOperation({ summary: '태그를 그룹화하여 방 전체 조회', description: 'room 테이블과 tag 테이블을 room 테이블의 id를 기준으로 join 후 tag 테이블의 tag를 기준으로 group by 하여 전체 조회' })
   async findRoomAndTags(): Promise<Room[]> {
     const roomList = await this.roomService.findRoomAndTags();
 
@@ -50,7 +50,7 @@ export class RoomController {
   }
 
   @Get('/tag/:tags')
-  @ApiOperation({ summary: '태그들을 포함하고 있는 방 조회', description: '[\'tag1\', \'tag2\', \'tag3\'] ... 형식으로 데이터 요청 시 tag1 또는 tag2 또는 tag3를 포함하고 있는 room_id 조회' })
+  @ApiOperation({ summary: '태그들을 포함하고 있는 방 조회', description: '[\"tag1\", \"tag2\", \"tag3\"] ... 형식으로 데이터 요청 시 tag1 또는 tag2 또는 tag3를 포함하고 있는 room_id 조회' })
   async findRoomAndTag(@Param('tags') tags: string): Promise<Room[]> {
     // console.log('컨트롤러/tags >', tags);
     const roomIdList = await this.roomService.findRoomWithTags(tags);

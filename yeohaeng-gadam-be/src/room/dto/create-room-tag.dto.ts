@@ -29,7 +29,7 @@ export class CreateRoomTagDto {
   @IsOptional()
   endDate?: string | null;
 
-  @ApiProperty({ type: [String], description: '태그' })
+  @ApiProperty({ type: [String], description: '태그들' })
   @IsArray()
   @IsOptional()
   tags?: string[] | null;

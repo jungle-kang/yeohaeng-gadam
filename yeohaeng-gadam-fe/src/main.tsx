@@ -58,10 +58,6 @@ const router = createBrowserRouter([
         path: "/gOauth",
         element: <GoogleLoginButton />
     },
-    // {
-    //     path: "/KakaoLogin",
-    //     element: <KakaoLogin/>
-    // },
     {
         path: "/SettingModal",
         element: <SettingModal/>

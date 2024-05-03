@@ -16,7 +16,7 @@ export class RoomService {
     @InjectRepository(Tag) private tagRepository: Repository<Tag>,
   ) {}
 
-  async save(RoomTagDTO: CreateRoomTagDto): Promise<void> {
+  async save(RoomTagDTO: CreateRoomTagDto): Promise<CreateRoomTagDto> {
     const RoomDTO: CreateRoomDto = {
       title: RoomTagDTO.title,
       location: RoomTagDTO.location,
@@ -26,7 +26,7 @@ export class RoomService {
     };
 
     const saveRoom = this.roomRepository.create(RoomDTO);  // DTO를 Entity로 변환
-    const savedRoom: CreateRoomDto = await this.roomRepository.save(saveRoom);  // Entity 저장 후 반환
+    const savedRoomDTO: CreateRoomDto = await this.roomRepository.save(saveRoom);  // Entity 저장 후 반환
     
     // console.log('서비스/RoomTagDTO.tag >', RoomTagDTO.tags);
 
@@ -36,7 +36,7 @@ export class RoomService {
       for (let i = 0; i < tagArray.length; i++) {
 
         const TagDTO: CreateTagDto = {
-          roomId: savedRoom.id,
+          roomId: savedRoomDTO.id,
           tag: tagArray[i]
         };
     
@@ -45,6 +45,18 @@ export class RoomService {
         await this.tagRepository.save(saveTag);
       }
     }
+
+    const rsRoomTagDTO: CreateRoomTagDto = {
+      id: savedRoomDTO.id,
+      title: RoomTagDTO.title,
+      location: RoomTagDTO.location,
+      hcMax: RoomTagDTO.hcMax,
+      startDate: RoomTagDTO.startDate,
+      endDate: RoomTagDTO.endDate,
+      tags: RoomTagDTO.tags
+    };
+    
+    return rsRoomTagDTO;
   }
 
   async findAll(): Promise<Room[]>{

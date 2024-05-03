@@ -16,10 +16,10 @@ export class RoomController {
   @Post('/')
   @ApiOperation({ summary: '방 생성', description: 'room 테이블에 데이터 저장 후 [\"tag1\", \"tag2\", \"tag3\"] ... 형식으로 전달받은 데이터를 tag 테이블에 room 테이블의 id와 tag의 개별 값을 매핑하여 저장' })
   async save(@Body() RoomTagDTO: CreateRoomTagDto) {
-    await this.roomService.save(RoomTagDTO);
+    const rsRoomTagDTO: CreateRoomTagDto = await this.roomService.save(RoomTagDTO);
 
     return {
-      data: { RoomTagDTO },
+      data: { rsRoomTagDTO },
       statusCode: HttpStatus.CREATED,
       statusMsg: `데이터 저장 성공`,
     };

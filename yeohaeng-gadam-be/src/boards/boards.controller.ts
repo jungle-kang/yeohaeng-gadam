@@ -20,7 +20,7 @@ import { GetUser } from 'src/auth/dto/get-user.decorator';
 
 @ApiTags('Boards')//swagger에 tag를 생성해줌
 @Controller('boards')
-@UseGuards(GoogleAuthGuard)
+@UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth('access-token') //인증추가 
 export class BoardsController {
     constructor(private boardsService: BoardsService) { }

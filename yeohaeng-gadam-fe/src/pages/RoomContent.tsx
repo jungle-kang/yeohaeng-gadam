@@ -37,6 +37,7 @@ const RoomContent = () => {
       <div className="w-7/12 h-4/5">
           <Whiteboard />
       </div>
+
       <div className="w-2/12 h-4/5 bg-blue-600">
         <div className="  h-15 bg-blue-50 text-center font-bold text-4xl p-4 logo-font rounded-lg mt-5 mr-5 ml-5">
           <button 
@@ -47,6 +48,7 @@ const RoomContent = () => {
           </div>
       </div>
       <SettingModal isOpen={modalOpen} closeModal={() => setModalOpen(false)} />
+
     </div>
   )
 }

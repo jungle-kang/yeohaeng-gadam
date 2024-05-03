@@ -12,12 +12,14 @@ export class ChatGateway {
   @WebSocketServer()
   server: Server;
 
+
   @SubscribeMessage('join_room')
   async joinRoom(
     @MessageBody() roomName: string,
     @ConnectedSocket() socket: Socket,
   ) {
     const room = this.server.in(roomName);
+
 
     const roomSockets = await room.fetchSockets();
     const numberOfPeopleInRoom = roomSockets.length;
@@ -38,10 +40,10 @@ export class ChatGateway {
   @SubscribeMessage('send_connection_offer')
   async sendConnectionOffer(
     @MessageBody()
-      {
-        offer,
-        roomName,
-      }: {
+    {
+      offer,
+      roomName,
+    }: {
       offer: RTCSessionDescriptionInit;
       roomName: string;
     },
@@ -51,15 +53,16 @@ export class ChatGateway {
       offer,
       roomName,
     });
+    // console.log('roomName', roomName);
   }
 
   @SubscribeMessage('answer')
   async answer(
     @MessageBody()
-      {
-        answer,
-        roomName,
-      }: {
+    {
+      answer,
+      roomName,
+    }: {
       answer: RTCSessionDescriptionInit;
       roomName: string;
     },
@@ -74,10 +77,10 @@ export class ChatGateway {
   @SubscribeMessage('send_candidate')
   async sendCandidate(
     @MessageBody()
-      {
-        candidate,
-        roomName,
-      }: {
+    {
+      candidate,
+      roomName,
+    }: {
       candidate: unknown;
       roomName: string;
     },

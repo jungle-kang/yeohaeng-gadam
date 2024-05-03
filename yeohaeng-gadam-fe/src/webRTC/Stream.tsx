@@ -13,7 +13,9 @@ export function Stream() {
     }
 
     // return <VideoFeed mediaStream={localStream} isMuted={true} />;
-    return <VideoChatRoom localStream={localStream} />;
+    return (
+        localStream && <VideoChatRoom localStream={localStream} />
+    );
 }
 
 // return (

@@ -21,9 +21,9 @@ function SearchForm({ insertRectangle }) {
 
     return (
         <>
-            <form className="inputForm" onSubmit={handleSubmit}>
-                <input placeholder="검색어를 입력하세요" onChange={onChange} value={InputText} />
-                <button onClick={onClickHandler} type="submit">검색</button>
+            <form className="inputForm flex justify-between m-2" onSubmit={handleSubmit}>
+                <input className="w-9/12 h-10 rounded-full p-2" placeholder="검색어를 입력하세요" onChange={onChange} value={InputText} />
+                <button className="w-2/12 h-10 bg-blue-400 rounded-full" onClick={onClickHandler} type="submit">검색</button>
             </form>
             {/* <MapContainer searchPlace={Place} /> */}
             {<MapContainer searchPlace={Place} insertRectangle={insertRectangle}/>}

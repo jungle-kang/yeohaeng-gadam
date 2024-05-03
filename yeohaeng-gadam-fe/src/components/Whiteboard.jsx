@@ -18,6 +18,7 @@ import Cursor from "./Cursor";
 import transportRunIcon from "../assets/whiteboard-transport-run.svg";
 import transportBusIcon from "../assets/whiteboard-transport-bus.svg";
 import transportCarIcon from "../assets/whiteboard-transport-car.svg";
+import routesearchIcon from "../assets/whiteboard-routesearch.svg";
 
 import placehoderImg from "../assets/img-placeholder.png";
 
@@ -139,7 +140,7 @@ function Canvas() {
         duration = result.routes.length > 0
           ? result.routes[0].legs[0].duration.value
           : 0;
-        // console.log(result); ///////////////////////
+        console.log(result); ///////////////////////
         break;
       case TRANS_METHOD_CAR:
         break;
@@ -416,11 +417,11 @@ function Rectangle({ id, onShapePointerDown, onLineButtonDown, updateMemo }) {
       </div>
 
       <button
-        className="bg-white rounded-full font-bold border-black ring-1 w-8 h-8"
+        className="bg-white flex justify-center items-center rounded-full font-bold border-black ring-1 w-8 h-8"
         style={{ position: "absolute", top: "100%", transform: "translate(0, -50%)" }}
         onPointerDown={(e) => onLineButtonDown(e, id)}
       >
-        GO
+        <img className="w-6" src={routesearchIcon} />
       </button>
 
     </div>

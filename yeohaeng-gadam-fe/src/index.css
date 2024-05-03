@@ -21,7 +21,7 @@
   
   .modal-open-button, .modal-close-btn {
     cursor: pointer;
-   
+
   }
   
   .modal-container {
@@ -41,4 +41,5 @@
     width: 500px;
     height: 300px;
     
+
   }

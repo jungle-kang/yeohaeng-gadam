@@ -14,19 +14,24 @@ const Modal = ({ isOpen, closeModal }) => {
         closeModal();
       }
     }}>
-      <div className={'modal-content'}>
-        <div className="mt-5">
-          <div className="text-center">
-            <button><GoogleLoginButton/></button>
+      <div className={'modal-content rounded-lg'}>
+        <div>
+          <div className="text-center mt-10">
+            <button className="text-center mt-10"><GoogleLoginButton/></button>
+          
+            {/* <button className='mt-20' onClick={closeModal}>
+            X
+          </button> */}
+          
           </div>
-          <div className="text-center">
+          {/* <div className="text-center">
             <button><KakaoLogin/></button>
-          </div>
+          </div> */}
         </div>
         <div>
-          <button className={'modal-close-btn'} onClick={closeModal}>
-            모달 닫기
-          </button>
+          <div className='ml-96 mb-96 top-20'>
+          
+          </div>
         </div>
         
       </div>

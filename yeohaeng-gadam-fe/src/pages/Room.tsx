@@ -4,7 +4,9 @@ import { createClient } from "@liveblocks/client";
 import { LiveMap, LiveObject } from "@liveblocks/client";
 import { RoomProvider, useMutation } from "/liveblocks.config";
 
-import RoomContent from "./RoomContent";
+
+
+import RoomContent from "./RoomContent.jsx";
 
 
 const client = createClient({
@@ -13,6 +15,7 @@ const client = createClient({
 
 const Room = () => {
   // const {roomId} = useParams<{roomId:string}>();
+  
 
   return (
         <RoomProvider

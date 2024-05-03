@@ -16,7 +16,7 @@ export class RoomService {
     @InjectRepository(Tag) private tagRepository: Repository<Tag>,
   ) {}
 
-  async save(RoomTagDTO: CreateRoomTagDto): Promise<void> {
+  async save(RoomTagDTO: CreateRoomTagDto): Promise<CreateRoomTagDto> {
     const RoomDTO: CreateRoomDto = {
       title: RoomTagDTO.title,
       location: RoomTagDTO.location,
@@ -26,17 +26,37 @@ export class RoomService {
     };
 
     const saveRoom = this.roomRepository.create(RoomDTO);  // DTO를 Entity로 변환
-
-    const savedRoom: CreateRoomDto = await this.roomRepository.save(saveRoom);  // Entity 저장 후 반환
+    const savedRoomDTO: CreateRoomDto = await this.roomRepository.save(saveRoom);  // Entity 저장 후 반환
     
-    const TagDTO: CreateTagDto = {
-      roomId: savedRoom.id,
-      tag: RoomTagDTO.tag
+    // console.log('서비스/RoomTagDTO.tag >', RoomTagDTO.tags);
+
+    if (RoomTagDTO.tags !== null && RoomTagDTO.tags !== undefined) {
+      let tagArray = RoomTagDTO.tags;
+
+      for (let i = 0; i < tagArray.length; i++) {
+
+        const TagDTO: CreateTagDto = {
+          roomId: savedRoomDTO.id,
+          tag: tagArray[i]
+        };
+    
+        const saveTag = this.tagRepository.create(TagDTO);
+    
+        await this.tagRepository.save(saveTag);
+      }
+    }
+
+    const rsRoomTagDTO: CreateRoomTagDto = {
+      id: savedRoomDTO.id,
+      title: RoomTagDTO.title,
+      location: RoomTagDTO.location,
+      hcMax: RoomTagDTO.hcMax,
+      startDate: RoomTagDTO.startDate,
+      endDate: RoomTagDTO.endDate,
+      tags: RoomTagDTO.tags
     };
-
-    const saveTag = this.tagRepository.create(TagDTO);
-
-    await this.tagRepository.save(saveTag);
+    
+    return rsRoomTagDTO;
   }
 
   async findAll(): Promise<Room[]>{
@@ -52,7 +72,7 @@ export class RoomService {
           room.hc_max, 
           room.start_date, 
           room.end_date, 
-          CONCAT('[', GROUP_CONCAT(tag.tag separator ', '), ']') AS tags
+          CONCAT('[", GROUP_CONCAT(tag.tag separator ', '), "]') AS tags
       FROM 
           yeohaeng_gadam.room
       LEFT JOIN 
@@ -63,20 +83,17 @@ export class RoomService {
   }
 
   async findRoomWithTags(tags: string): Promise<any[]> {
-    // ['tag 4', 'tag3']
-    const cleanedTagString = tags.replace(/\[|\]/g, '');  // 양 끝의 대괄호 제거
-    // console.log('서비스/cleanedTagString >', cleanedTagString);
-    const tagArray = cleanedTagString.split(',');  // ,를 기준으로 잘라서 배열에 저장
-    // console.log('서비스/tagArray >', tagArray);
+    // ["tag1", "tag2"]
+    const tagArray = JSON.parse(tags);
+    console.log('서비스/tagArray >', tagArray);
     // console.log('서비스/tagArray[0] >', tagArray[0]);
 
     let orConditions = '';
     for (let i = 1; i < tagArray.length; i++) {
-        orConditions += `OR tag.tag =${tagArray[i]} `;
+        orConditions += `OR tag.tag = '${tagArray[i]}' `;
     }
 
     // console.log('서비스/OR conditions:', orConditions);
-    // console.log('서비스/', tagArray[0], orConditions);
 
     return await this.roomRepository.query(`
       SELECT DISTINCT
@@ -86,7 +103,7 @@ export class RoomService {
       INNER JOIN 
         yeohaeng_gadam.tag ON room.id = tag.room_id
       WHERE 
-        tag.tag = ${tagArray[0]} ${orConditions};
+        tag.tag = '${tagArray[0]}' ${orConditions};
     `);
   }
 

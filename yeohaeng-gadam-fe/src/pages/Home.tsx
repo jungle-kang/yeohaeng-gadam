@@ -1,5 +1,6 @@
 import SearchBar from "../components/SearchBar.tsx";
 import RoomList from "../components/RoomList.tsx";
+import PopularLocation from "../components/PopularLocation.tsx";
 
 const Home = () => {
     return (
@@ -11,6 +12,7 @@ const Home = () => {
             </div>
             <div className="h-screen overflow-y-none">
                 <SearchBar/>
+                <PopularLocation/>
                 <RoomList/>
             </div>
         </main>

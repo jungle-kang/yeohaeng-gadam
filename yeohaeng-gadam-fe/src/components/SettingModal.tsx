@@ -19,11 +19,27 @@ const SettingModal = ({ isOpen, closeModal }) => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(url)
       .then(() => {
-        toast('URL이 클립보드에 복사되었습니다!'); // 성공 메시지를 toast로 표시
+        toast('URL이 클립보드에 복사되었습니다!', {
+          position: "top-center",
+          autoClose: 1500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+        }); // 성공 메시지를 toast로 표시
       })
       .catch(err => {
         console.error('클립보드 복사에 실패했습니다:', err);
-        toast.error('클립보드 복사에 실패했습니다!'); // 실패 메시지를 toast로 표시
+        toast.error('클립보드 복사에 실패했습니다!', {
+          position: "top-center",
+          autoClose: 1500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        }); // 실패 메시지를 toast로 표시
       });
   };
 
@@ -50,7 +66,7 @@ const SettingModal = ({ isOpen, closeModal }) => {
           <div className='ml-96 mb-96 top-20'></div>
         </div>
       </div>
-      <ToastContainer position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
+      <ToastContainer position="top-center" autoClose={1500} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
     </div>
   );
 };

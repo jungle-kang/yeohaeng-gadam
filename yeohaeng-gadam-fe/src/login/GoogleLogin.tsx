@@ -30,6 +30,7 @@ function GoogleOauth() {
 
     useEffect(
         () => {
+            console.log("user ??: ", user); ////
             if (user) {
                 axios
                     .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
@@ -40,6 +41,11 @@ function GoogleOauth() {
                     })
                     .then((res) => {
                         setProfile(res.data);
+                        // console.log(profile); ////
+                        axios.post(`/api/auth/google`, {
+                            token: user.access_token, // 사용자 토큰
+                            profile: res.data // 사용자 프포필 정보
+                        })
                     })
                     .catch((err) => console.log(err));
             }

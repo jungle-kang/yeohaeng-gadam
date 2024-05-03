@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 
 import * as Joi from 'joi';
 import { ChatModule } from './chat/chat.module';
+import { GoogleStrategy } from './auth/google.strategies';
 
 
 dotenv.config();
@@ -38,6 +39,6 @@ dotenv.config();
         AuthModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService, GoogleStrategy],
 })
 export class AppModule { }

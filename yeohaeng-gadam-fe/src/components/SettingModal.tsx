@@ -19,11 +19,11 @@ const SettingModal = ({ isOpen, closeModal }) => {
       <div className={'modal-content rounded-lg'}>
         <div>
           <div className="text-center ">
-            <button onClick={()=>closeModal()} className=" bg-slate-300 text-center p-2 mt-10 ">메인화면</button>
+            <button onClick={()=>closeModal()} className=" bg-slate-300 text-center p-2 mt-10 rounded-lg">메인화면</button>
             <br/>
-            <button className="bg-slate-300 text-center p-2 mt-10 ">확정하기</button>
+            <button className="bg-slate-300 text-center p-2 mt-10 rounded-lg">확정하기</button>
             <br/>            
-            <button onClick={()=>navigate("/")} className="bg-slate-300 text-center p-2 mt-10 ">방나가기</button>           
+            <button onClick={()=>navigate("/")} className="bg-slate-300 text-center p-2 mt-10 rounded-lg">방나가기</button>           
           </div>         
         </div>
         <div>

@@ -38,8 +38,12 @@ const RoomContent = () => {
           <Whiteboard />
       </div>
       <div className="w-2/12 h-4/5 bg-blue-600">
-        <div className="  h-15 bg-blue-50 text-center font-bold text-4xl p-4 logo-font">
-          <button onClick={()=>setModalOpen(true)}>설정</button>
+        <div className="  h-15 bg-blue-50 text-center font-bold text-4xl p-4 logo-font rounded-lg mt-5 mr-5 ml-5">
+          <button 
+          onClick={()=>setModalOpen(true)}>설정</button>         
+          </div>
+          <div className=" bg-green-400 h-5/6 mt-5">
+            <p>화상채팅 영역</p>
           </div>
       </div>
       <SettingModal isOpen={modalOpen} closeModal={() => setModalOpen(false)} />

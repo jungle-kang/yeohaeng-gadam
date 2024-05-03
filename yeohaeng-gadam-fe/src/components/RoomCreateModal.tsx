@@ -21,12 +21,16 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
         hcMax: selectedItem,
         startDate:'',
         endDate:'',
-        tag:'1',
+        tags:activeTags,
     });
 
-    const handleSelectChange = (item:string) =>{
+    const handleSelectChange = (item: string) => {
         setSelectedItem(item);
-    }
+        setForm(prevForm => ({
+            ...prevForm,
+            hcMax: item
+        }));
+    };
 
     const handleClickOutside = (event: MouseEvent) => {
         if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -35,11 +39,17 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
     };
 
     const handleTagClick = (tag: string) => {
-        if (activeTags.includes(tag)) {
-            setActiveTags(activeTags.filter((activeTag) => activeTag !== tag));
-        } else {
-            setActiveTags([...activeTags, tag]);
-        }
+        setActiveTags(prevTags => {
+            const updatedTags = prevTags.includes(tag)
+                ? prevTags.filter((activeTag) => activeTag !== tag)
+                : [...prevTags, tag];
+
+            setForm(prevForm => ({
+                ...prevForm,
+                tags: updatedTags
+            }));
+            return updatedTags;
+        });
     };
 
     const handleSubmit = async ()=>{
@@ -56,7 +66,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
             const result = await response.json()
             console.log(result)
             if(result.statusCode === 201){
-                navigate(`/room/${result.data.id}`)
+                navigate(`/${result.data.rsRoomTagDTO.id}`)
             }
         }catch(e){
             console.error('room create fail: ',e)
@@ -139,33 +149,33 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                     <div className="ml-2 w-72 h-8">
                         <button
                             className={`${
-                                activeTags.includes("healing") ? "bg-blue-300" : "bg-blue-100"
+                                activeTags.includes("힐링") ? "bg-blue-300" : "bg-blue-100"
                             } rounded w-12 mt-1 hover:bg-blue-300 logo-font h-8`}
-                            onClick={() => handleTagClick("healing")}
+                            onClick={() => handleTagClick("힐링")}
                         >
                             힐링
                         </button>
                         <button
                             className={`${
-                                activeTags.includes("backpack") ? "bg-blue-300" : "bg-blue-100"
+                                activeTags.includes("배낭") ? "bg-blue-300" : "bg-blue-100"
                             } ml-5 rounded w-12 mt-1 hover:bg-blue-300 logo-font h-8`}
-                            onClick={() => handleTagClick("backpack")}
+                            onClick={() => handleTagClick("배낭")}
                         >
                             배낭
                         </button>
                         <button
                             className={`${
-                                activeTags.includes("leisure") ? "bg-blue-300" : "bg-blue-100"
+                                activeTags.includes("레저") ? "bg-blue-300" : "bg-blue-100"
                             } ml-5 rounded w-12 mt-1 hover:bg-blue-300 logo-font h-8`}
-                            onClick={() => handleTagClick("leisure")}
+                            onClick={() => handleTagClick("레저")}
                         >
                             레저
                         </button>
                         <button
                             className={`${
-                                activeTags.includes("restaurant") ? "bg-blue-300" : "bg-blue-100"
+                                activeTags.includes("맛집") ? "bg-blue-300" : "bg-blue-100"
                             } ml-5 rounded w-12 mt-1 hover:bg-blue-300 logo-font h-8`}
-                            onClick={() => handleTagClick("restaurant")}
+                            onClick={() => handleTagClick("맛집")}
                         >
                             맛집
                         </button>

@@ -2,22 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 
-// function GoogleOauth() {
-//     const responseMessage = (response) => {
-//         console.log(response);
-//     };
-//     const errorMessage = (error) => {
-//         console.log(error);
-//     };
-//     return (
-//         <div>
-//             <h2>React Google Login</h2>
-//             <br />
-//             <br />
-//             <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
-//         </div>
-//     )
-// }
+
 
 function GoogleOauth() {
     const [user, setUser] = useState([]);

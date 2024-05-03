@@ -11,6 +11,7 @@ import FindWay from './map/FindWay.jsx';
 import GoogleOauth from './login/GoogleLogin.tsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import GoogleLoginButton from './login/jwtgoogle.tsx';
+import KakaoLogin from './login/KakaoLogin.tsx';
 import Stream from './webRTC/Stream.tsx';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -54,7 +55,11 @@ const router = createBrowserRouter([
     {
         path: "video-chat-room/:roomName",
         element: <Stream />
-    }
+    },
+    {
+        path: "/KakaoLogin",
+        element: <KakaoLogin/>
+    },
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

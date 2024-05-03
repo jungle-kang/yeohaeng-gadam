@@ -60,7 +60,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/SettingModal",
-        element: <SettingModal/>
+        element: <SettingModal />
     },
     {
         path: "/stream/:roomId",
@@ -68,7 +68,7 @@ const router = createBrowserRouter([
     },
     
 ])
-
+// 왜 머지가 안되니
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <React.StrictMode>

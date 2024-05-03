@@ -1,29 +1,36 @@
 // import {useParams} from "react-router-dom";
 import React from "react";
+import { useParams } from "react-router-dom";
 import { createClient } from "@liveblocks/client";
 import { LiveMap, LiveObject } from "@liveblocks/client";
 import { RoomProvider, useMutation } from "/liveblocks.config";
 
-import RoomContent from "./RoomContent";
+import RoomContent from "../components/RoomContent";
+
+const API_KEY = import.meta.env.VITE_LIVEBLOCKS_API_PUBLIC;
 
 
 const client = createClient({
-  publicApiKey: "pk_dev_D0wfBLYE808M7fX_lLoN_qZ9LaSNWrITw1rZc5ruC63IiaVpIczKB6NG_XCCVFjA",
+  publicApiKey: API_KEY,
 });
 
 const Room = () => {
-  // const {roomId} = useParams<{roomId:string}>();
+  const {roomId} = useParams<{roomId:string}>();
+  const roomProviderId = "whiteboard-" + roomId
 
   return (
         <RoomProvider
-          id="react-whiteboard-app"
+          id={roomProviderId}
           initialPresence={{
             cursor: null,
-            selectedShape: null,
+            selectedCard: null,
+            selectedShape: null, /////////
             lineStartShape: null,
           }}
           initialStorage={{
-            shapes: new LiveMap(),
+            pages: new LiveMap(),
+            cards: new LiveMap(),
+            shapes: new LiveMap(), ///////////
             lines: new LiveMap(),
           }}
         >

@@ -6,5 +6,13 @@ const client = createClient({
   publicApiKey: "pk_prod_9M_WTfouoMxktBHjkUipC0ifJR18-GHvJ0tQi1Z3SeeRHvXtZnfsdS64WpyxQcsg",
 });
 
-export const { RoomProvider, useOthers, useMyPresence, useMap, useHistory, useBatch, useRoom, useStorage, useMutation, useSelf } =
-  createRoomContext(client);
+export const {
+  RoomProvider,
+  useOthers,
+  useMyPresence,
+  useStorage,
+  useMutation,
+  useSelf,
+  useBroadcastEvent,
+  useEventListener,
+} = createRoomContext(client);

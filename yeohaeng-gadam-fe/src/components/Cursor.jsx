@@ -5,8 +5,6 @@ export default function Cursor({ color, x, y }) {
     <svg
       style={{
         position: "absolute",
-        left: 0,
-        top: 0,
         transform: `translateX(${x}px) translateY(${y}px)`,
         zIndex: 9999,
         transition: "all 0.2s",

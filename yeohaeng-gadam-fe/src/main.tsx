@@ -13,6 +13,8 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import GoogleLoginButton from './login/jwtgoogle.tsx';
 import KakaoLogin from './login/KakaoLogin.tsx';
 import Stream from './webRTC/Stream.tsx';
+import Mypage from "./components/Mypage.jsx"
+import SettingModal from './components/SettingModal.jsx';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -60,6 +62,17 @@ const router = createBrowserRouter([
         path: "/KakaoLogin",
         element: <KakaoLogin/>
     },
+
+    {
+        path: "/stream/:roomId",
+        element: <Stream />
+    },
+    {
+        path:"Mypage",
+        element: <Mypage/>
+    }
+    
+
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

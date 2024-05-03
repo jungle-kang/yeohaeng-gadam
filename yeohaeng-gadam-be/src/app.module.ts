@@ -9,12 +9,16 @@ import { AuthModule } from './auth/auth.module';
 
 import * as Joi from 'joi';
 import { ChatModule } from './chat/chat.module';
+import { GoogleStrategy } from './auth/google.strategies';
+import { PassportModule } from '@nestjs/passport';
+import { BoardsModule } from './boards/boards.module';
 
 
 dotenv.config();
 
 @Module({
     imports: [
+        PassportModule.register({ defaultStrategy: 'google' }),
         ChatModule,
         ConfigModule.forRoot({
             validationSchema: Joi.object({
@@ -36,8 +40,9 @@ dotenv.config();
         }),
         RoomModule,
         AuthModule,
+        BoardsModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService, GoogleStrategy],
 })
 export class AppModule { }

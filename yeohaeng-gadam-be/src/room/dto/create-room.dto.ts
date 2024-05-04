@@ -14,6 +14,11 @@ export class CreateRoomDto {
   @IsString()
   location: string;
 
+  @ApiProperty({ type: Number, description: '상태' })
+  @IsInt()
+  @IsOptional()
+  state?: number;
+
   @ApiProperty({ type: Number, description: '참가 인원 수' })
   @IsInt()
   @IsOptional()
@@ -23,11 +28,6 @@ export class CreateRoomDto {
   @IsInt()
   @IsOptional()
   hcMax?: number;
-
-  @ApiProperty({ type: Number, description: '상태' })
-  @IsInt()
-  @IsOptional()
-  state?: number;
 
   @ApiProperty({ type: Date, description: '여행 시작 날짜' })
   @IsDate()

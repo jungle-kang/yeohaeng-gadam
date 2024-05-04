@@ -35,7 +35,7 @@ export default function SearchBar(){
                         방 찾기
                     </button>
                 </div>
-                <div className="basis-1/5">
+                <div className="basis-1/5 ml-2">
                     <button onClick={createRoomModal}
                             className="logo-font font-bold h-full text-center block w-full rounded-md border-0 py-1.5 px-auto text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-200 hover:text-gray-500 bg-gray-300">
                         방 만들기

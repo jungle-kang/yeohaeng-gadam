@@ -23,14 +23,16 @@ const Room = () => {
           id={roomProviderId}
           initialPresence={{
             cursor: null,
-            selectedCard: null,
-            selectedShape: null, /////////
-            lineStartShape: null,
+            selectedPageId: null,
+            selectedCardId: null,
+            lineStartCardId: null,
+            // selectedShape: null, /////////
+            // lineStartShape: null, //////
           }}
           initialStorage={{
             pages: new LiveMap(),
             cards: new LiveMap(),
-            shapes: new LiveMap(), ///////////
+            // shapes: new LiveMap(), ///////////
             lines: new LiveMap(),
           }}
         >

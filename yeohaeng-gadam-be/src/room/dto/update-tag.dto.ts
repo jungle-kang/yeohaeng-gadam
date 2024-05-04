@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class UpdateTagDto {
-  @ApiProperty({ type: Number, description: '방 기본키' })
+  @ApiProperty({ type: Number, description: '방 기본키 참조' })
   @IsInt()
   @IsOptional()
   roomId: string;

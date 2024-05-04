@@ -75,15 +75,42 @@ export class RoomController {
         statusCode: HttpStatus.OK,
         statusMsg: '데이터 조회 성공',
     });
-}
+  }
 
   @Get('/')
-  @ApiOperation({ summary: '방 쿼리 조회', description: 'room 테이블의 id, title, location, hcMax, startDate, endDate 중 속성을 선택하여 필요한 데이터 요청 시 방 조회' })
-  async find(@Body() roomDTO: SearchRoomDto) {
-    const data = await this.roomService.find(roomDTO);
+  @ApiOperation({ summary: '방 쿼리 조회', description: 'room 테이블의 id, title, location, hcAttend, hcMax, startDate, endDate 중 속성을 선택하여 필요한 데이터 요청 시 방 조회' })
+  @ApiQuery({ name: 'id', required: false })
+  @ApiQuery({ name: 'title', required: false })
+  @ApiQuery({ name: 'location', required: false })
+  @ApiQuery({ name: 'state', required: false })
+  @ApiQuery({ name: 'hcAttend', required: false })
+  @ApiQuery({ name: 'hcMax', required: false })
+  @ApiQuery({ name: 'startDate', required: false })
+  @ApiQuery({ name: 'endDate', required: false })
+  async find(
+    @Query('id') id?: string,
+    @Query('title') title?: string,
+    @Query('location') location?: string,
+    @Query('state') state?: number,
+    @Query('hcAttend') hcAttend?: number,
+    @Query('hcMax') hcMax?: number,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    const roomDTO: SearchRoomDto = {
+      "id": id,
+      "title": title,
+      "location": location,
+      "state": state,
+      "hcAttend": hcAttend,
+      "hcMax": hcMax,
+      "startDate": startDate,
+      "endDate": endDate
+    };
+    const roomList = await this.roomService.find(roomDTO);
     
     return {
-      data,
+      data: roomList,
       statusCode: HttpStatus.OK,
       statusMsg: '데이터 조회 성공',
     };

@@ -10,7 +10,7 @@ const Home = () => {
                      src="https://images.pexels.com/photos/2407070/pexels-photo-2407070.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
                      alt="main image"/>
             </div>
-            <div className="h-screen overflow-y-none">
+            <div className="h-auto">
                 <SearchBar/>
                 <PopularLocation/>
                 <RoomList/>

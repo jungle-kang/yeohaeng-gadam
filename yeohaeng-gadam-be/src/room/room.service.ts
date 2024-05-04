@@ -191,7 +191,7 @@ export class RoomService {
     for (let i = 0; i < addTagArray.length; i++) {
       if(i !== ((addTagArray.length)-1)){
         values += `('${tagDTO.roomId}', '${addTagArray[i]}'),`;
-      } else if(i === ((addTagArray.length)-1)) {
+      } else {
         values += `('${tagDTO.roomId}', '${addTagArray[i]}')`;
       }
     }

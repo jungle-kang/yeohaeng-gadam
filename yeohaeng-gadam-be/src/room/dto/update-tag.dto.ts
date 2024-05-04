@@ -1,7 +1,3 @@
-// import { PartialType } from '@nestjs/swagger';
-// import { CreateTagDto } from './create-tag.dto';
-
-// export class UpdateTagDto extends PartialType(CreateTagDto) {}
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsInt, IsOptional, IsString } from 'class-validator';
 

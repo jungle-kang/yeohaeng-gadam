@@ -15,6 +15,8 @@ import KakaoLogin from './login/KakaoLogin.tsx';
 import Stream from './webRTC/Stream.tsx';
 import Mypage from "./components/Mypage.jsx"
 import SettingModal from './components/SettingModal.jsx';
+import BoardList from './pages/TestBoard.tsx';
+import { CookiesProvider } from 'react-cookie';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -33,8 +35,8 @@ const router = createBrowserRouter([
                 element: <Room />
             },
             {
-                path:"Mypage",
-                element: <Mypage/>
+                path: "Mypage",
+                element: <Mypage />
             }
         ]
     },
@@ -64,22 +66,28 @@ const router = createBrowserRouter([
     },
     {
         path: "/KakaoLogin",
-        element: <KakaoLogin/>
+        element: <KakaoLogin />
     },
 
     {
         path: "/stream/:roomId",
         element: <Stream />
     },
-   
-    
+    {
+        path: "/test",
+        element: <BoardList />
+    }
+
+
 
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <React.StrictMode>
-            <RouterProvider router={router} />
-        </React.StrictMode>
-    </GoogleOAuthProvider>,
+    <CookiesProvider>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            <React.StrictMode>
+                <RouterProvider router={router} />
+            </React.StrictMode>
+        </GoogleOAuthProvider>,
+    </CookiesProvider>
 )

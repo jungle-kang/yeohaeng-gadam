@@ -18,7 +18,7 @@ dotenv.config();
 
 @Module({
     imports: [
-        PassportModule.register({ defaultStrategy: 'google' }),
+        // PassportModule.register({ defaultStrategy: 'jwt' }),
         ChatModule,
         ConfigModule.forRoot({
             validationSchema: Joi.object({

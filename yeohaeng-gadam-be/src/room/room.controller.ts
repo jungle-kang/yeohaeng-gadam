@@ -116,6 +116,30 @@ export class RoomController {
     };
   }
 
+  @Patch('/enter')
+  @ApiOperation({ summary: '방 참가 가능 여부 조회 후 가능 시 참가', description: 'room 테이블에서 참가 인원 수와 최대 인원 수를 비교하여 참가 가능 여부 조회 후 참가 아니면 불참<br><br>"data": true -> 참가 성공<br>"data": false -> 참가 불가' })
+  async findRoomEnter(@Query('id') id?: string): Promise<Room[]> {
+    const rsRoomEnter = await this.roomService.findRoomEnter(id);
+
+    return Object.assign({
+      data: rsRoomEnter,
+      statusCode: HttpStatus.OK,
+      statusMsg: rsRoomEnter ? `데이터 수정 성공` : `데이터 수정 실패`,
+    });
+  }
+
+  @Patch('/exit')
+  @ApiOperation({ summary: '방 나가기 가능 여부 조회 후 가능 시 나가기', description: 'room 테이블에서 참가 인원 수와 최대 인원 수를 비교하여 나가기 가능 여부 조회 후 나가기 아니면 방 삭제<br><br>"data": true -> 나가기 성공<br>"data": false -> 나가기 성공 및 방 삭제' })
+  async findRoomExit(@Query('id') id?: string): Promise<Room[]> {
+    const rsRoomExit = await this.roomService.findRoomExit(id);
+
+    return Object.assign({
+      data: rsRoomExit,
+      statusCode: HttpStatus.OK,
+      statusMsg: `데이터 수정 성공`,
+    });
+  }
+
   @Patch('/tag')
   @ApiOperation({ summary: '태그들 수정', description: '[\"tag1\", \"tag2\", \"tag3\"] ... 형식으로 전달받은 데이터를 tag 테이블에 room 테이블의 id와 tag의 개별 값을 매핑하여 저장' })
   @ApiQuery({ name: 'tags', description: '["tag1", "tag2", "tag3"]<br>**태그는 최소 1개 이상이어야 하며, 반드시 선택된 모든 태그 값을 전달해야 합니다.**', required: true })

@@ -1,4 +1,4 @@
-import { Injectable, Param } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateRoomTagDto } from './dto/create-room-tag.dto';
@@ -9,7 +9,6 @@ import { SearchRoomDto } from './dto/search-room.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { Room } from './entities/room.entity';
 import { Tag } from './entities/tag.entity';
-
 
 @Injectable()
 export class RoomService {
@@ -22,8 +21,8 @@ export class RoomService {
     const roomDTO: CreateRoomDto = {
       title: roomTagDTO.title,
       location: roomTagDTO.location,
-      state: 1,
-      hcAttend: 1,
+      state: 0,
+      hcAttend: 0,
       hcMax: roomTagDTO.hcMax,
       startDate: roomTagDTO.startDate,
       endDate: roomTagDTO.endDate
@@ -177,6 +176,49 @@ export class RoomService {
     return await this.roomRepository.find({ where });
   }
 
+  async findRoomEnter(id: string): Promise<any> {
+    // 참가 인원이 최대 인원보다 작으면 참
+    const rsRoomEnter = await this.roomRepository.query(`
+      SELECT IF(hc_attend < hc_max, 'true', 'false') AS room_enter
+      FROM room
+      WHERE id = ${id};
+    `);
+
+    if(rsRoomEnter[0].room_enter === 'true') {
+      // 참가 인원 수 증가
+      await this.roomRepository.update(id, {
+        hcAttend: () => 'hc_attend + 1',
+      });
+
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async findRoomExit(id: string): Promise<any> {
+    // 참가 인원이 1명만 남았으면 거짓
+    const rsRoomExit = await this.roomRepository.query(`
+      SELECT IF(hc_attend != 1, 'true', 'false') AS room_exit
+      FROM room
+      WHERE id = ${id};
+    `);
+
+    if(rsRoomExit[0].room_exit === 'true') {
+      // 참가 인원 수 감소
+      await this.roomRepository.update(id, {
+        hcAttend: () => 'hc_attend - 1',
+      });
+
+      return true;
+    } else {
+      // 참가 인원이 1명 남았으면 방 삭제
+      this.remove(id);
+
+      return false;
+    }
+  }
+
   async changeTag(tagDTO: UpdateTagDto): Promise<any> {
     // 검색한 값 평탄화
     const existTagArray: string[] = (await this.roomRepository.query(`
@@ -204,9 +246,9 @@ export class RoomService {
     let values = '';
     for (let i = 0; i < addTagArray.length; i++) {
       if(i !== ((addTagArray.length)-1)){
-        values += `('${tagDTO.roomId}', '${addTagArray[i]}'),`;
+        values += `(${tagDTO.roomId}, '${addTagArray[i]}'),`;
       } else {
-        values += `('${tagDTO.roomId}', '${addTagArray[i]}')`;
+        values += `(${tagDTO.roomId}, '${addTagArray[i]}')`;
       }
     }
 

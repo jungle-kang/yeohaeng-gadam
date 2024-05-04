@@ -5,19 +5,22 @@ import * as dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
 import { WebsocketAdapter } from './chat/websocket-adapter';
 async function bootstrap() {
-  dotenv.config();
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
+
+  const frontendUrl = configService.get('FRONTEND_URL');
   app.enableCors({
-    // origin: configService.get('process.env.FRONTEND_URL'),
-    origin: '*',
+    origin: frontendUrl,
+    // origin: '*',
+    credentials: true,
   });
 
   app.useWebSocketAdapter(
     new WebsocketAdapter(app, {
-      // origin: configService.get('process.env.FRONTEND_URL'),
-      origin: '*',
+      origin: frontendUrl,
+      // origin: '*',
+      credentials: true,
     }),
   );
 

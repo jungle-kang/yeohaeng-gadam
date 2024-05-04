@@ -24,9 +24,16 @@ export class AuthController {
     // }
     async googleAuthRedirect(@Req() req, @Res() res) {
         console.log('GET oauth2/redirect/google - googleAuthRedirect 실행');
+        // console.log('req: ', req);
+        // console.log('res: ', res);
 
         const token = await this.authService.googleLogin(req);
-        res.cookie('access_token', token.access_token, { httpOnly: true });
-        res.redirect('/');
+        // res.cookie('access_token', token.access_token, { httpOnly: true });
+        res.cookie('access_token', token.access_token, {
+            // path: '/auth',
+            // httpOnly: true,
+        });
+        // console.log('access_token: ', token.access_token);
+        res.redirect('http://localhost:5173');
     }
 }

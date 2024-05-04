@@ -154,6 +154,9 @@ export class RoomService {
     if (RoomDTO.location !== undefined) {
       where.location = RoomDTO.location;
     }
+    if (RoomDTO.hcAttend !== undefined) {
+      where.hcAttend = RoomDTO.hcAttend;
+    }
     if (RoomDTO.hcMax !== undefined) {
       where.hcMax = RoomDTO.hcMax;
     }

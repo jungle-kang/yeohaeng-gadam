@@ -119,7 +119,7 @@ export class RoomController {
   @Patch('/enter')
   @ApiOperation({ summary: '방 참가 가능 여부 조회 후 가능 시 참가', description: 'room 테이블에서 참가 인원 수와 최대 인원 수를 비교하여 참가 가능 여부 조회 후 참가 아니면 불참<br><br>"data": true -> 참가 성공<br>"data": false -> 참가 불가' })
   async findRoomEnter(@Query('id') id?: string): Promise<Room[]> {
-    const rsRoomEnter = await this.roomService.findRoomEnter(id);
+    const rsRoomEnter = await this.roomService.changeRoomEnter(id);
 
     return Object.assign({
       data: rsRoomEnter,
@@ -131,7 +131,7 @@ export class RoomController {
   @Patch('/exit')
   @ApiOperation({ summary: '방 나가기 가능 여부 조회 후 가능 시 나가기', description: 'room 테이블에서 참가 인원 수와 최대 인원 수를 비교하여 나가기 가능 여부 조회 후 나가기 아니면 방 삭제<br><br>"data": true -> 나가기 성공<br>"data": false -> 나가기 성공 및 방 삭제' })
   async findRoomExit(@Query('id') id?: string): Promise<Room[]> {
-    const rsRoomExit = await this.roomService.findRoomExit(id);
+    const rsRoomExit = await this.roomService.changeRoomExit(id);
 
     return Object.assign({
       data: rsRoomExit,

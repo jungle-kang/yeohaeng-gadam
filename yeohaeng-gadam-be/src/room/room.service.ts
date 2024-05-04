@@ -176,7 +176,7 @@ export class RoomService {
     return await this.roomRepository.find({ where });
   }
 
-  async findRoomEnter(id: string): Promise<any> {
+  async changeRoomEnter(id: string): Promise<any> {
     // 참가 인원이 최대 인원보다 작으면 참
     const rsRoomEnter = await this.roomRepository.query(`
       SELECT IF(hc_attend < hc_max, 'true', 'false') AS room_enter
@@ -196,7 +196,7 @@ export class RoomService {
     }
   }
 
-  async findRoomExit(id: string): Promise<any> {
+  async changeRoomExit(id: string): Promise<any> {
     // 참가 인원이 1명만 남았으면 거짓
     const rsRoomExit = await this.roomRepository.query(`
       SELECT IF(hc_attend != 1, 'true', 'false') AS room_exit

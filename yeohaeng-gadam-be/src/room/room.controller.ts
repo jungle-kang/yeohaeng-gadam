@@ -78,7 +78,7 @@ export class RoomController {
 }
 
   @Get('/')
-  @ApiOperation({ summary: '방 쿼리 조회', description: 'room 테이블의 id, title, location, hcMax, startDate, endDate 중 속성을 선택하여 필요한 데이터 요청 시 방 조회' })
+  @ApiOperation({ summary: '방 쿼리 조회', description: 'room 테이블의 id, title, location, hcAttend, hcMax, startDate, endDate 중 속성을 선택하여 필요한 데이터 요청 시 방 조회' })
   async find(@Body() roomDTO: SearchRoomDto) {
     const data = await this.roomService.find(roomDTO);
     

@@ -22,6 +22,7 @@ export class RoomService {
     const roomDTO: CreateRoomDto = {
       title: roomTagDTO.title,
       location: roomTagDTO.location,
+      hcAttend: 1,
       hcMax: roomTagDTO.hcMax,
       startDate: roomTagDTO.startDate,
       endDate: roomTagDTO.endDate
@@ -33,7 +34,7 @@ export class RoomService {
     // console.log('서비스/RoomTagDTO.tag >', RoomTagDTO.tags);
 
     if (roomTagDTO.tags !== null && roomTagDTO.tags !== undefined) {
-      let addTagArray = roomTagDTO.tags;
+      const addTagArray: string[] = roomTagDTO.tags;
 
       for (let i = 0; i < addTagArray.length; i++) {
         const tagDTO: CreateTagDto = {
@@ -51,6 +52,7 @@ export class RoomService {
       id: savedRoomDTO.id,
       title: roomTagDTO.title,
       location: roomTagDTO.location,
+      hcAttend: roomTagDTO.hcAttend,
       hcMax: roomTagDTO.hcMax,
       startDate: roomTagDTO.startDate,
       endDate: roomTagDTO.endDate,
@@ -70,6 +72,7 @@ export class RoomService {
           room.id AS room_id, 
           room.title, 
           room.location, 
+          room.hc_attend,
           room.hc_max, 
           room.start_date, 
           room.end_date, 
@@ -79,7 +82,7 @@ export class RoomService {
       LEFT JOIN 
           yeohaeng_gadam.tag ON room.id = tag.room_id
       GROUP BY 
-          room.id, room.title, room.location, room.hc_max, room.start_date, room.end_date;
+          room.id, room.title, room.location, room.hc_attend, room.hc_max, room.start_date, room.end_date;
     `);
   }
 
@@ -114,6 +117,7 @@ export class RoomService {
           room.id AS room_id, 
           room.title, 
           room.location, 
+          room.hc_attend,
           room.hc_max, 
           room.start_date, 
           room.end_date, 
@@ -130,9 +134,9 @@ export class RoomService {
               AND end_dateBETWEEN '${startDate}' AND '${endDate}'
           )
       GROUP BY 
-          room.id, room.title, room.location, room.hc_max, room.start_date, room.end_date
+          room.id, room.title, room.location, room.hc_attend,room.hc_max, room.start_date, room.end_date
       ORDER BY 
-          room.start_date ASC, room.hc_max ASC;
+          room.start_date ASC, room.hc_attend ASC, room.hc_max ASC;
     `);
   }
 

@@ -17,6 +17,11 @@ export class SearchRoomDto {
   @IsOptional()
   location?: string;
 
+  @ApiProperty({ type: Number, description: '참가 인원 수' })
+  @IsInt()
+  @IsOptional()
+  hcAttend?: number;
+
   @ApiProperty({ type: Number, description: '최대 인원 수' })
   @IsInt()
   @IsOptional()

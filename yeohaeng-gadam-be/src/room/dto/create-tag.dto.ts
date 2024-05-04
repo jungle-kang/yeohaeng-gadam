@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateTagDto {
-  @ApiProperty({ type: Number, description: '방 기본키' })
+  @ApiProperty({ type: Number, description: '방 기본키 참조' })
   @IsInt()
   @IsOptional()
   roomId: string;

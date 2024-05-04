@@ -13,6 +13,9 @@ export class Room {
   @Column("varchar", { name: "location", comment: "목적지", length: 50 })
   location: string;
 
+  @Column("int", { name: "state", nullable: true, comment: "상태" })
+  state: number | null;
+  
   @Column("int", { name: "hc_attend", nullable: true, comment: "참가 인원 수" })
   hcAttend: number | null;
 

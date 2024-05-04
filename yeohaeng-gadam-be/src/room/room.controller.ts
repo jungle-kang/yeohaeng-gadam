@@ -82,6 +82,7 @@ export class RoomController {
   @ApiQuery({ name: 'id', required: false })
   @ApiQuery({ name: 'title', required: false })
   @ApiQuery({ name: 'location', required: false })
+  @ApiQuery({ name: 'state', required: false })
   @ApiQuery({ name: 'hcAttend', required: false })
   @ApiQuery({ name: 'hcMax', required: false })
   @ApiQuery({ name: 'startDate', required: false })
@@ -90,6 +91,7 @@ export class RoomController {
     @Query('id') id?: string,
     @Query('title') title?: string,
     @Query('location') location?: string,
+    @Query('state') state?: number,
     @Query('hcAttend') hcAttend?: number,
     @Query('hcMax') hcMax?: number,
     @Query('startDate') startDate?: string,
@@ -99,6 +101,7 @@ export class RoomController {
       "id": id,
       "title": title,
       "location": location,
+      "state": state,
       "hcAttend": hcAttend,
       "hcMax": hcMax,
       "startDate": startDate,

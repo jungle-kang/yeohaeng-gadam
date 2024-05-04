@@ -36,7 +36,6 @@ export class RoomService {
       let addTagArray = roomTagDTO.tags;
 
       for (let i = 0; i < addTagArray.length; i++) {
-
         const tagDTO: CreateTagDto = {
           roomId: savedRoomDTO.id,
           tag: addTagArray[i]
@@ -92,7 +91,7 @@ export class RoomService {
 
     let orConditions = '';
     for (let i = 1; i < addTagArray.length; i++) {
-        orConditions += `OR tag.tag = '${addTagArray[i]}' `;
+      orConditions += `OR tag.tag = '${addTagArray[i]}' `;
     }
 
     // console.log('서비스/OR conditions:', orConditions);
@@ -181,7 +180,7 @@ export class RoomService {
     const removeTagArray: string[] = existTagArray.filter(tag => !changeTagArray.includes(tag));
     let orConditions = '';
     for (let i = 1; i < removeTagArray.length; i++) {
-        orConditions += `OR tag = '${removeTagArray[i]}' `;
+      orConditions += `OR tag = '${removeTagArray[i]}' `;
     }
     
     // console.log('서비스/removeTagArray >', removeTagArray);
@@ -189,8 +188,12 @@ export class RoomService {
     // 변경할 태그와 존재했던 태그 배열의 차집합을 계산해 신규 선택할 태그들 저장
     const addTagArray: string[] = changeTagArray.filter(tag => !existTagArray.includes(tag));
     let values = '';
-    for (let i = 1; i < addTagArray.length; i++) {
-      values += `', '${addTagArray[i]}'`;
+    for (let i = 0; i < addTagArray.length; i++) {
+      if(i !== ((addTagArray.length)-1)){
+        values += `('${tagDTO.roomId}', '${addTagArray[i]}'),`;
+      } else {
+        values += `('${tagDTO.roomId}', '${addTagArray[i]}')`;
+      }
     }
 
     // console.log('서비스/addTagArray >', addTagArray);
@@ -199,12 +202,12 @@ export class RoomService {
     await this.roomRepository.query(`
       DELETE FROM tag
       WHERE room_id = '${tagDTO.roomId}'
-      AND (tag = '${removeTagArray[0]} ${orConditions}');`);
+      AND (tag = '${removeTagArray[0]}' ${orConditions});`);
 
     // 존재했던 태그들 중에서 신규 선택된 태그들 저장
     await this.roomRepository.query(`
       INSERT INTO tag (room_id, tag)
-      VALUES ('${tagDTO.roomId}', '${addTagArray[0]} ${values}');
+      VALUES ${values};
     `);
 
     return {

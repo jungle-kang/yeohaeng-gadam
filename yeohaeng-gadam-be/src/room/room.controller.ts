@@ -99,7 +99,7 @@ export class RoomController {
     return Object.assign({
       data: tagList,
       statusCode: HttpStatus.OK,
-      statusMsg: `데이터 조회 성공`,
+      statusMsg: `데이터 수정 성공`,
     });
   }
 

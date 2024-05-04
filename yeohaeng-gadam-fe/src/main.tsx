@@ -31,6 +31,10 @@ const router = createBrowserRouter([
             {
                 path: '/:roomId',
                 element: <Room />
+            },
+            {
+                path:"Mypage",
+                element: <Mypage/>
             }
         ]
     },
@@ -67,10 +71,7 @@ const router = createBrowserRouter([
         path: "/stream/:roomId",
         element: <Stream />
     },
-    {
-        path:"Mypage",
-        element: <Mypage/>
-    }
+   
     
 
 ])

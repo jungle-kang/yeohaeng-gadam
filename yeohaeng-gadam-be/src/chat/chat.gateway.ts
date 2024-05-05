@@ -31,19 +31,28 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // disconnect user를 제외
       room = room.filter(user => user.id !== client.id);
       this.users[roomID] = room;
+      if (room.length === 0) {
+        delete this.users[roomID];
+        return;
+      }
     }
-    client.broadcast.to(roomID).emit("user_exit", { id: client.id });
+    // client.broadcast.to(roomID).emit("user_exit", { id: client.id });
+    client.to(roomID).emit("user_exit", { id: client.id });
     // console.log(this.users);
   }
 
   @SubscribeMessage('join_room')
-  async handleJoinRoom(client: Socket, data: any) {
+  // async handleJoinRoom(client: Socket, data: any) {
+  handleJoinRoom(
+    @MessageBody() data: { room: string; email: string },
+    @ConnectedSocket() client: Socket,
+  ) {
     // user[room]에는 room에 있는 사용자들이 배열 형태로 저장된다.
     // room이 존재한다면
     if (this.users[data.room]) {
       const length = this.users[data.room].length;
       if (length === 5) {
-        client.emit("room_full");
+        client.to(client.id).emit("room_full");
         return;
       }
       // 인원이 최대 인원보다 적으면 접속 가능
@@ -63,28 +72,76 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // 본인에게 해당 user array를 전송
     // 새로 접속하는 user가 이미 방에 있는 user들에게 offer(signal)를 보내기 위해
-    client.emit("all_users", usersInThisRoom);
+    // client.emit("all_users", usersInThisRoom);
+    this.server.to(client.id).emit('all_users', usersInThisRoom);
   }
 
   // 다른 user들에게 offer를 보냄 (자신의 RTCSessionDescription)
   @SubscribeMessage('offer')
-  handleOffer(client: Socket, sdp: any) {
+  // handleOffer(client: Socket, sdp: any) {
+  //   console.log("offer: " + client.id);
+  //   client.broadcast.emit("getOffer", sdp);
+  // }
+  handleOffer(
+    @MessageBody()
+    data: {
+      offerReceiveID: string;
+      sdp: string;
+      offerSendID: string;
+      offerSendEmail: string;
+    },
+    @ConnectedSocket() client: Socket,
+  ) {
     console.log("offer: " + client.id);
-    client.broadcast.emit("getOffer", sdp);
+    client.to(data.offerReceiveID).emit('getOffer', {
+      sdp: data.sdp,
+      offerSendID: data.offerSendID,
+      offerSendEmail: data.offerSendEmail,
+    });
   }
 
   // offer를 보낸 user에게 answer을 보냄 (자신의 RTCSessionDescription)
   @SubscribeMessage('answer')
-  handleAnswer(client: Socket, sdp: any) {
+  // handleAnswer(client: Socket, sdp: any) {
+  //   console.log("answer: " + client.id);
+  //   client.broadcast.emit("getAnswer", sdp);
+  // }
+  handleAnswer(
+    @MessageBody()
+    data: {
+      answerReceiveID: string;
+      sdp: string;
+      answerSendID: string;
+    },
+    @ConnectedSocket() client: Socket,
+  ) {
     console.log("answer: " + client.id);
-    client.broadcast.emit("getAnswer", sdp);
+    client.to(data.answerReceiveID).emit('getAnswer', {
+      sdp: data.sdp,
+      answerSendID: data.answerSendID,
+    });
   }
 
   // 자신의 ICECandidate 정보를 signal(offer 또는 answer)을 주고 받은 상대에게 전달
   @SubscribeMessage('candidate')
-  handleCandidate(client: Socket, candidate: any) {
+  // handleCandidate(client: Socket, candidate: any) {
+  //   console.log("candidate: " + client.id);
+  //   client.broadcast.emit("getCandidate", candidate);
+  // }
+  handleCandidate(
+    @MessageBody()
+    data: {
+      candidateReceiveID: string;
+      candidate: string;
+      candidateSendID: string;
+    },
+    @ConnectedSocket() client: Socket,
+  ) {
     console.log("candidate: " + client.id);
-    client.broadcast.emit("getCandidate", candidate);
+    client.to(data.candidateReceiveID).emit('getCandidate', {
+      candidate: data.candidate,
+      candidateSendID: data.candidateSendID,
+    });
   }
 }
 

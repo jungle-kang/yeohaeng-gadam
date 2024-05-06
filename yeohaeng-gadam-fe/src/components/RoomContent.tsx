@@ -10,6 +10,7 @@ import SearchPanel from "./SearchPanel.jsx";
 import Whiteboard from "../components/Whiteboard.jsx";
 import { Navigate, useNavigate } from "react-router-dom";
 import SettingModal from "../components/SettingModal.tsx"
+import VideoChat from "../webRTC/VideoChat.tsx";
 
 const RoomContent = () => {
   // const {roomId} = useParams<{roomId:string}>();
@@ -73,6 +74,7 @@ const RoomContent = () => {
         </div>
         <div className=" bg-green-400 h-5/6 mt-5">
           <p>화상채팅 영역</p>
+          <VideoChat/>
         </div>
       </div>
       

@@ -10,6 +10,7 @@ import SearchPanel from "./SearchPanel.jsx";
 import Whiteboard from "../components/Whiteboard.jsx";
 import { Navigate, useNavigate } from "react-router-dom";
 import SettingModal from "../components/SettingModal.tsx"
+import VideoChat from "../webRTC/VideoChat.tsx";
 
 const RoomContent = () => {
   // const {roomId} = useParams<{roomId:string}>();
@@ -59,6 +60,12 @@ const RoomContent = () => {
       </div>
       <div className="flex-col w-7/12 h-full">
         <Whiteboard />
+        <div 
+      className="  bg-slate-300"
+      style={{height: "25%", width: "100%", float: "left"}}
+      >       
+        <p>여행 확정</p>
+      </div>
       </div>
 
       <div className="w-2/12 h-full bg-blue-600">
@@ -68,8 +75,10 @@ const RoomContent = () => {
         </div>
         <div className=" bg-green-400 h-5/6 mt-5">
           <p>화상채팅 영역</p>
+          <VideoChat/>
         </div>
       </div>
+      
       <SettingModal isOpen={modalOpen} closeModal={() => setModalOpen(false)} />
 
     </div>

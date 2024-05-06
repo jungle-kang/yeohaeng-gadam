@@ -24,6 +24,7 @@ const RoomContent = () => {
       x: 300,
       y: 300,
       fill: "rgb(147, 197, 253)",
+      cardType: "place",
       placeName: data.place_name,
       placeX: data.x,
       placeY: data.y,
@@ -52,15 +53,15 @@ const RoomContent = () => {
   // }, []);
 
   return (
-    <div className="flex h-screen bg-blue-200">
-      <div className="bg-blue-300 h-4/5 w-3/12 p-2 overflow-scroll overflow-x-hidden">
+    <div className="flex h-screen">
+      <div className="bg-blue-300 h-full w-3/12 p-2 overflow-scroll overflow-x-hidden">
         <SearchPanel insertCard={insertCard} />
       </div>
-      <div className="w-7/12 h-4/5">
+      <div className="flex-col w-7/12 h-full">
         <Whiteboard />
       </div>
 
-      <div className="w-2/12 h-4/5 bg-blue-600">
+      <div className="w-2/12 h-full bg-blue-600">
         <div className="  h-15 bg-blue-50 text-center font-bold text-4xl p-4 logo-font rounded-lg mt-5 mr-5 ml-5">
           <button
             onClick={() => setModalOpen(true)}>설정</button>

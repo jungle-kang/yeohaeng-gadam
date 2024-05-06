@@ -53,11 +53,17 @@ const RoomContent = () => {
 
   return (
     <div className="flex h-screen bg-blue-200">
-      <div className="bg-blue-300 h-4/5 w-3/12 p-2 overflow-scroll overflow-x-hidden">
+      <div className="bg-blue-300 h-full w-3/12 p-2 overflow-scroll overflow-x-hidden">
         <SearchPanel insertCard={insertCard} />
       </div>
       <div className="w-7/12 h-4/5">
         <Whiteboard />
+        <div 
+      className="  bg-slate-300"
+      style={{height: "25%", width: "100%", float: "left"}}
+      >       
+        <p>여행 확정</p>
+      </div>
       </div>
 
       <div className="w-2/12 h-4/5 bg-blue-600">
@@ -69,6 +75,7 @@ const RoomContent = () => {
           <p>화상채팅 영역</p>
         </div>
       </div>
+      
       <SettingModal isOpen={modalOpen} closeModal={() => setModalOpen(false)} />
 
     </div>

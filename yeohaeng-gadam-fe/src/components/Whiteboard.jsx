@@ -683,7 +683,8 @@ function Canvas() {
 
 
   return (
-    <div className="bg-yellow-100 w-full h-full"
+    <div className="bg-yellow-100 w-full "
+      style={{height: "96%"}}
       ref={canvasRef}
       onPointerDown={onCanvasPointerDown}
       onPointerMove={onCanvasPointerMove}

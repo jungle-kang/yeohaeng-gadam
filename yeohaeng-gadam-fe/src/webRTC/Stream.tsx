@@ -14,19 +14,9 @@ export function Stream() {
 
     // return <VideoFeed mediaStream={localStream} isMuted={true} />;
     return (
+
         localStream && <VideoChatRoom localStream={localStream} />
     );
 }
 
-// return (
-//     <BrowserRouter>
-//         <Routes>
-//             <Route
-//                 path="video-chat-room/:roomName"
-//                 element={localStream && <VideoChatRoom localStream={localStream} />}
-//             />
-//         </Routes>
-//     </BrowserRouter>
-// );
-// };
 export default Stream

@@ -18,6 +18,9 @@ import SettingModal from './components/SettingModal.jsx';
 import BoardList from './pages/TestBoard.tsx';
 import { CookiesProvider } from 'react-cookie';
 import Search from "./pages/Search.tsx";
+import VideoChat from './webRTC/VideoChat.tsx';
+import VideoTest from './webRTC/test.tsx';
+import NtoN from './webRTC/test1.tsx';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -66,7 +69,7 @@ const router = createBrowserRouter([
         element: <GoogleLoginButton />
     },
     {
-        path: "video-chat-room/:roomName",
+        path: "video-test",
         element: <Stream />
     },
     {
@@ -81,6 +84,18 @@ const router = createBrowserRouter([
     {
         path: "/test",
         element: <BoardList />
+    },
+    {
+        path: "/video",
+        element: <VideoChat />
+    },
+    {
+        path: "/videoTest",
+        element: <VideoTest />
+    },
+    {
+        path: "/nton",
+        element: <NtoN />
     }
 
 

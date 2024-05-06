@@ -15,4 +15,5 @@ export const {
   useSelf,
   useBroadcastEvent,
   useEventListener,
+  useHistory,
 } = createRoomContext(client);

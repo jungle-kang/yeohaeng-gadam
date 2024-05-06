@@ -7,7 +7,8 @@ import { useSendingAnswer } from './useSendingAnswer.tsx';
 import { useAnswerProcessing } from './useAnswerProcessing.tsx';
 
 export function useChatConnection(peerConnection: RTCPeerConnection) {
-    const { roomName } = useParams();
+    // const { roomName } = useParams();
+    const roomName = 'test'; // 룸네임 임시로 고정
 
     const { sendOffer } = useOfferSending(peerConnection);
 
@@ -17,8 +18,8 @@ export function useChatConnection(peerConnection: RTCPeerConnection) {
 
     const handleConnection = useCallback(() => {
         socket.emit('join_room', roomName);
+        console.log('join_room', roomName)
     }, [roomName]);
-    console.log('joinroom', roomName);
 
     const handleReceiveCandidate = useCallback(
         ({ candidate }: { candidate: RTCIceCandidate }) => {
@@ -29,16 +30,17 @@ export function useChatConnection(peerConnection: RTCPeerConnection) {
 
     useEffect(() => {
         socket.connect();
+        socket.on('connect', handleConnection);
         // console.log('socket', socket);
         socket.on('answer', handleOfferAnswer);
         socket.on('send_connection_offer', handleConnectionOffer);
-        socket.on('another_person_ready', sendOffer);
+        // socket.on('another_person_ready', sendOffer);
         socket.on('connect', handleConnection);
         socket.on('send_candidate', handleReceiveCandidate);
         return () => {
             socket.off('answer', handleOfferAnswer);
             socket.off('send_connection_offer', handleConnectionOffer);
-            socket.off('another_person_ready', sendOffer);
+            // socket.off('another_person_ready', sendOffer);
             socket.off('connect', handleConnection);
             socket.off('send_candidate', handleReceiveCandidate);
         };

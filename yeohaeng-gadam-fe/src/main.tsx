@@ -17,6 +17,7 @@ import Mypage from "./components/Mypage.jsx"
 import SettingModal from './components/SettingModal.jsx';
 import BoardList from './pages/TestBoard.tsx';
 import { CookiesProvider } from 'react-cookie';
+import Search from "./pages/Search.tsx";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
             {
                 path: "Mypage",
                 element: <Mypage />
+            },
+            {
+                path:"/search",
+                element: <Search/>
             }
         ]
     },

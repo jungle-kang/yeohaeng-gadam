@@ -25,6 +25,10 @@ const TRANS_METHOD_RUN = 0;
 const TRANS_METHOD_BUS = 1;
 const TRANS_METHOD_CAR = 2;
 
+const DEFAULT_ZOOM_LEVEL = 7;
+
+const { kakao } = window; // 카카오 지도 사용
+
 
 
 export default function Whiteboard() {
@@ -194,16 +198,18 @@ export default function Whiteboard() {
                 style={{ backgroundColor: tabColor }}
                 onClick={(e) => onClickTab(e, pageId)}
               >
-                {pageId === renamingPageId
-                  ? <textarea
-                    className="resize-none w-full h-full"
-                    // value={pages.get(pageId).name}
-                    autoFocus
-                    onChange={(e) => onChangeTabRename(e, pageId)}
-                    // onBlur={(e) => onBlurTabRename(e)}
-                    onKeyDown={(e) => onKeyDownTabRename(e)}
-                  />
-                  : pages.get(pageId).name}
+                {
+                  pageId === renamingPageId
+                    ? <textarea
+                      className="resize-none w-full h-full"
+                      // value={pages.get(pageId).name}
+                      autoFocus
+                      onChange={(e) => onChangeTabRename(e, pageId)}
+                      // onBlur={(e) => onBlurTabRename(e)}
+                      onKeyDown={(e) => onKeyDownTabRename(e)}
+                    />
+                    : pages.get(pageId).name
+                }
               </button>
               <button className="bg-red-300"
                 onClick={() => onClickTabRemoveBtn(pageId, i)}
@@ -235,7 +241,7 @@ function Canvas() {
 
   const canvasRef = useRef(null);
   const [canvasPos, setCanvasPos] = useState({ x: 0, y: 0 }); // 좌상단의 캔버스 좌표
-  const [canvasZoomLevel, setCanvasZoomLevel] = useState(3);
+  const [canvasZoomLevel, setCanvasZoomLevel] = useState(DEFAULT_ZOOM_LEVEL);
   const [draggingCardId, setDraggingCardId] = useState(null);
   const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
   // const [lineStartCardId, setLineStartCardId] = useState(null);
@@ -299,15 +305,48 @@ function Canvas() {
 
   const cards = useStorage((root) => root.pages.get(selectedPageId).cards);
 
-  const insertCard = useMutation(({ storage, self }, x, y) => {
+  // 디버깅용 함수
+  const insertPlaceCard = useMutation(({ storage, self }, x, y) => {
     const pageId = self.presence.selectedPageId;
     const cardId = nanoid();
     const card = new LiveObject({
       x: x,
       y: y,
       fill: "rgb(147, 197, 253)",
+      cardType: "place",
       placeName: "Placeholder Name",
       // placeCord: "0,0",
+    });
+    // console.log("created card at ", x, ", ", y); /////////////
+    storage.get("pages").get(pageId).get("cards").set(cardId, card);
+    // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
+  }, []);
+
+  // 디버깅용 함수
+  const insertMemoCard = useMutation(({ storage, self }, x, y) => {
+    const pageId = self.presence.selectedPageId;
+    const cardId = nanoid();
+    const card = new LiveObject({
+      x: x,
+      y: y,
+      fill: "rgb(255, 255, 204)",
+      cardType: "memo",
+      memoText: "",
+    });
+    // console.log("created card at ", x, ", ", y); /////////////
+    storage.get("pages").get(pageId).get("cards").set(cardId, card);
+    // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
+  }, []);
+
+  // 디버깅용 함수
+  const insertMapCard = useMutation(({ storage, self }, x, y) => {
+    const pageId = self.presence.selectedPageId;
+    const cardId = nanoid();
+    const card = new LiveObject({
+      x: x,
+      y: y,
+      fill: "rgb(169, 209, 142)",
+      cardType: "map",
     });
     // console.log("created card at ", x, ", ", y); /////////////
     storage.get("pages").get(pageId).get("cards").set(cardId, card);
@@ -320,6 +359,14 @@ function Canvas() {
     card.update({
       x: card.get("x") + dx,
       y: card.get("y") + dy,
+    });
+  }, []);
+
+  const updateMemoCard = useMutation(({ storage, self }, cardId, text) => {
+    const pageId = self.presence.selectedPageId;
+    const card = storage.get("pages").get(pageId).get("cards").get(cardId);
+    card.update({
+      memoText: text,
     });
   }, []);
 
@@ -355,8 +402,12 @@ function Canvas() {
     updateMyPresence({ selectedCardId: cardId });
   };
 
-  const onCardPointerUp = (e, cardId) => {
+  const onCardPointerUp = (e, cardId, isPlace) => {
     // 간선 생성 과정에서 마우스를 때면 땐 카드로 간선 연결
+    if (!isPlace) {
+      return null;
+    }
+
     if (!lineStartCardId) {
       return null;
     }
@@ -365,6 +416,10 @@ function Canvas() {
       createLine(lineStartCardId, cardId);
     }
   }
+
+  const onCardChange = (e, cardId) => {
+    updateMemoCard(cardId, e.target.value);
+  };
 
   // useMutation(
   //   ({ setMyPresence }, e, shapeId) => {
@@ -533,6 +588,16 @@ function Canvas() {
     });
   };
 
+  const onCanvasWheel = (e) => {
+    e.preventDefault();
+    // console.log(e); /////////////
+    if (e.deltaY > 0) {
+      zoomOut();
+    } else {
+      zoomIn();
+    }
+  }
+
   const zoomOut = () => {
     if (canvasZoomLevel > 0) {
       setCanvasZoomLevel(canvasZoomLevel - 1);
@@ -574,9 +639,13 @@ function Canvas() {
   //////////////////////////// 렌더링 ////////////////////////////
 
   const cardList = cardIds.map((cardId) => {
+    if (!canvasRef.current) { ////////////////
+      return null;
+    }
+
     // const { cardX, cardY } = useStorage((root) => root.cards.get(cardId));
     const card = cards.get(cardId);
-    if (!isInsideCanvas(card.x, card.y, 0, 0)) {
+    if (!isInsideCanvas(card.x, card.y, 100, 100)) {
       return null;
     }
 
@@ -595,21 +664,26 @@ function Canvas() {
         zoom={ZOOMS[canvasZoomLevel]}
         onCardPointerDown={onCardPointerDown}
         onCardPointerUp={onCardPointerUp}
-        onLineBtnPointerDown={onLineBtnPointerDown}
         deleteCard={deleteCard}
+        onLineBtnPointerDown={onLineBtnPointerDown} // place card
+        onCardChange={onCardChange} // memo card
       />
     );
   });
 
   const lineList = lineIds.map((lineId) => {
+    if (!canvasRef.current) { ///////////
+      return null;
+    }
+
     const line = lines.get(lineId);
     const card1 = cards.get(line.card1Id);
     const card2 = cards.get(line.card2Id);
 
-    if (!isInsideCanvas(card1.x, card1.y, 0, 0)
-      && !isInsideCanvas(card2.x, card2.y, 0, 0)) {
-      return null;
-    }
+    // if (!isInsideCanvas(card1.x, card1.y, 0, 0)
+    //   && !isInsideCanvas(card2.x, card2.y, 0, 0)) {
+    //   return null;
+    // }
 
     const x1 = canvasRef.current.offsetWidth / 2
       + (card1.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
@@ -619,6 +693,13 @@ function Canvas() {
       + (card2.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
     const y2 = canvasRef.current.offsetHeight / 2
       + (card2.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+
+    if (Math.max(x1, x2) < 0
+      || Math.min(x1, x2) > canvasRef.current.getBoundingClientRect().width
+      || Math.max(y1, y2) < 0
+      || Math.min(y1, y2) > canvasRef.current.getBoundingClientRect().height) {
+      return null;
+    }
 
     return (
       <Line
@@ -660,8 +741,9 @@ function Canvas() {
         <div className="absolute bg-black h-[5px] z-[1000]"
           style={{
             position: "absolute",
-            height: "5px",
+            height: 5 * ZOOMS[canvasZoomLevel],
             zIndex: "1000",
+            // zIndex: "-9000",
             //////////////////////
             transform: `translate(${x}px, ${y}px) translateX(-50%) rotate(${theta}rad)`,
             width: `${r}px`,
@@ -673,6 +755,7 @@ function Canvas() {
             position: "absolute",
             transform: `translate(${x2}px, ${y2}px) translate(-50%, -50%)`,
             zIndex: "1000",
+            // zIndex: "-9000",
           }}
         >
           <img className="w-6" src={routesearchIcon} />
@@ -683,12 +766,13 @@ function Canvas() {
 
 
   return (
-    <div className="bg-yellow-100 w-full h-full"
+    <div className="relative overflow-hidden bg-gray-100 w-full h-full"
       ref={canvasRef}
       onPointerDown={onCanvasPointerDown}
       onPointerMove={onCanvasPointerMove}
       onPointerUp={onCanvasPointerUp}
       onPointerLeave={onCanvasPointerLeave}
+      onWheel={onCanvasWheel}
     >
       {othersCursorList}
       {cardList}
@@ -712,9 +796,19 @@ function Canvas() {
         Zoom In
       </button>
       <button className="bg-blue-600 text-white"
-        onClick={() => insertCard(canvasPos.x + 100, canvasPos.y + 100)}
+        onClick={() => insertPlaceCard(canvasPos.x + 100, canvasPos.y + 100)}
       >
-        New Card
+        Place
+      </button>
+      <button className="bg-blue-600 text-white"
+        onClick={() => insertMemoCard(canvasPos.x + 100, canvasPos.y + 100)}
+      >
+        Memo
+      </button>
+      <button className="bg-blue-600 text-white"
+        onClick={() => insertMapCard(canvasPos.x + 100, canvasPos.y + 100)}
+      >
+        Map
       </button>
 
       {/* DEBUG */}
@@ -729,10 +823,150 @@ function Canvas() {
   );
 }
 
+function PlaceCardContent({ id, card, onLineBtnPointerDown }) {
+  return (
+    <>
+      {card.placeName}
+      <button
+        className="bg-white flex justify-center items-center rounded-full border-black border-2 w-8 h-8"
+        style={{ position: "absolute", top: "50%", left: "100%", transform: "translate(-50%, -50%)" }}
+        onPointerDown={(e) => onLineBtnPointerDown(e, id)}
+      >
+        <img className="w-6" src={routesearchIcon} />
+      </button>
+    </>
+  );
+}
 
-function Card({ id, card, x, y, zoom, onCardPointerDown, onCardPointerUp, onLineBtnPointerDown, deleteCard }) {
+function MemoCardContent({ id, card, isSelected, onCardChange }) {
+  return (
+    <>
+      {
+        isSelected
+          ? <textarea className="resize-none w-full h-full"
+            value={card.memoText}
+            onChange={(e) => onCardChange(e, id)}
+          />
+          : card.memoText
+      }
+    </>
+  );
+}
 
-  // const selectedAsLineStart = useSelf((me) => me.presence.lineStartShape === id);
+function MapCardContent({ id, card }) {
+  const [{ selectedPageId }] = useMyPresence();
+  const containerRef = useRef(null);
+
+  const cardIds = useStorage(
+    (root) => Array.from(root.pages.get(selectedPageId).cards.keys()),
+    shallow
+  );
+  const cards = useStorage((root) => root.pages.get(selectedPageId).cards);
+
+  const lineIds = useStorage(
+    (root) => Array.from(root.pages.get(selectedPageId).lines.keys()),
+    shallow
+  );
+  const lines = useStorage((root) => root.pages.get(selectedPageId).lines);
+
+  useEffect(() => {
+    const options = {
+      center: new kakao.maps.LatLng(33.450701, 126.570667),
+      level: 3,
+    };
+    const map = new kakao.maps.Map(containerRef.current, options);
+
+    const bounds = new kakao.maps.LatLngBounds();
+
+    cardIds.map((cardId) => {
+      const card = cards.get(cardId);
+      if (card.cardType !== "place") {
+        return;
+      }
+      const LatLng = new kakao.maps.LatLng(card.placeY, card.placeX);
+
+      // 지도에 표시될 영역을 확장
+      bounds.extend(LatLng);
+      // 지도에 마커를 추가
+      new kakao.maps.Marker({
+        map: map,
+        position: LatLng,
+        title: card.placeName,
+      });
+    });
+
+    // 확장된 영역을 지도에 적용
+    map.setBounds(bounds);
+
+    lineIds.map((lineId) => {
+      const line = lines.get(lineId);
+      const card1 = cards.get(line.card1Id);
+      const card2 = cards.get(line.card2Id);
+
+      const linePath = [
+        new kakao.maps.LatLng(card1.placeY, card1.placeX),
+        new kakao.maps.LatLng(card2.placeY, card2.placeX),
+      ];
+
+      const polyline = new kakao.maps.Polyline({
+        path: linePath, // 선을 구성하는 좌표배열 입니다
+        strokeWeight: 5, // 선의 두께 입니다
+        strokeColor: '#FFAE00', // 선의 색깔입니다
+        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+        strokeStyle: 'shortdash' // 선의 스타일입니다
+      });
+
+      // 지도에 선을 표시합니다 
+      polyline.setMap(map);
+    });
+
+    // var infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
+    // const container = document.getElementById('myMap');
+    // const options = {
+    //   center: new kakao.maps.LatLng(33.450701, 126.570667),
+    //   level: 3,
+    // };
+    // const map = new kakao.maps.Map(container, options);
+    // const ps = new kakao.maps.services.Places();
+
+    // ps.keywordSearch(searchPlace, placesSearchCB);
+
+
+    // function placesSearchCB(data, status, pagination) {
+    //   let bounds = new kakao.maps.LatLngBounds();
+    //   for (let i = 0; i < data.length; i++) {
+    //     displayMarker(data[i]);
+    //     bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
+    //   }
+    //   map.setBounds(bounds);
+
+    //   setPlaces(data);
+    // }
+
+    // function displayMarker(place) {
+    //   let marker = new kakao.maps.Marker({
+    //     map: map,
+    //     position: new kakao.maps.LatLng(place.y, place.x),
+    //   });
+    //   kakao.maps.event.addListener(marker, 'click', () => {
+    //     infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
+    //     infowindow.open(map, marker);
+    //   });
+    // }
+
+  }, [cardIds, lineIds]);
+
+  return (
+    <>
+      <div className="w-full h-full"
+        // style={{ zInedx: 5001 }}
+        ref={containerRef}
+      />
+    </>
+  );
+}
+
+function Card({ id, card, x, y, zoom, onCardPointerDown, onCardPointerUp, deleteCard, onLineBtnPointerDown, onCardChange }) {
   const selectedByMe = useSelf((me) => me.presence.selectedCardId === id);
   const selectedByOthers = useOthers((others) =>
     others.some((other) => other.presence.selectedCardId === id)
@@ -744,35 +978,40 @@ function Card({ id, card, x, y, zoom, onCardPointerDown, onCardPointerUp, onLine
       ? "green"
       : "transparent";
 
-  // const selectionColor = selectedAsLineStart
-  //   ? "gold"
-  //   : selectedByMe
-  //     ? "blue"
-  //     : selectedByOthers
-  //       ? "green"
-  //       : "transparent";
+  const width = card.cardType === "place"
+    ? 175
+    : card.cardType === "memo"
+      ? 150
+      : 200;
+
+  const height = card.cardType === "place"
+    ? 100
+    : card.cardType === "memo"
+      ? 120
+      : 200;
 
   return (
-    <div className="absolute flex flex-col items-center rounded-lg w-[175px] h-[100px]"
+    <div className="absolute flex flex-col items-center rounded-lg"
       style={{
         borderWidth: "3px",
         zIndex: "5000",
+        // zIndex: "-5000",
         ///////////////////////
+        width: width,
+        height: height,
         transform: `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${zoom}, ${zoom})`,
         borderColor: selectionColor,
         backgroundColor: card.fill,
       }}
       onPointerDown={(e) => onCardPointerDown(e, id)}
-      onPointerUp={(e) => onCardPointerUp(e, id)}
+      onPointerUp={(e) => onCardPointerUp(e, id, card.cardType === "place")}
     >
-      {card.placeName}
-      <button
-        className="bg-white flex justify-center items-center rounded-full border-black border-2 w-8 h-8"
-        style={{ position: "absolute", top: "50%", left: "100%", transform: "translate(-50%, -50%)" }}
-        onPointerDown={(e) => onLineBtnPointerDown(e, id)}
-      >
-        <img className="w-6" src={routesearchIcon} />
-      </button>
+      {card.cardType === "place"
+        ? <PlaceCardContent id={id} card={card} onLineBtnPointerDown={onLineBtnPointerDown} />
+        : card.cardType === "memo"
+          ? <MemoCardContent id={id} card={card} isSelected={selectedByMe} onCardChange={onCardChange} />
+          : <MapCardContent id={id} card={card} />
+      }
       <button
         className="bg-black text-white flex justify-center items-center rounded-full font-bold w-6 h-6"
         style={{ position: "absolute", top: "100%", transform: "translate(0, -50%)" }}
@@ -862,20 +1101,21 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
   const infoBody = line.isChoosingTrans
     ? <LineInfoChoosing id={id} onTransportBtnDown={onTransportBtnDown} />
     : <LineInfoChosen
-        id={id}
-        deleteLine={deleteLine}
-        transportMethod={line.transportMethod}
-        distance={line.distance}
-        duration={line.duration}
-      />;
+      id={id}
+      deleteLine={deleteLine}
+      transportMethod={line.transportMethod}
+      distance={line.distance}
+      duration={line.duration}
+    />;
 
   return (
     <>
       <div className="absolute bg-black h-[5px] z-[1000]"
         style={{
           position: "absolute",
-          height: "5px",
+          height: 5 * zoom,
           zIndex: "1000",
+          // zIndex: "-5000",
           //////////////////////
           transform: `translate(${x}px, ${y}px) translateX(-50%) rotate(${theta}rad)`,
           width: `${r}px`,
@@ -895,6 +1135,7 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
 
           position: "absolute",
           zIndex: "2000",
+          // zIndex: "-8000",
 
           //////////////////////////////
           width: "80px",
@@ -956,4 +1197,4 @@ function formatDur(dur) {
 const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 
 // 줌 배율 목록
-const ZOOMS = [0.1, 0.2, 0.5, 1, 2, 4];
+const ZOOMS = [0.2, 0.25, 0.33, 0.4, 0.5, 0.65, 0.8, 1];

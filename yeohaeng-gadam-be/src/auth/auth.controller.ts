@@ -41,7 +41,6 @@ export class AuthController {
     @Get('/me/:id')
     async me(@Param('id') id: string) {
         if(this.authService.idCheck(id)){
-            console.log('id 존재')
             return Object.assign({
                 data: true,
                 statusCode: HttpStatus.OK,

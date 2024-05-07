@@ -1,7 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import Modal from './LoginModal.jsx';
 import '../index.css';
 import {getCookie} from "../pages/TestBoard.tsx";
 import {jwtDecode} from "jwt-decode";
@@ -9,22 +8,21 @@ import {jwtDecode} from "jwt-decode";
 
 export default function Header() {
   const navigate = useNavigate();
-  const [modalOpen, setModalOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
 
   useEffect(()=>{
       const accessToken = getCookie('access_token');
+      // @ts-ignore
       const id = jwtDecode(accessToken).id;
-      console.log(isLogin);
       const meCheck = async () =>{
           try{
               const response = await fetch(`/api/auth/me/${id}`,{
                   method: 'GET',
                   credentials: 'include',
               }).then(res=>res.json())
-              console.log(response.data);
-              setIsLogin(true);
-              console.log(isLogin);
+              if(response.data) {
+                  setIsLogin(true);
+              }
           }catch(e){
               console.log(e);
           }
@@ -60,7 +58,6 @@ export default function Header() {
               마이페이지
         </button>
       </div>
-      <Modal isOpen={modalOpen} closeModal={() => setModalOpen(false)} />
     </header>
   );
 }

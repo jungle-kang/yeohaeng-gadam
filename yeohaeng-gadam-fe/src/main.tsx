@@ -17,7 +17,6 @@ import Mypage from "./components/Mypage.jsx"
 import SettingModal from './components/SettingModal.jsx';
 import BoardList from './pages/TestBoard.tsx';
 import { CookiesProvider } from 'react-cookie';
-import Search from "./pages/Search.tsx";
 import VideoChat from './webRTC/VideoChat.tsx';
 import VideoTest from './webRTC/test.tsx';
 import NtoN from './webRTC/test1.tsx';
@@ -43,8 +42,7 @@ const router = createBrowserRouter([
                 element: <Mypage />
             },
             {
-                path:"/search",
-                element: <Search/>
+                path: "/Mypage/:pageId", element: <Mypage/>
             }
         ]
     },
@@ -97,6 +95,7 @@ const router = createBrowserRouter([
         path: "/nton",
         element: <NtoN />
     }
+    
 
 
 

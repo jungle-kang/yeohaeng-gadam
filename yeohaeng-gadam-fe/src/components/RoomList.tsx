@@ -65,9 +65,9 @@ const RoomList = ()=>{
             {(Array.isArray(post) && post.length === 0) ?(
                 <div className="mt-10">글이 없습니다.</div>
             ) : (<div>
-                {post.map(({room_id,title,location,hc_max,start_date,end_date,tags})=>(
+                {Array.isArray(post)&&post.map(({room_id,title,location,hc_max,start_date,end_date,tags})=>(
                         <div key={room_id}
-                            className="flex p-5 h-42 w-11/12 mt-5 mx-auto mt-5  ring-1 ring-gray-300 rounded-lg shadow-sm">
+                            className="flex p-5 h-42 w-11/12 mx-auto mt-5  ring-1 ring-gray-300 rounded-lg shadow-sm">
                             <div className="w-5/6">
                                 <div className="font-bold text-xl">{title}</div>
                                 <div>목적지 : {location}</div>
@@ -82,9 +82,9 @@ const RoomList = ()=>{
                                 })}</div>
                                 <div>참여 인원 : {hc_max} </div>
                                 <div className="flex mt-2">
-                                    {/*{ tags.length < 1 && tags[0] === null ? (<></>):(tags.map((item,idx)=>(*/}
-                                    {/*    <div key={idx} className="ring-1 w-14 h-7 bg-blue-200 ml-2 text-center pt-1 font-bold rounded-lg text-sm ">{item}</div>*/}
-                                    {/*)))}*/}
+                                    { tags.length < 1 && tags[0] === null ? (<></>):(tags.map((item,idx)=>(
+                                        <div key={idx} className="ring-1 w-14 h-7 bg-blue-200 ml-2 text-center pt-1 font-bold rounded-lg text-sm ">{item}</div>
+                                    )))}
                                 </div>
                             </div>
                             <div className="w-1/6 min-w-32 h-full">

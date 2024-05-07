@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Cookies } from 'react-cookie';
+import { jwtDecode } from "jwt-decode";
 // import axios from "axios";
 
 const cookies = new Cookies();
@@ -89,6 +90,8 @@ const BoardList = () => {
     /* accessToken을 사용하여 게시판 목록을 가져오는 함수 */
     useEffect(() => {
         const accessToken = getCookie('access_token');
+        console.log("jwtDecode: " + JSON.stringify(jwtDecode(accessToken), null, 2));
+
         // console.log(accessToken);
         fetchBoards(accessToken); // accessToken을 fetchBoards 함수에 전달합니다.
     }, []);

@@ -29,6 +29,7 @@ const RoomContent = () => {
       placeName: data.place_name,
       placeX: data.x,
       placeY: data.y,
+      likes: 0,
       // text: data.place_name,
       // placeName: memoInputRef.current.value,
       // placeCord: "0,0",
@@ -60,12 +61,12 @@ const RoomContent = () => {
       </div>
       <div className="flex-col w-7/12 h-full">
         <Whiteboard />
-        <div 
+        {/* <div 
       className="  bg-slate-300"
       style={{height: "25%", width: "100%", float: "left"}}
       >       
         <p>여행 확정</p>
-      </div>
+      </div> */}
       </div>
 
       <div className="w-2/12 h-full bg-blue-600">
@@ -75,7 +76,7 @@ const RoomContent = () => {
         </div>
         <div className=" bg-green-400 h-5/6 mt-5">
           <p>화상채팅 영역</p>
-          <VideoChat/>
+          {/* <VideoChat/> */}
         </div>
       </div>
       

@@ -38,7 +38,8 @@ export default function Whiteboard() {
   // 클라이언트가 현재 이름 변경중인 페이지의 ID
   const [renamingPageId, setRenamingPageId] = useState(null);
   // 핑 이벤트가 발생한 탭의 리스트
-  const [pingedPageList, setPingedPageList] = useState([]);
+  // const [pingedPageList, setPingedPageList] = useState([]);
+  const [pingEventList, setPingEventList] = useState([]);
 
 
   //////////////////////////// 페이지 storage 관련 ////////////////////////////
@@ -57,9 +58,9 @@ export default function Whiteboard() {
   //   })
   //   : <div>No page selected</div>;
 
-  const curCanvas = selectedPageId
-    ? <Canvas />
-    : <div>No page selected</div>;
+  // const curCanvas = selectedPageId
+  //   ? <Canvas />
+  //   : <div>No page selected</div>;
 
   // 페이지 추가
   const createPage = useMutation(({ storage }) => {
@@ -106,7 +107,7 @@ export default function Whiteboard() {
     } else {
       // setCurPageId(pageId);
       updateMyPresence({ selectedPageId: pageId });
-      setPingedPageList(pingedPageList.filter((id) => (pageId !== id)));
+      // setPingedPageList(pingedPageList.filter((id) => (pageId !== id)));
     }
   };
 
@@ -146,14 +147,33 @@ export default function Whiteboard() {
 
   useEventListener(({ event, user, connectionId }) => {
     if (event.type === "PING") {
-      console.log(event, user, connectionId); //////////////
+      setPingEventList((prev) => {
+        const modifiedPingEventList = prev.filter((pingEvent) => (
+          pingEvent.userId !== connectionId
+        )); // 핑을 찍은 사용자의 이전 핑은 삭제
+        const newPingEvent = {
+          userId: connectionId,
+          pageId: event.pageId,
+          x: event.x,
+          y: event.y,
+        };
+        return ([...prev, newPingEvent]);
+      });
+      // console.log(event, user, connectionId); //////////////
+      console.log("new ping event: ", event, ", from user ", user, ", conID: ", connectionId); ///
+      console.log("updated pingEventList: ", pingEventList);
 
-      if (event.pageId !== selectedPageId && !pingedPageList.includes(event.pageId)) {
-        setPingedPageList([...pingedPageList, event.pageId]);
-        console.log("pinged list: ", pingedPageList); /////////////
-      }
+      // if (event.pageId !== selectedPageId && !pingedPageList.includes(event.pageId)) {
+      //   setPingedPageList([...pingedPageList, event.pageId]);
+      //   console.log("pinged list: ", pingedPageList); /////////////
+      // }
+      // if (event.pageId !== selectedPageId) {
+
+      // }
     }
   });
+
+  const pingedPageList = pingEventList.map((pingEvent) => (pingEvent.pageId));
 
 
 
@@ -177,8 +197,6 @@ export default function Whiteboard() {
   if (pages == null) {
     return <div className="flex justify-center items-center w-full h-full">Loading</div>;
   }
-
-
 
   return (
     <>
@@ -226,7 +244,11 @@ export default function Whiteboard() {
         </button>
       </div>
       {/* {curPageId ? <Canvas pageId={curPageId} /> : <div>No page selected</div>} */}
-      {curCanvas}
+      {
+        selectedPageId
+          ? <Canvas pingEventList={pingEventList} setPingEventList={setPingEventList} />
+          : <div>No page selected</div>
+      }
     </>
   );
 }
@@ -235,7 +257,7 @@ export default function Whiteboard() {
 
 // 캔버스
 // function Canvas({ pageId }) {
-function Canvas() {
+function Canvas({ pingEventList, setPingEventList }) {
   const history = useHistory();
   const [{ cursor, selectedPageId, selectedCardId, lineStartCardId }, updateMyPresence] = useMyPresence();
 
@@ -294,7 +316,19 @@ function Canvas() {
   const broadcast = useBroadcastEvent();
 
   const onClickPingBtn = () => {
-    broadcast({ type: "PING", pageId: selectedPageId, canvasX: 0, canvasY: 0 });
+    broadcast({
+      type: "PING",
+      pageId: selectedPageId,
+      x: canvasPos.x,
+      y: canvasPos.y,
+    });
+  };
+
+  const removePingEvent = (userId) => {
+    // userId에 해당하는 핑 이벤트를 pingEventList에서 삭제제
+    setPingEventList((prev) => prev.filter(((pingEvent) => (
+      pingEvent.userId !== userId
+    ))))
   };
 
   //////////////////////////// 카드 편집 ////////////////////////////
@@ -332,6 +366,7 @@ function Canvas() {
       fill: "rgb(255, 255, 204)",
       cardType: "memo",
       memoText: "",
+      likes: 0,
     });
     // console.log("created card at ", x, ", ", y); /////////////
     storage.get("pages").get(pageId).get("cards").set(cardId, card);
@@ -391,6 +426,16 @@ function Canvas() {
     }
   }, []);
 
+  const likeCard = useMutation(({ storage, self, setMyPresence }, cardId) => {
+    // const pageId = self.presence.selectedPageId;
+    const page = storage.get("pages").get(self.presence.selectedPageId);
+    const card = page.get("cards").get(cardId);
+    card.update({
+      likes: card.get("likes") + 1,
+    });
+    // storage.get("pages").get(pageId).get("cards").delete(cardId);
+  }, []);
+
 
   //////////////////////////// 카드 동작 ////////////////////////////
 
@@ -420,6 +465,10 @@ function Canvas() {
   const onCardChange = (e, cardId) => {
     updateMemoCard(cardId, e.target.value);
   };
+
+  const onLikeBtnClick = (id) => {
+    likeCard(id);
+  }
 
   // useMutation(
   //   ({ setMyPresence }, e, shapeId) => {
@@ -638,6 +687,29 @@ function Canvas() {
 
   //////////////////////////// 렌더링 ////////////////////////////
 
+  const pingIndicatorList = pingEventList.map((pingEvent) => {
+    if (pingEvent.pageId !== selectedPageId) {
+      return null;
+    }
+
+    if (!isInsideCanvas(pingEvent.x, pingEvent.y, 0, 0)) {
+      return null;
+    }
+
+    const x = canvasRef.current.offsetWidth / 2
+      + (pingEvent.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
+    const y = canvasRef.current.offsetHeight / 2
+      + (pingEvent.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+
+    return (
+      <PingIndicator
+        x={x}
+        y={y}
+        userId={pingEvent.userId}
+        removePingEvent={removePingEvent} />
+    )
+  });
+
   const cardList = cardIds.map((cardId) => {
     if (!canvasRef.current) { ////////////////
       return null;
@@ -666,6 +738,7 @@ function Canvas() {
         onCardPointerUp={onCardPointerUp}
         deleteCard={deleteCard}
         onLineBtnPointerDown={onLineBtnPointerDown} // place card
+        onLikeBtnClick={onLikeBtnClick}
         onCardChange={onCardChange} // memo card
       />
     );
@@ -775,6 +848,7 @@ function Canvas() {
       onWheel={onCanvasWheel}
     >
       {othersCursorList}
+      {pingIndicatorList}
       {cardList}
       {lineList}
       <LineIndicator />
@@ -784,6 +858,16 @@ function Canvas() {
         onClick={onClickPingBtn}
       >
         PING!!
+      </button>
+      <button className="bg-gray-400"
+        onClick={() => history.undo()}
+      >
+        Undo
+      </button>
+      <button className="bg-gray-400"
+        onClick={() => history.redo()}
+      >
+        Redo
       </button>
       <button className="bg-black text-white"
         onClick={zoomOut}
@@ -819,6 +903,31 @@ function Canvas() {
       <div>selectedCardId: {selectedCardId}</div>
       <div>lineStartCardId: {lineStartCardId}</div>
       <div>Zoom Level: {ZOOMS[canvasZoomLevel]}</div>
+    </div>
+  );
+}
+
+
+function PingIndicator({ x, y, userId, removePingEvent }) {
+  return (
+    <div className="absolute flex justify-center items-center bg-red-200 rounded-full"
+      style={{
+        width: "50px",
+        height: "50px",
+        transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
+        zIndex: 9000,
+      }}
+      onMouseOver={() => removePingEvent(userId)}
+    >
+      <div
+        style={{
+          fontSize: "100px",
+          color: "red",
+          transform: "translateY(-25%)",
+        }}
+      >
+        !
+      </div>
     </div>
   );
 }
@@ -875,6 +984,8 @@ function MapCardContent({ id, card }) {
       level: 3,
     };
     const map = new kakao.maps.Map(containerRef.current, options);
+    map.setDraggable(false);
+    map.setZoomable(false);
 
     const bounds = new kakao.maps.LatLngBounds();
 
@@ -966,7 +1077,15 @@ function MapCardContent({ id, card }) {
   );
 }
 
-function Card({ id, card, x, y, zoom, onCardPointerDown, onCardPointerUp, deleteCard, onLineBtnPointerDown, onCardChange }) {
+function Card({
+  id, card, x, y, zoom,
+  onCardPointerDown,
+  onCardPointerUp,
+  deleteCard,
+  onLineBtnPointerDown,
+  onLikeBtnClick,
+  onCardChange,
+}) {
   const selectedByMe = useSelf((me) => me.presence.selectedCardId === id);
   const selectedByOthers = useOthers((others) =>
     others.some((other) => other.presence.selectedCardId === id)
@@ -991,7 +1110,7 @@ function Card({ id, card, x, y, zoom, onCardPointerDown, onCardPointerUp, delete
       : 200;
 
   return (
-    <div className="absolute flex flex-col items-center rounded-lg"
+    <div className="absolute rounded-lg"
       style={{
         borderWidth: "3px",
         zIndex: "5000",
@@ -1012,9 +1131,22 @@ function Card({ id, card, x, y, zoom, onCardPointerDown, onCardPointerUp, delete
           ? <MemoCardContent id={id} card={card} isSelected={selectedByMe} onCardChange={onCardChange} />
           : <MapCardContent id={id} card={card} />
       }
+      {
+        card.cardType !== "map" &&
+        <div className="absolute"
+          style={{
+            top: "100%",
+          }}
+        >
+          <button onClick={() => onLikeBtnClick(id)}>
+            ❤️
+          </button>
+          {card.likes}
+        </div>
+      }
       <button
         className="bg-black text-white flex justify-center items-center rounded-full font-bold w-6 h-6"
-        style={{ position: "absolute", top: "100%", transform: "translate(0, -50%)" }}
+        style={{ position: "absolute", top: "0", left: "100%", transform: "translate(-50%, -50%)" }}
         onPointerDown={(e) => deleteCard(e, id)}
       >
         X

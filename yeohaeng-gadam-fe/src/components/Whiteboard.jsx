@@ -157,7 +157,7 @@ export default function Whiteboard() {
           x: event.x,
           y: event.y,
         };
-        return ([...prev, newPingEvent]);
+        return ([...modifiedPingEventList, newPingEvent]);
       });
       // console.log(event, user, connectionId); //////////////
       console.log("new ping event: ", event, ", from user ", user, ", conID: ", connectionId); ///

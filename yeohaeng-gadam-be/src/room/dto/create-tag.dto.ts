@@ -5,7 +5,7 @@ export class CreateTagDto {
   @ApiProperty({ type: Number, description: '방 기본키 참조' })
   @IsInt()
   @IsOptional()
-  roomId: string;
+  room_id: string;
 
   @ApiProperty({ type: String, description: '태그' })
   @IsString()

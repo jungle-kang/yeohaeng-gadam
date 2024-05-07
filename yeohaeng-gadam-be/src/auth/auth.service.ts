@@ -79,4 +79,18 @@ export class authService {
 
         return { access_token: accessToken };
     }
+
+    async idCheck(id:string){
+        const user :User[] = await this.userRepository.find({
+            where: {
+                id: Number(id),
+            },
+            take:1
+        })
+        if(user[0]){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

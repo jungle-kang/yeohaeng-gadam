@@ -72,22 +72,22 @@ const router = createBrowserRouter([
         element: <KakaoLogin />
     },
 
-    {
-        path: "/stream/:roomId",
-        element: <Stream />
-    },
+    // {
+    //     path: "/stream/:roomId",
+    //     element: <Stream />
+    // },
     {
         path: "/test",
         element: <BoardList />
     },
-    {
-        path: "/video",
-        element: <VideoChat />
-    },
-    {
-        path: "/videoTest",
-        element: <VideoTest />
-    },
+    // {
+    //     path: "/video",
+    //     element: <VideoChat />
+    // },
+    // {
+    //     path: "/videoTest",
+    //     element: <VideoTest />
+    // },
     {
         path: "/nton",
         element: <NtoN />

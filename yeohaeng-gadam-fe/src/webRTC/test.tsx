@@ -8,8 +8,8 @@ const pc_config = {
     iceServers: [
         // {
         //   urls: 'stun:[STUN_IP]:[PORT]',
-        //   'credentials': '[YOR CREDENTIALS]',
         //   'username': '[USERNAME]'
+        //   'credentials': '[YOR CREDENTIALS]',
         // },
         {
             urls: [
@@ -41,6 +41,7 @@ export function VideoTest() {
             });
 
             if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+            // console.log(localVideoRef.current?.srcObject)
 
             if (!(pcRef.current && socketRef.current)) return;
 
@@ -61,6 +62,7 @@ export function VideoTest() {
             pcRef.current.oniceconnectionstatechange = (e) => {
                 console.log(e);
             };
+            // console.log(remoteVideoRef.current)
 
             pcRef.current.ontrack = (ev) => {
                 console.log("add remotetrack success");
@@ -94,7 +96,7 @@ export function VideoTest() {
             // console.log(sdp);
             pcRef.current.setLocalDescription(new RTCSessionDescription(sdp));
             socketRef.current.emit("offer", sdp);
-            // console.log(sdp);
+            console.log(sdp);
         } catch (e) {
             console.error(e);
         }

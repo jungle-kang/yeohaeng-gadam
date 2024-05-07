@@ -38,17 +38,16 @@ export class authService {
 
     //     }
     // }
-    async findByEmailOrSave(email: string, fullName: string, photo: string, provider: string): Promise<User> {
+    async findByEmailOrSave(email: string, firstName: string, lastName: string, photo: string): Promise<User> {
         try {
             const foundMember = await this.userRepository.findOne({ where: { email } });
             if (foundMember) return foundMember;
 
             const newMember = this.userRepository.save({
-                email,
-                name: fullName,
-                nickname: fullName,
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
                 profileImage: photo,
-                provider,
             });
             return newMember;
         } catch (error) {
@@ -58,9 +57,9 @@ export class authService {
 
     async googleLogin(req): Promise<any> {
         const { email, firstName, lastName, photo } = req.user;
-
         // const fullName = firstName + lastName;
         const user: User = await this.findByEmailOrSave(email, firstName, lastName, photo); // 이메일로 가입된 회원을 찾고, 없다면 회원가입
+        console.log("req.user: ", req.user);
 
         // JWT 토큰에 포함될 payload
         const payload = {

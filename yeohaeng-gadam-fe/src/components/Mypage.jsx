@@ -1,31 +1,31 @@
 import React from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Roomlist from "./RoomList";
 
 export default function Mypage() {
+  const navigate = useNavigate();
+  const { pageId } = useParams();
+
   return (
-    <>
-    <div className=" bg-amber-300">
-      <div className="bg-indigo-200 basis-1/5 font-bold text-4xl p-4 logo-font text-center ml-10 mr-10">
-        <h1>마이페이지</h1>
-      </div>
-
-      <div
-      className="bg-indigo-500 basis-2/5 mt-20 ml-20 mr-20 h-64">
-        <h2
-        className="text-4xl mt-10 ml-5 ">진행중</h2>
-        <div className="text-right">
-          <button className="bg-stone-100 mt-20 mr-20 p-8 rounded-md">확인</button>
+    <>      
+        <div className="bg-indigo-200 basis-1/5 font-bold text-4xl p-4 logo-font text-center ml-96 mr-96 rounded-lg">
+          <h1>마이페이지</h1>
         </div>
-      </div>
-
-      <div
-      className="bg-indigo-500 basis-2/5 mt-20 ml-20 mr-20 h-64">
-        <h2
-        className=" text-4xl mt-10 ml-5">완료</h2>
-        <div className="text-right">
-          <button className="bg-stone-100 mt-20 mr-20 p-8 rounded-md">확인</button>
+        <div>
+          <button
+            className="bg-stone-100 hover:bg-slate-200 active:bg-slate-400 mt-10 mr-10 ml-20 p-4 rounded-lg focus:outline-none focus:ring focus:ring-violet-300"
+            onClick={() => navigate('/Mypage/1')}
+          >
+            진행중
+          </button>
+          <button
+            className="bg-stone-100 hover:bg-slate-200 active:bg-slate-400 p-4 rounded-lg focus:outline-none focus:ring focus:ring-violet-300"
+            onClick={() => navigate('/Mypage/2')}
+          >
+            완료
+          </button>
         </div>
-      </div>
-      </div>
+            <Roomlist/>
     </>
   );
 }

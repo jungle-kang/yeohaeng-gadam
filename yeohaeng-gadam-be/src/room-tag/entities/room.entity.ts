@@ -7,23 +7,38 @@ export class Room {
   @PrimaryGeneratedColumn({ type: "bigint", name: "id", comment: "방 기본키" })
   id: string;
 
-  @Column("varchar", { name: "title", nullable: true, comment: "방 제목", length: 255 })
-  title: string;
+  @Column("varchar", {
+    name: "title",
+    nullable: true,
+    comment: "방 제목",
+    length: 255,
+  })
+  title: string | null;
 
-  @Column("varchar", { name: "location", nullable: true, comment: "목적지", length: 50 })
-  location: string;
+  @Column("varchar", {
+    name: "location",
+    nullable: true,
+    comment: "목적지",
+    length: 255,
+  })
+  location: string | null;
 
   @Column("int", { name: "state", nullable: true, comment: "상태" })
   state: number | null;
-  
+
   @Column("int", { name: "hc_attend", nullable: true, comment: "참가 인원 수" })
   hc_attend: number | null;
 
   @Column("int", { name: "hc_max", nullable: true, comment: "최대 인원 수" })
   hc_max: number | null;
 
-  @Column("varchar", { name: "hd_id", nullable: true, comment: "방장", length: 255 })
-  hd_id: string;
+  @Column("varchar", {
+    name: "hd_id",
+    nullable: true,
+    comment: "방장",
+    length: 255,
+  })
+  hd_id: string | null;
 
   @Column("date", {
     name: "start_date",
@@ -45,7 +60,7 @@ export class Room {
     comment: "방 생성 날짜시간",
     default: () => "CURRENT_TIMESTAMP",
   })
-  regDate: Date | null;
+  reg_date: Date | null;
 
   @Column("datetime", {
     name: "mod_date",
@@ -53,10 +68,10 @@ export class Room {
     comment: "방 수정 날짜시간",
     default: () => "CURRENT_TIMESTAMP",
   })
-  modDate: Date | null;
+  mod_date: Date | null;
 
   @OneToMany(() => Entry, (entry) => entry.room)
-  entrys: Entry[];
+  entries: Entry[];
 
   @OneToMany(() => Tag, (tag) => tag.room)
   tags: Tag[];

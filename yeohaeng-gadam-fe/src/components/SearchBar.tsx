@@ -1,20 +1,42 @@
 import RoomCreateModal from "./RoomCreateModal";
-import {useState} from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {useNavigate} from "react-router-dom";
+
+
+
+
 interface SearchFormType{
     location:string,
     start_date:string,
     end_date:string,
     [key: string]: string;
 }
+
+
 export default function SearchBar(){
+
     const navigate = useNavigate();
     const[isOpen,setIsOpen]=useState(false);
+    const [tags, setTags] = useState([{
+        id:'',
+        name:''
+    }])
+    const [activeTags, setActiveTags] = useState<string[]>([]);
     const[searchForm,setSearchForm]=useState({
         location:'',
         start_date:'',
         end_date:''
     });
+    const [selectedItem, setSelectedItem] = useState<string>('2');
+    const [form,setForm]=useState({
+        title:'',
+        location:'',
+        hcMax: selectedItem,
+        startDate:'',
+        endDate:'',
+        tags:activeTags,
+    });
+
     const searchFormToQueryString = (searchForm:SearchFormType) => {
         const params = new URLSearchParams();
         for (const key in searchForm) {
@@ -23,6 +45,20 @@ export default function SearchBar(){
             }
         }
         return params.toString();
+    };
+
+    const handleTagClick = (tag: string) => {
+        setActiveTags(prevTags => {
+            const updatedTags = prevTags.includes(tag)
+                ? prevTags.filter((activeTag) => activeTag !== tag)
+                : [...prevTags, tag];
+
+            setForm(prevForm => ({
+                ...prevForm,
+                tags: updatedTags
+            }));
+            return updatedTags;
+        });
     };
 
     const createRoomModal = () =>{
@@ -42,6 +78,15 @@ export default function SearchBar(){
         // console.log(result);
         navigate(`/search?${searchFormQuery}`)
     }
+
+    useEffect(() => {
+        const fetchData = async () =>{
+            await fetch('/tags.json')
+                .then(res=>res.json())
+                .then(result=>setTags(result));
+        }
+        fetchData()
+    }, []);
 
     return (
         <div className="sticky top-0 z-[100] bg-white pt-1 pb-3 shadow">
@@ -89,6 +134,22 @@ export default function SearchBar(){
                         방 만들기
                     </button>
                 </div>
+            </div>
+            <div className="ml-10 mt-10">
+                <p>태그로 검색</p>
+                
+                {/* <TagButtons tags={tags} activeTags={activeTags} onTagClick={handleTagClick} /> */}
+                {tags.map(({id,name})=>(
+                                <button key={id}
+                                    className={`${
+                                        activeTags.includes(name) ? "bg-blue-300" : "bg-blue-100"
+                                    } rounded w-auto px-2 mx-2 mt-1 hover:bg-blue-300 logo-font h-8`}
+                                    onClick={() => handleTagClick(name)}
+                                >
+                                    {name}
+                                </button>
+                            )
+                        )}
             </div>
             {isOpen && (
                 <RoomCreateModal onClose={closeModal}/>

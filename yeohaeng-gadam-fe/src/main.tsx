@@ -18,6 +18,7 @@ import BoardList from './pages/TestBoard.tsx';
 import { CookiesProvider } from 'react-cookie';
 import Videochat from './videochat-proto/Videochat.jsx';
 
+
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const router = createBrowserRouter([
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
                 path: "/Mypage/:pageId", element: <Mypage/>
             },
             {
-                path:"/search",
+                path:"/Search",
                 element: <Search/>
             }
         ]

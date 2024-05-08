@@ -56,6 +56,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
             return updatedTags;
         });
     };
+    
 
     const handleSubmit = async ()=>{
         try{

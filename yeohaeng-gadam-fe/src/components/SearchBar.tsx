@@ -16,9 +16,12 @@ interface SearchFormType{
 
 
 export default function SearchBar(){
-    const accessToken = getCookie('access_token');
+    const accessToken:string = getCookie('access_token')? getCookie('access_token'):'' ;
+    let id = '';
     // @ts-ignore
-    const id = jwtDecode(accessToken).id;
+    if(accessToken!== '') {
+        id = jwtDecode(accessToken).id;
+    }
     const navigate = useNavigate();
     const[isOpen,setIsOpen]=useState(false);
     const [tags, setTags] = useState([{

@@ -46,18 +46,22 @@ export default function Videochat() {
   const [savedSocketId, setSavedSocketId] = useState(null);
   // const socket = useSocket();
 
-  const setLocalStream = async () => {
+  const getLocalStream = async () => {
     if (localStream) {
       console.log("setLocalStream(): localStream already set");
       return;
     }
 
     localStream = await navigator.mediaDevices.getUserMedia({
+      // const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: AUDIO_SETTINGS,
     });
 
+    // setLocalStream(stream);
+
     if (localVideoRef.current) {
+      // localVideoRef.current.srcObject = stream;
       localVideoRef.current.srcObject = localStream;
       console.log("setLocalStream(): success");
     } else {
@@ -154,7 +158,7 @@ export default function Videochat() {
       return;
     }
 
-    await setLocalStream();
+    await getLocalStream();
 
     console.log("onConnectHandler(): start");
 
@@ -326,6 +330,19 @@ export default function Videochat() {
   socket.on("get_candidate", onGetCandidateHandler);
   socket.on("user_exit", onUserExitHandler);
 
+  // const toggleVideo = () => {
+  // // function toggleVideo() {
+  //   console.log("toggleVideo(): start");
+  //   console.log("localStream: ", localStream);
+  //   if (localStream) {
+  //     console.log("toggleVideo(): start");
+  //     localStream.getVideoTracks().forEach(track => {
+  //       console.log("toggleVideo(): " + track.enabled);
+  //       track.enabled = !track.enabled; // 현재 상태의 반대로 설정
+  //     });
+  //   }
+  // };
+
 
 
   const Video = ({ email, stream, muted = false }) => {
@@ -363,6 +380,9 @@ export default function Videochat() {
     );
   };
 
+
+
+
   useEffect(() => {
     return (() => {
       if (socket) {
@@ -387,6 +407,7 @@ export default function Videochat() {
         autoPlay
       />
       {/* <Video key={socket.id} email="" stream={localStream} muted /> */}
+      {/* <button onClick={toggleVideo}>비디오 켜기/끄기</button> */}
       <div>other users</div>
       {users.map((user, index) => (
         // <Video key={user.id} email={user.email} stream={user.stream} />

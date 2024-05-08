@@ -20,7 +20,8 @@ import { CookiesProvider } from 'react-cookie';
 import VideoChat from './webRTC/VideoChat.tsx';
 import VideoTest from './webRTC/test.tsx';
 import NtoN from './webRTC/test1.tsx';
-import Search from './pages/Search.tsx';
+import Search from "./pages/Search.tsx";
+
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 

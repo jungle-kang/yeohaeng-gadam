@@ -22,22 +22,26 @@ export class CreateRoomDto {
   @ApiProperty({ type: Number, description: '참가 인원 수' })
   @IsInt()
   @IsOptional()
-  hcAttend?: number;
+  hc_attend?: number;
   
   @ApiProperty({ type: Number, description: '최대 인원 수' })
   @IsInt()
   @IsOptional()
-  hcMax?: number;
+  hc_max?: number;
 
-  @ApiProperty({ type: Date, description: '여행 시작 날짜' })
+  @ApiProperty({ type: String, description: '방장' })
+  @IsString()
+  hd_id?: string;
+
+  @ApiProperty({ type: Date, description: '여행 시작 날짜', example: "2000-00-00" })
   @IsDate()
   @IsOptional()
-  startDate?: string | null;
+  start_date?: string | null;
 
-  @ApiProperty({ type: Date, description: '여행 종료 날짜' })
+  @ApiProperty({ type: Date, description: '여행 종료 날짜', example: "2000-00-00" })
   @IsDate()
   @IsOptional()
-  endDate?: string | null;
+  end_date?: string | null;
 
   constructor(partial: Partial<CreateRoomDto>) {
     Object.assign(this, partial);

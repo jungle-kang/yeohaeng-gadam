@@ -28,7 +28,7 @@ export default function SearchBar(){
         end_date:''
     });
     const [selectedItem, setSelectedItem] = useState<string>('2');
-    const [form,setForm]=useState({
+    const [form,setForm]=React.useState({
         title:'',
         location:'',
         hcMax: selectedItem,
@@ -47,18 +47,21 @@ export default function SearchBar(){
         return params.toString();
     };
 
-    const handleTagClick = (tag: string) => {
-        setActiveTags(prevTags => {
-            const updatedTags = prevTags.includes(tag)
-                ? prevTags.filter((activeTag) => activeTag !== tag)
-                : [...prevTags, tag];
-
-            setForm(prevForm => ({
-                ...prevForm,
-                tags: updatedTags
-            }));
-            return updatedTags;
-        });
+    const handleTagClick =async (tags: string) => {
+        try {
+            const encodedTags = encodeURIComponent(tags);
+            const response = await fetch(`/api/room/tag?tags=${encodedTags}`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setForm(data.data);
+        } catch (error) {
+            console.error('Failed to fetch rooms:', error);
+        }
     };
 
     const createRoomModal = () =>{
@@ -121,7 +124,7 @@ export default function SearchBar(){
                            className="block w-full rounded-md border-0 text-center h-full px-4  text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                 </div>
-                <div className="basis-1/5">
+                <div className="basis-1/5 ml-2">
                     <button
                         onClick={handleSearch}
                         className="logo-font font-bold h-full text-center block w-full rounded-md border-0 py-1.5 px-auto text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-200 hover:text-gray-500 bg-gray-300">
@@ -135,10 +138,10 @@ export default function SearchBar(){
                     </button>
                 </div>
             </div>
-            <div className="ml-10 mt-10">
+            <div className="ml-10 mt-10 mb-4">
                 <p>태그로 검색</p>
-                
-                {/* <TagButtons tags={tags} activeTags={activeTags} onTagClick={handleTagClick} /> */}
+            </div>
+            <div className="ml-8">
                 {tags.map(({id,name})=>(
                                 <button key={id}
                                     className={`${
@@ -150,7 +153,7 @@ export default function SearchBar(){
                                 </button>
                             )
                         )}
-            </div>
+                    </div>
             {isOpen && (
                 <RoomCreateModal onClose={closeModal}/>
             )}

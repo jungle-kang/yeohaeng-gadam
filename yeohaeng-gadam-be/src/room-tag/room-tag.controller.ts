@@ -37,7 +37,7 @@ export class RoomController {
     });
   }
 
-  @Get('/tags')
+  @Get('/tag')
   @ApiOperation({ summary: '태그를 그룹화하여 방 전체 조회', description: 'room 테이블과 tag 테이블을 room 테이블의 id를 기준으로 join 후 tag 테이블의 tag를 기준으로 group by하여 전체 조회' })
   async findRoomAndTags(): Promise<Room[]> {
     const roomTagsList = await this.roomService.findRoomAndTags();
@@ -49,7 +49,7 @@ export class RoomController {
     });
   }
 
-  @Get('/tag')
+  @Get('/tags')
   @ApiOperation({ summary: '태그들 중 하나라도 포함하고 있는 방 조회', description: '[\"tag1\", \"tag2\", \"tag3\"] ... 형식으로 데이터 요청 시 tag1 또는 tag2 또는 tag3를 포함하고 있는 room_id 조회' })
   @ApiQuery({ name: 'tags', description: '["tag1", "tag2", "tag3"]<br>**태그는 최소 1개 이상이어야 합니다.**', required: true })
   async findRoomWithOrTags(@Query('tags') tags: string): Promise<Room[]> {

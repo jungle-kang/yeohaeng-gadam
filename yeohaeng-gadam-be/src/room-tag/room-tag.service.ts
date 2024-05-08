@@ -95,7 +95,7 @@ export class RoomService {
   // ["tag1", "tag2"] tag1과 tag2 중 하나라도 포함하고 있는 room 테이블의 id를 배열로 반환
   async findRoomWithOrTags(tags: string): Promise<any[]> {
     const orTagArray = JSON.parse(tags);
-    // console.log('서비스/orTagArray >', orTagArray);
+    console.log('서비스/orTagArray >', orTagArray);
 
     let orConditions = '';
     for (let i = 1; i < orTagArray.length; i++) {

@@ -1,5 +1,7 @@
 import React, {useEffect} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
+import {getCookie} from "../pages/TestBoard.tsx";
+import {jwtDecode} from "jwt-decode";
 interface SearchFormType{
     location:string,
     start_date:string,

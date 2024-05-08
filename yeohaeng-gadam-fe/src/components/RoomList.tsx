@@ -1,5 +1,7 @@
 import React, {useEffect} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
+import {getCookie} from "../pages/TestBoard.tsx";
+import {jwtDecode} from "jwt-decode";
 interface SearchFormType{
     location:string,
     start_date:string,
@@ -53,11 +55,12 @@ const RoomList = ()=>{
                 method: 'GET',
                 credentials: 'include'
             })
-            const data = await response.json()
+            const data = await response.json();
+            console.log(data);
             setPost(data.data);
         }
         fetchData()
-    },[])
+    },[searchParams])
 
 
     return(
@@ -82,7 +85,7 @@ const RoomList = ()=>{
                                 })}</div>
                                 <div>참여 인원 : {hc_max} </div>
                                 <div className="flex mt-2">
-                                    { tags.length < 1 && tags[0] === null ? (<></>):(tags.map((item,idx)=>(
+                                    { tags[0] === null ? (<></>):(tags.map((item,idx)=>(
                                         <div key={idx} className="ring-1 w-14 h-7 bg-blue-200 ml-2 text-center pt-1 font-bold rounded-lg text-sm ">{item}</div>
                                     )))}
                                 </div>

@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import SelectBox from "./SelectBox.tsx";
 import {useNavigate} from "react-router-dom";
+import {getCookie} from "../pages/TestBoard.tsx";
+import {jwtDecode} from "jwt-decode";
 
 
 interface RoomCreateModalProps {
@@ -8,6 +10,9 @@ interface RoomCreateModalProps {
 }
 
 const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
+    const accessToken = getCookie('access_token');
+    // @ts-ignore
+    const id = jwtDecode(accessToken).id;
     const [tags,setTags] = useState([{
         id:'',
         name:''
@@ -23,9 +28,10 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
     const [form,setForm]=useState({
         title:'',
         location:'',
-        hcMax: selectedItem,
-        startDate:'',
-        endDate:'',
+        hc_max: selectedItem,
+        hd_id: id,
+        start_date:'',
+        end_date:'',
         tags:activeTags,
     });
 
@@ -33,7 +39,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
         setSelectedItem(item);
         setForm(prevForm => ({
             ...prevForm,
-            hcMax: item
+            hc_max: item
         }));
     };
 
@@ -72,7 +78,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
             const result = await response.json()
             console.log(result)
             if(result.statusCode === 201){
-                navigate(`/${result.data.rsRoomTagDTO.id}`)
+                navigate(`/${result.data.id}`)
             }
         }catch(e){
             console.error('room create fail: ',e)
@@ -135,20 +141,20 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                     <div className="logo-font h-8 pt-1 font-bold w-20 text-start">날짜</div>
                     <div className="ml-2 w-72 ring-insert ring-1 ring-gray-300 rounded h-8">
                         <input
-                            value={form.startDate}
+                            value={form.start_date}
                             onChange={e => {
                                 setForm({
                                     ...form,
-                                    startDate: e.target.value,
+                                    start_date: e.target.value,
                                 })
                             }}
                             type="date" className=""/>
                         <input
-                            value={form.endDate}
+                            value={form.end_date}
                             onChange={e => {
                                 setForm({
                                     ...form,
-                                    endDate: e.target.value,
+                                    end_date: e.target.value,
                                 })
                             }}
                             type="date" className="ml-2"/>

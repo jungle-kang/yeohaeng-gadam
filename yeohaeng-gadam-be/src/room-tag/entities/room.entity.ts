@@ -1,16 +1,16 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Tag } from "./tag.entity";
-import { Admission } from "./admission.entity";
+import { Entry } from "../../entry/entities/entry.entity";
 
 @Entity("room", { schema: "yeohaeng_gadam" })
 export class Room {
   @PrimaryGeneratedColumn({ type: "bigint", name: "id", comment: "방 기본키" })
   id: string;
 
-  @Column("varchar", { name: "title", comment: "방 제목", length: 255 })
+  @Column("varchar", { name: "title", nullable: true, comment: "방 제목", length: 255 })
   title: string;
 
-  @Column("varchar", { name: "location", comment: "목적지", length: 50 })
+  @Column("varchar", { name: "location", nullable: true, comment: "목적지", length: 50 })
   location: string;
 
   @Column("int", { name: "state", nullable: true, comment: "상태" })
@@ -22,7 +22,7 @@ export class Room {
   @Column("int", { name: "hc_max", nullable: true, comment: "최대 인원 수" })
   hc_max: number | null;
 
-  @Column("varchar", { name: "hd_id", comment: "방장", length: 255 })
+  @Column("varchar", { name: "hd_id", nullable: true, comment: "방장", length: 255 })
   hd_id: string;
 
   @Column("date", {
@@ -55,8 +55,8 @@ export class Room {
   })
   modDate: Date | null;
 
-  @OneToMany(() => Admission, (admission) => admission.room)
-  admissions: Admission[];
+  @OneToMany(() => Entry, (entry) => entry.room)
+  entrys: Entry[];
 
   @OneToMany(() => Tag, (tag) => tag.room)
   tags: Tag[];

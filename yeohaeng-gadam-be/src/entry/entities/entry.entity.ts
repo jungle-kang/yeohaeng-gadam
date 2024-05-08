@@ -6,15 +6,15 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Room } from "./room.entity";
+import { Room } from "../../room-tag/entities/room.entity";
 
 @Index("room_id", ["room_id"], {})
-@Entity("admission", { schema: "yeohaeng_gadam" })
-export class Admission {
+@Entity("entry", { schema: "yeohaeng_gadam" })
+export class Entry {
   @PrimaryGeneratedColumn({
     type: "bigint",
     name: "id",
-    comment: "가입 기본키",
+    comment: "참가자 기본키",
   })
   id: string;
 
@@ -24,7 +24,7 @@ export class Admission {
   @Column("varchar", { name: "user_id", comment: "사용자 기본키 참조", length: 255 })
   user_id: string;
 
-  @ManyToOne(() => Room, (room) => room.admissions, {
+  @ManyToOne(() => Room, (room) => room.entrys, {
     onDelete: "CASCADE",
     onUpdate: "NO ACTION",
   })

@@ -1,18 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import * as dotenv from 'dotenv';
+import { PassportModule } from '@nestjs/passport';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { RoomModule } from './room/room.module';
-import { AuthModule } from './auth/auth.module';
-
+import * as dotenv from 'dotenv';
 import * as Joi from 'joi';
 import { ChatModule } from './chat/chat.module';
-import { GoogleStrategy } from './auth/google.strategies';
-import { PassportModule } from '@nestjs/passport';
+import { AuthModule } from './auth/auth.module';
 import { BoardsModule } from './boards/boards.module';
-
+import { EntryModule } from './entry/entry.module';
+import { RoomTagModule } from './room-tag/room-tag.module';
+import { GoogleStrategy } from './auth/google.strategies';
 
 dotenv.config();
 
@@ -38,9 +37,10 @@ dotenv.config();
             ],
             synchronize: true,
         }),
-        RoomModule,
         AuthModule,
         BoardsModule,
+        EntryModule,
+        RoomTagModule,
     ],
     controllers: [AppController],
     providers: [AppService, GoogleStrategy],

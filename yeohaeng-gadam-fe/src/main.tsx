@@ -12,14 +12,18 @@ import GoogleOauth from './login/GoogleLogin.tsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import GoogleLoginButton from './login/jwtgoogle.tsx';
 import KakaoLogin from './login/KakaoLogin.tsx';
-import Stream from './webRTC/Stream.tsx';
 import Mypage from "./components/Mypage.jsx"
 import SettingModal from './components/SettingModal.jsx';
 import BoardList from './pages/TestBoard.tsx';
 import { CookiesProvider } from 'react-cookie';
-import VideoChat from './webRTC/VideoChat.tsx';
-import VideoTest from './webRTC/test.tsx';
-import NtoN from './webRTC/test1.tsx';
+
+// import Stream from './webRTC/Stream.tsx';
+// import VideoChat from './webRTC/VideoChat.tsx';
+// import VideoTest from './webRTC/test.tsx';
+// import NtoN from './webRTC/test1.tsx';
+
+import Videochat from './videochat-proto/Videochat.jsx';
+// import { SocketProvider } from './videochat-proto/SocketContext.jsx';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -42,60 +46,44 @@ const router = createBrowserRouter([
                 element: <Mypage />
             },
             {
-                path: "/Mypage/:pageId", element: <Mypage/>
+                path: "/Mypage/:pageId", element: <Mypage />
             }
         ]
     },
-    {
+    { //////////////
         path: "/map",
         element: <SearchForm />,
     },
-    {
+    { //////////////
         path: "/detail",
         element: <SearchDetail />,
     },
-    {
+    { //////////////
         path: "/findway",
         element: <FindWay />,
     },
-    {
+    { //////////////
         path: "/googleLogin",
         element: <GoogleOauth />
     },
-    {
+    { //////////////
         path: "/gOauth",
         element: <GoogleLoginButton />
     },
-    {
-        path: "video-test",
-        element: <Stream />
-    },
-    {
+    { //////////////
         path: "/KakaoLogin",
         element: <KakaoLogin />
     },
-
-    // {
-    //     path: "/stream/:roomId",
-    //     element: <Stream />
-    // },
     {
         path: "/test",
         element: <BoardList />
     },
-    // {
-    //     path: "/video",
-    //     element: <VideoChat />
-    // },
-    // {
-    //     path: "/videoTest",
-    //     element: <VideoTest />
-    // },
+
     {
-        path: "/nton",
-        element: <NtoN />
-    }
-    
+        path: "/zoom",
+        element: <Videochat />
+    },
+
 
 
 
@@ -104,9 +92,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <CookiesProvider>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-            <React.StrictMode>
-                <RouterProvider router={router} />
-            </React.StrictMode>
+            {/* <React.StrictMode> */}
+            <RouterProvider router={router} />
+            {/* </React.StrictMode> */}
         </GoogleOAuthProvider>,
     </CookiesProvider>
 )

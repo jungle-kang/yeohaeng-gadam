@@ -18,8 +18,8 @@ async function bootstrap() {
 
   app.useWebSocketAdapter(
     new WebsocketAdapter(app, {
-      origin: frontendUrl,
-      // origin: '*',
+      // origin: frontendUrl,
+      origin: '*',
       credentials: true,
     }),
   );

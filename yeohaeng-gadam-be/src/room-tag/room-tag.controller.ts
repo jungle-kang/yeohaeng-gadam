@@ -54,10 +54,10 @@ export class RoomController {
   @ApiQuery({ name: 'tags', description: '["tag1", "tag2", "tag3"]<br>**태그는 최소 1개 이상이어야 합니다.**', required: true })
   async findRoomWithOrTags(@Query('tags') tags: string): Promise<Room[]> {
     // console.log('컨트롤러/tags >', tags);
-    const roomIdList = await this.roomService.findRoomWithOrTags(tags);
+    const roomTagsList = await this.roomService.findRoomWithOrTags(tags);
     
     return Object.assign({
-      data: roomIdList,
+      data: roomTagsList,
       statusCode: HttpStatus.OK,
       statusMsg: `데이터 조회 성공`
     });

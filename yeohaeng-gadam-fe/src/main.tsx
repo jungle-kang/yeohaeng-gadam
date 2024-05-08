@@ -16,14 +16,7 @@ import Mypage from "./components/Mypage.jsx"
 import SettingModal from './components/SettingModal.jsx';
 import BoardList from './pages/TestBoard.tsx';
 import { CookiesProvider } from 'react-cookie';
-
-// import Stream from './webRTC/Stream.tsx';
-// import VideoChat from './webRTC/VideoChat.tsx';
-// import VideoTest from './webRTC/test.tsx';
-// import NtoN from './webRTC/test1.tsx';
-
 import Videochat from './videochat-proto/Videochat.jsx';
-// import { SocketProvider } from './videochat-proto/SocketContext.jsx';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -46,7 +39,11 @@ const router = createBrowserRouter([
                 element: <Mypage />
             },
             {
-                path: "/Mypage/:pageId", element: <Mypage />
+                path: "/Mypage/:pageId", element: <Mypage/>
+            },
+            {
+                path:"/search",
+                element: <Search/>
             }
         ]
     },

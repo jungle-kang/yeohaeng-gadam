@@ -17,24 +17,27 @@ export class Room {
   state: number | null;
   
   @Column("int", { name: "hc_attend", nullable: true, comment: "참가 인원 수" })
-  hcAttend: number | null;
+  hc_attend: number | null;
 
   @Column("int", { name: "hc_max", nullable: true, comment: "최대 인원 수" })
-  hcMax: number | null;
+  hc_max: number | null;
+
+  @Column("varchar", { name: "hd_id", comment: "방장", length: 255 })
+  hd_id: string;
 
   @Column("date", {
     name: "start_date",
     nullable: true,
     comment: "여행 시작 날짜",
   })
-  startDate: string | null;
+  start_date: string | null;
 
   @Column("date", {
     name: "end_date",
     nullable: true,
     comment: "여행 종료 날짜",
   })
-  endDate: string | null;
+  end_date: string | null;
 
   @Column("datetime", {
     name: "reg_date",

@@ -12,6 +12,7 @@ import { BoardsModule } from './boards/boards.module';
 import { EntryModule } from './entry/entry.module';
 import { RoomTagModule } from './room-tag/room-tag.module';
 import { GoogleStrategy } from './auth/google.strategies';
+import { PlanModule } from './plan/plan.module';
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ dotenv.config();
         BoardsModule,
         EntryModule,
         RoomTagModule,
+        PlanModule,
     ],
     controllers: [AppController],
     providers: [AppService, GoogleStrategy],

@@ -70,7 +70,7 @@ export class RoomService {
     return await this.roomRepository.find();
   }
 
-  async findRoomAndTags(): Promise<any[]> {
+  async findRoomWithTags(): Promise<any[]> {
     return await this.roomRepository.query(`
       SELECT 
           room.id AS room_id, 
@@ -162,7 +162,7 @@ export class RoomService {
               AND end_date BETWEEN '${start_date}' AND '${end_date}'
           )
       GROUP BY 
-          room.id, room.title, room.location, room.state, room.hc_attend, room.hc_max, room.hd_id, room.start_date, room.end_date
+          room.id
       ORDER BY 
           room.start_date ASC, room.state ASC, room.hc_attend ASC, room.hc_max ASC;
     `);

@@ -21,10 +21,14 @@ export class Entry {
   @Column("bigint", { name: "room_id", comment: "방 기본키 참조" })
   room_id: string;
 
-  @Column("varchar", { name: "user_id", comment: "사용자 기본키 참조", length: 255 })
+  @Column("varchar", {
+    name: "user_id",
+    comment: "사용자 기본키 참조",
+    length: 255,
+  })
   user_id: string;
 
-  @ManyToOne(() => Room, (room) => room.entrys, {
+  @ManyToOne(() => Room, (room) => room.entries, {
     onDelete: "CASCADE",
     onUpdate: "NO ACTION",
   })

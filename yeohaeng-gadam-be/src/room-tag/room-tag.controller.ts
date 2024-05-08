@@ -38,9 +38,9 @@ export class RoomController {
   }
 
   @Get('/tags')
-  @ApiOperation({ summary: '태그를 그룹화하여 방 전체 조회', description: 'room 테이블과 tag 테이블을 room 테이블의 id를 기준으로 join 후 tag 테이블의 tag를 기준으로 group by하여 전체 조회' })
-  async findRoomAndTags(): Promise<Room[]> {
-    const roomTagsList = await this.roomService.findRoomAndTags();
+  @ApiOperation({ summary: '태그를 그룹화하여 방 전체 조회', description: 'room 테이블과 tag 테이블을 room 테이블의 id를 기준으로 join 후 tag 테이블의 room_id를 기준으로 group by하여 tag들을 전체 조회' })
+  async findRoomWithTags(): Promise<Room[]> {
+    const roomTagsList = await this.roomService.findRoomWithTags();
 
     return Object.assign({
       data: roomTagsList,

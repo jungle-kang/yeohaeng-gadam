@@ -23,13 +23,26 @@ export class EntryController {
   }
 
   @Get('/user')
-  @ApiOperation({ summary: '사용자가 참여하고 있는 방 조회', description: 'user_id로 데이터 요청 시 사용자가 참여하고 있는 room_id 조회' })
+  @ApiOperation({ summary: '사용자가 참가하고 있는 방 조회', description: 'user_id로 데이터 요청 시 사용자가 참여하고 있는 방 조회 후 tag 테이블과 join하여 전체 조회' })
   @ApiQuery({ name: 'user_id', required: true })
-  async findRoomWithUser(@Query('user_id') user_id: string): Promise<Entry[]> {
-    const roomIdList = await this.entryService.findRoomWithUser(user_id);
+  async findRoomWithTagsByUser(@Query('user_id') user_id: string): Promise<Entry[]> {
+    const roomTagsList = await this.entryService.findRoomWithTagsByUser(user_id);
     
     return Object.assign({
-      data: roomIdList,
+      data: roomTagsList,
+      statusCode: HttpStatus.OK,
+      statusMsg: `데이터 조회 성공`
+    });
+  }
+
+  @Get('/room')
+  @ApiOperation({ summary: '방에 참가하고 있는 사용자 전체 조회', description: 'room_id로 데이터 요청 시 방에 참가하고 있는 사용자 전체 조회' })
+  @ApiQuery({ name: 'room_id', required: true })
+  async findUserByRoom(@Query('room_id') room_id: string): Promise<Entry[]> {
+    const userIdList = await this.entryService.findUserByRoom(room_id);
+    
+    return Object.assign({
+      data: userIdList,
       statusCode: HttpStatus.OK,
       statusMsg: `데이터 조회 성공`
     });

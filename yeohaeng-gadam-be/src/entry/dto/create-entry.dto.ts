@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsString } from 'class-validator';
 
-export class CreateAdmissionDto {
+export class CreateEntryDto {
   @ApiProperty({ type: Number, description: '참가 기본키' })
   @IsInt()
   id?: string;
@@ -14,7 +14,7 @@ export class CreateAdmissionDto {
   @IsString()
   user_id?: string;
 
-  constructor(partial: Partial<CreateAdmissionDto>) {
+  constructor(partial: Partial<CreateEntryDto>) {
     Object.assign(this, partial);
   }
 

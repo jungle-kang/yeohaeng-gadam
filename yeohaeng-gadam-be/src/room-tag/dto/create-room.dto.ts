@@ -8,11 +8,11 @@ export class CreateRoomDto {
 
   @ApiProperty({ type: String, description: '방 제목' })
   @IsString()
-  title: string;
+  title?: string;
 
   @ApiProperty({ type: String, description: '목적지' })
   @IsString()
-  location: string;
+  location?: string;
 
   @ApiProperty({ type: Number, description: '상태' })
   @IsInt()

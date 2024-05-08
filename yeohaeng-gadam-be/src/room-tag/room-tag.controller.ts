@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery, ApiParam, ApiBody } from '@nestjs/swagger';
-import { RoomService } from './room.service';
+import { RoomService } from './room-tag.service';
 import { CreateRoomTagDto } from './dto/create-room-tag.dto';
 import { SearchRoomTagsDto } from './dto/search-room-tags.dto';
+import { UpdateRoomDto } from './dto/update-room.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { Room } from './entities/room.entity';
 
@@ -18,7 +19,7 @@ export class RoomController {
     const rsRoomTagDTO: CreateRoomTagDto = await this.roomService.save(roomTagDTO);
 
     return {
-      data: { rsRoomTagDTO },
+      data: rsRoomTagDTO,
       statusCode: HttpStatus.CREATED,
       statusMsg: `데이터 저장 성공`
     };
@@ -116,6 +117,20 @@ export class RoomController {
       statusCode: HttpStatus.OK,
       statusMsg: '데이터 조회 성공'
     };
+  }
+
+  @Patch('/state')
+  @ApiOperation({ summary: '사용자 방 상태 수정'})
+  @ApiBody({ type: UpdateRoomDto, description: 'id, state만 전달하시면 됩니다.' })
+  async changeState(@Body() roomDTO: UpdateRoomDto): Promise<Room[]> {
+  // async changeState(@Query('id') id?: string, @Query('state') state?: string): Promise<Room[]> {
+    const rsRoomState = await this.roomService.changeState(roomDTO);
+
+    return Object.assign({
+      data: rsRoomState,
+      statusCode: HttpStatus.OK,
+      statusMsg: `데이터 수정 성공`
+    });
   }
 
   @Patch('/enter')

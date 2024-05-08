@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, In, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
-import { CreateAdmissionDto } from './dto/create-admission.dto';
+import { Between, Repository } from 'typeorm';
+import { CreateEntryDto } from '../entry/dto/create-entry.dto';
 import { CreateRoomTagDto } from './dto/create-room-tag.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { SearchRoomTagsDto } from './dto/search-room-tags.dto';
-// import { UpdateRoomDto } from './dto/update-room.dto';
+import { UpdateRoomDto } from './dto/update-room.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { Room } from './entities/room.entity';
 import { Tag } from './entities/tag.entity';
-import { Admission } from './entities/admission.entity';
+import { Entry } from '../entry/entities/entry.entity';
 
 @Injectable()
 export class RoomService {
   constructor(
     @InjectRepository(Room) private roomRepository: Repository<Room>,
     @InjectRepository(Tag) private tagRepository: Repository<Tag>,
-    @InjectRepository(Admission) private admissionRepository: Repository<Admission>,
+    @InjectRepository(Entry) private entryRepository: Repository<Entry>
   ) {}
 
   async save(roomTagDTO: CreateRoomTagDto): Promise<CreateRoomTagDto> {
@@ -122,11 +122,16 @@ export class RoomService {
     // console.log('서비스/andTagArray >', andTagArray);
 
     const roomIdList: string[] = (await this.roomRepository.query(`
-        SELECT room_id AS id
-        FROM yeohaeng_gadam.tag
-        WHERE tag IN (${andTagArray.map(tag => `'${tag}'`).join(', ')})
-        GROUP BY room_id
-        HAVING COUNT(DISTINCT tag) = ${andTagArray.length};
+        SELECT
+          room_id AS id
+        FROM
+          yeohaeng_gadam.tag
+        WHERE
+          tag IN (${andTagArray.map(tag => `'${tag}'`).join(', ')})
+        GROUP BY
+          room_id
+        HAVING
+          COUNT(DISTINCT tag) = ${andTagArray.length};
     `)).map((item: any) => item.id);
 
     return roomIdList;
@@ -274,16 +279,29 @@ export class RoomService {
      }
   }
 
+  async changeState(roomDTO: UpdateRoomDto): Promise<any> {
+    const rsRoomState = await this.roomRepository.query(`
+      UPDATE
+        room
+      SET
+        state = ${roomDTO.state}
+      WHERE
+        id = ${roomDTO.id};
+    `);
+
+    return rsRoomState;
+  }
+
   async changeRoomEnter(room_id: string, user_id: string): Promise<any> {
     const rsRoomEnter = await this.roomRepository.query(`
       SELECT 
         room.id AS room_id, 
         IF(hc_attend < hc_max, 'true', 'false') AS room_enter,
-        JSON_ARRAYAGG(admission.user_id) AS users
+        JSON_ARRAYAGG(entry.user_id) AS users
       FROM 
         yeohaeng_gadam.room
       LEFT JOIN 
-        yeohaeng_gadam.admission ON room.id = admission.room_id
+        yeohaeng_gadam.entry ON room.id = entry.room_id
       WHERE room.id = ${room_id};
     `);
     
@@ -297,24 +315,25 @@ export class RoomService {
         hc_attend: () => 'hc_attend + 1',
       });
     
-      console.log('참여 인원 증가 완료');
+      console.log('참가 인원 증가 완료');
     
-      const admissionDTO: CreateAdmissionDto = {
+      const entryDTO: CreateEntryDto = {
         room_id: room_id,
         user_id: user_id
       }
-      const saveAdmission = this.admissionRepository.create(admissionDTO);
-      const savedAdmission = await this.admissionRepository.save(saveAdmission);
-      console.log('savedAdmission', savedAdmission);
+      const saveEntry = this.entryRepository.create(entryDTO);
+      const savedEntry = await this.entryRepository.save(saveEntry);
+      
+      console.log('savedEntry', savedEntry);
       
       return true;
     } else if (existUserArray.includes(user_id)) {  // 사용자가 이미 참가한 방이라면
-      
-      console.log('이미 들어있네');
+      console.log('이미 참가한 사용자');
+
       return true;
     } else {
+      console.log('참가 불가');
 
-      console.log('못 들어옴');
       return false;
     }
   }
@@ -325,11 +344,11 @@ export class RoomService {
       SELECT 
         room.id AS room_id,
         IF(hc_attend > 1, 'true', 'false') AS room_exit,
-        JSON_ARRAYAGG(admission.user_id) AS users
+        JSON_ARRAYAGG(entry.user_id) AS users
       FROM 
         yeohaeng_gadam.room
       LEFT JOIN 
-        yeohaeng_gadam.admission ON room.id = admission.room_id
+        yeohaeng_gadam.entry ON room.id = entry.room_id
       WHERE room.id = ${room_id};
     `);
 
@@ -343,12 +362,12 @@ export class RoomService {
         hc_attend: () => 'hc_attend - 1',
       });
 
-      await this.admissionRepository.delete({ room_id: room_id, user_id: user_id });
+      await this.entryRepository.delete({ room_id: room_id, user_id: user_id });
 
       return true;
     } else if (existUserArray.includes(user_id)) {  // 참가 인원이 1명 남았으면 방 삭제
       // room 테이블의 id를 외래키로 가지고 있는 행을 삭제
-      await this.admissionRepository.delete({ room_id: room_id });
+      await this.entryRepository.delete({ room_id: room_id });
       await this.tagRepository.delete({ room_id: room_id });
       
       // 방 삭제
@@ -363,9 +382,12 @@ export class RoomService {
   async changeTag(tagDTO: UpdateTagDto): Promise<any> {
     // 검색한 값 평탄화
     const existTagArray: string[] = (await this.roomRepository.query(`
-      SELECT JSON_ARRAYAGG(tag) AS tags FROM tag
-      WHERE room_id = '${tagDTO.room_id}'
-      GROUP BY room_id;
+      SELECT
+        JSON_ARRAYAGG(tag) AS tags FROM tag
+      WHERE
+        room_id = '${tagDTO.room_id}'
+      GROUP BY
+        room_id;
     `)).map((item: any) => item.tags).flat();
 
     // console.log('서비스/tagDTO.tags >', tagDTO.tags);

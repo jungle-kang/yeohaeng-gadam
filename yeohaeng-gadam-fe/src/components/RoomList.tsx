@@ -58,7 +58,7 @@ const RoomList = ()=>{
             setPost(data.data);
         }
         fetchData()
-    },[])
+    },[searchParams])
 
 
     return(

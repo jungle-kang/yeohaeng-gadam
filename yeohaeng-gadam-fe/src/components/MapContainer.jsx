@@ -7,6 +7,10 @@ const MapContainer = ({ searchPlace, insertCard }) => {
   const [places, setPlaces] = useState([]);
 
   useEffect(() => {
+    if (searchPlace == '') {
+      return;
+    }
+
     var infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
     const container = document.getElementById('myMap');
     const options = {
@@ -45,7 +49,7 @@ const MapContainer = ({ searchPlace, insertCard }) => {
 
   return (
     <div style={{ width: '100%', height: '100%' }}>
-      <div id="myMap" style={{ width: '100%', height: '50%' }} />
+      <div id="myMap" style={{ aspectRatio: "1 / 1", width: '100%' }} />
       <div id="result-list">
         {places.map((res, i) => (
           <div

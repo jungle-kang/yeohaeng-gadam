@@ -10,12 +10,15 @@ export default function Header() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
 
+  const [userId, setUserId] = useState(""); //////////
+
   useEffect(()=>{
       const accessToken:string = getCookie('access_token')? getCookie('access_token'):'' ;
       let id = '';
       // @ts-ignore
       if(accessToken!== '') {
           id = jwtDecode(accessToken).id;
+          setUserId(id); //////////////////////////
       }
       const meCheck = async () =>{
           try{
@@ -43,6 +46,7 @@ export default function Header() {
         className="basis-1/5 font-bold text-4xl p-4 logo-font">
         여행가담
       </button>
+      <div>USER ID IS {userId}</div>
       <div className="basis-3/5"></div>
       <div className="basis-1/5 h-full flex">
         {/* <button className="w-1/2 h-full logo-font hover:text-gray-400" onClick={() => setModalOpen(true)}> */}

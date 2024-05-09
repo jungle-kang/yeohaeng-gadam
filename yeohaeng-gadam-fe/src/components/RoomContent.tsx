@@ -13,7 +13,7 @@ import SettingModal from "../components/SettingModal.tsx"
 import Videochat from "../videochat-proto/Videochat.jsx";
 // import VideoChat from "../webRTC/VideoChat.tsx";
 
-const RoomContent = () => {
+const RoomContent = ({ roomId }) => {
   // const {roomId} = useParams<{roomId:string}>();
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
@@ -81,7 +81,7 @@ const RoomContent = () => {
             onClick={() => setModalOpen(true)}>방 설정</button>
         </div>
         <div className="h-5/6 mt-5">
-          <Videochat />
+          <Videochat roomId={roomId} />
         </div>
       </div>
 

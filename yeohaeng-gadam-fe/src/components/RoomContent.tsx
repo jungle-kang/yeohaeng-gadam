@@ -76,9 +76,9 @@ const RoomContent = () => {
       </div>
 
       <div className="w-2/12 h-full bg-blue-600">
-        <div className="  h-15 bg-blue-50 text-center font-bold text-4xl p-4 logo-font rounded-lg mt-5 mr-5 ml-5">
+        <div className="flex justify-center h-10 bg-blue-50 text-center font-bold text-4l logo-font rounded-lg mt-5 mr-5 ml-5">
           <button
-            onClick={() => setModalOpen(true)}>설정</button>
+            onClick={() => setModalOpen(true)}>방 설정</button>
         </div>
         <div className="h-5/6 mt-5">
           <Videochat />

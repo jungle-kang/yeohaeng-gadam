@@ -25,12 +25,12 @@ const pc_config = {
     },
   ],
 };
-const AUDIO_SETTINGS = true;
-// const AUDIO_SETTINGS = {
-//   echoCancellation: true,
-//   noiseSuppression: true,
-//   autoGainControl: true,
-// };
+// const AUDIO_SETTINGS = true;
+const AUDIO_SETTINGS = {
+  echoCancellation: true,
+  noiseSuppression: true,
+  autoGainControl: true,
+};
 
 export default function Videochat() {
   const localVideoRef = useRef(null); // 내 영상 표시할 video element
@@ -345,7 +345,7 @@ export default function Videochat() {
     }, [stream]);
 
     return (
-      <div>
+      <div className="my-2">
         <video
           ref={ref}
           muted={muted}
@@ -374,7 +374,7 @@ export default function Videochat() {
   return (
     <div className="mx-2">
       {/* <div>{savedSocketId}</div> */}
-      <video
+      <video className="my-2"
         style={{
           aspectRatio: "4/3",
           width: "100%",
@@ -387,14 +387,13 @@ export default function Videochat() {
         autoPlay
       />
       {/* <Video key={socket.id} email="" stream={localStream} muted /> */}
-      <div>other users</div>
       {users.map((user, index) => (
         // <Video key={user.id} email={user.email} stream={user.stream} />
         <div key={index}>
           <Video key={user.id} email={user.email} stream={user.stream} />
-          <h1 >
+          {/* <h1 >
             {`User ${index + 1}`}
-          </h1>
+          </h1> */}
         </div>
       ))}
     </div>

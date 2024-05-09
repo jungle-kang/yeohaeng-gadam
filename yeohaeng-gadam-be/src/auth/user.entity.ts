@@ -1,7 +1,8 @@
 // user.entity.ts
 import { Board } from 'src/boards/board.entity';
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, Unique, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, Unique, OneToMany, Index } from 'typeorm';
 
+@Index("IDX_e12875dfb3b1d92d7d7c5377e2", ["email"], { unique: true })
 @Entity()
 @Unique(['email'])
 export class User extends BaseEntity {

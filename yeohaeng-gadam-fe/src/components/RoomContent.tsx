@@ -56,8 +56,13 @@ const RoomContent = () => {
   // }, []);
 
   return (
-    <div className="flex h-screen">
-      <div className="bg-blue-300 h-full w-3/12 p-2 overflow-scroll overflow-x-hidden">
+    <div className="flex"
+      style={{
+        height: "calc(100vh - 80px)",
+      }}
+    >
+      <div className="bg-blue-300 w-3/12 h-full p-2 overflow-scroll overflow-x-hidden"
+      >
         <SearchPanel insertCard={insertCard} />
       </div>
       <div className="flex-col w-7/12 h-full">
@@ -71,16 +76,15 @@ const RoomContent = () => {
       </div>
 
       <div className="w-2/12 h-full bg-blue-600">
-        <div className="  h-15 bg-blue-50 text-center font-bold text-4xl p-4 logo-font rounded-lg mt-5 mr-5 ml-5">
+        <div className="flex justify-center h-10 bg-blue-50 text-center font-bold text-4l logo-font rounded-lg mt-5 mr-5 ml-5">
           <button
-            onClick={() => setModalOpen(true)}>설정</button>
+            onClick={() => setModalOpen(true)}>방 설정</button>
         </div>
-        <div className=" bg-green-400 h-5/6 mt-5">
-          <p>화상채팅 영역</p>
-          <Videochat/>
+        <div className="h-5/6 mt-5">
+          <Videochat />
         </div>
       </div>
-      
+
       <SettingModal isOpen={modalOpen} closeModal={() => setModalOpen(false)} />
 
     </div>

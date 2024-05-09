@@ -31,9 +31,9 @@ const Room = () => {
           }}
           initialStorage={{
             pages: new LiveMap(),
-            cards: new LiveMap(),
+            // cards: new LiveMap(),
             // shapes: new LiveMap(), ///////////
-            lines: new LiveMap(),
+            // lines: new LiveMap(),
           }}
         >
           <RoomContent />

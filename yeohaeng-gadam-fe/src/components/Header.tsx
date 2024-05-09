@@ -11,9 +11,12 @@ export default function Header() {
   const [isLogin, setIsLogin] = useState(false);
 
   useEffect(()=>{
-      const accessToken = getCookie('access_token');
+      const accessToken:string = getCookie('access_token')? getCookie('access_token'):'' ;
+      let id = '';
       // @ts-ignore
-      const id = jwtDecode(accessToken).id;
+      if(accessToken!== '') {
+          id = jwtDecode(accessToken).id;
+      }
       const meCheck = async () =>{
           try{
               const response = await fetch(`/api/auth/me/${id}`,{

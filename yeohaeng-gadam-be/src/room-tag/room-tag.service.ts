@@ -70,7 +70,7 @@ export class RoomService {
     return await this.roomRepository.find();
   }
 
-  async findRoomAndTags(): Promise<any[]> {
+  async findRoomWithTags(): Promise<any[]> {
     return await this.roomRepository.query(`
       SELECT 
           room.id AS room_id, 
@@ -102,18 +102,31 @@ export class RoomService {
       orConditions += `OR tag.tag = '${orTagArray[i]}' `;
     }
 
-    const roomIdList = await this.roomRepository.query(`
-      SELECT DISTINCT
-          room.id AS room_id
+    return await this.roomRepository.query(`
+      SELECT
+        room.id AS room_id, 
+        room.title, 
+        room.location, 
+        room.state, 
+        room.hc_attend,
+        room.hc_max, 
+        room.hd_id, 
+        DATE_FORMAT(room.start_date, '%Y-%m-%d') AS start_date,
+        DATE_FORMAT(room.end_date, '%Y-%m-%d') AS end_date,
+        JSON_ARRAYAGG(tag.tag) AS tags
       FROM 
-          yeohaeng_gadam.room
-      INNER JOIN 
-          yeohaeng_gadam.tag ON room.id = tag.room_id
+        yeohaeng_gadam.room
+      LEFT JOIN 
+        yeohaeng_gadam.tag ON room.id = tag.room_id
       WHERE 
-          tag.tag = '${orTagArray[0]}' ${orConditions};
+        room.id IN (
+            SELECT DISTINCT room_id
+            FROM yeohaeng_gadam.tag
+            WHERE tag.tag = '${orTagArray[0]}' ${orConditions}
+        )
+      GROUP BY 
+        room.id;
     `);
-
-    return roomIdList;
   }
 
   // ["tag1", "tag2"] tag1과 tag2를 모두 포함하고 있는 room 테이블의 id를 배열로 반환
@@ -162,7 +175,7 @@ export class RoomService {
               AND end_date BETWEEN '${start_date}' AND '${end_date}'
           )
       GROUP BY 
-          room.id, room.title, room.location, room.state, room.hc_attend, room.hc_max, room.hd_id, room.start_date, room.end_date
+          room.id
       ORDER BY 
           room.start_date ASC, room.state ASC, room.hc_attend ASC, room.hc_max ASC;
     `);

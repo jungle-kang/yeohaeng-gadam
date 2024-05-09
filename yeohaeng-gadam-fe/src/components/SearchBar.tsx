@@ -1,6 +1,8 @@
 import RoomCreateModal from "./RoomCreateModal";
 import React, { useRef, useEffect, useState } from "react";
 import {useNavigate} from "react-router-dom";
+import {getCookie} from "../pages/TestBoard.tsx";
+import {jwtDecode} from "jwt-decode";
 
 
 
@@ -14,7 +16,12 @@ interface SearchFormType{
 
 
 export default function SearchBar(){
-
+    const accessToken:string = getCookie('access_token')? getCookie('access_token'):'' ;
+    let id = '';
+    // @ts-ignore
+    if(accessToken!== '') {
+        id = jwtDecode(accessToken).id;
+    }
     const navigate = useNavigate();
     const[isOpen,setIsOpen]=useState(false);
     const [tags, setTags] = useState([{
@@ -62,7 +69,11 @@ export default function SearchBar(){
     };
 
     const createRoomModal = () =>{
-        setIsOpen(true);
+        if(id === null) {
+            alert('로그인이 필요합니다.')
+        }else{
+            setIsOpen(true);
+        }
     }
     const closeModal = () =>{
         setIsOpen(false);
@@ -80,6 +91,7 @@ export default function SearchBar(){
     }
 
     useEffect(() => {
+
         const fetchData = async () =>{
             await fetch('/tags.json')
                 .then(res=>res.json())

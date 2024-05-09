@@ -28,7 +28,8 @@ const TRANS_METHOD_CAR = 2;
 const DEFAULT_ZOOM_LEVEL = 7;
 
 const { kakao } = window; // 카카오 지도 사용
-
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_MAP_API // calculateTime 전용
+const SK_API_KEY = import.meta.env.VITE_SK_MAP_API // calculateTime 전용
 
 
 export default function Whiteboard() {
@@ -509,6 +510,111 @@ function Canvas({ pingEventList, setPingEventList }) {
     storage.get("pages").get(pageId).get("lines").delete(lineId);
   }, []);
 
+  // 두 지점 사이의 이동 시간 업데이트
+  const updateLineTime = useMutation(({ storage, self }, line, duration) => {
+    // const pageId = self.presence.selectedPageId;
+    // const line = storage.get("pages").get(pageId).get("lines").get(lineId);
+
+    line.update({
+      duration: duration,
+    })
+  }, []);
+
+  // 두 지점 사이의 이동 거리 계산
+  const calculateLineTime = async (line, transportMethod, card1, card2) => {
+    console.log("calculateTime(", line, transportMethod, card1, card2, ")"); ////////
+
+    let duration = 0;
+    let res = null;
+    let result = null;
+
+    switch (transportMethod) {
+      case TRANS_METHOD_RUN:
+        // 걷기: 직선거리 기반 시간 계산
+        // console.log("line distance: ",line.get("distance") ); ///////////
+        // duration = line.get("distance") / WALK_SPEED;
+
+        // 걷기: SK TMAP API
+        res = await fetch(
+          "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json&callback=result"
+          +`&startX=${card1.get("placeX")}`
+          +`&startY=${card1.get("placeY")}`
+          +`&endX=${card2.get("placeX")}`
+          +`&endY=${card2.get("placeY")}`
+          +`&startName=${card1.get("placeName")}`
+          +`&endName=${card2.get("placeName")}`,
+          {
+            method: "POST",
+            headers: { "appKey": SK_API_KEY },
+          }
+        );
+        result = await res.json();
+
+        // console.log("walk API res: ", result);
+        console.log("totalTime: ", result.features[0].properties.totalTime);
+        duration = result.features[0].properties.totalTime;
+
+        break;
+      case TRANS_METHOD_BUS:
+        // 버스: 구글 Directions API
+
+        // const res = await fetch(
+        //   `/maps/api/directions/json?destination=${shape2.get("placeName")}&origin=${shape1.get("placeName")}&departure_time=1714532400&mode=transit&key=${API_KEY}`
+        // );
+
+        console.log("Google API req: ", `/maps/api/directions/json?destination=${card2.get("placeY")},${card2.get("placeX")}&origin=${card1.get("placeY")},${card1.get("placeX")}&departure_time=1714532400&mode=transit&key={GOOGLE_API_KEY}`);
+        res = await fetch(
+          `/maps/api/directions/json`
+          + `?destination=${card2.get("placeY")},${card2.get("placeX")}`
+          + `&origin=${card1.get("placeY")},${card1.get("placeX")}`
+          + `&departure_time=1714532400&mode=transit&key=${GOOGLE_API_KEY}`
+        );
+        result = await res.json();
+        duration = result.routes.length > 0
+          ? result.routes[0].legs[0].duration.value
+          : 0;
+        console.log(result); ///////////////////////
+        break;
+      case TRANS_METHOD_CAR:
+        // 자동차: SK TMAP API
+        res = await fetch(
+          "https://apis.openapi.sk.com/tmap/routes?version=1&format=json&callback=result"
+          +`&startX=${card1.get("placeX")}`
+          +`&startY=${card1.get("placeY")}`
+          +`&endX=${card2.get("placeX")}`
+          +`&endY=${card2.get("placeY")}`,
+          {
+            method: "POST",
+            headers: { "appKey": SK_API_KEY },
+          }
+        );
+        result = await res.json();
+
+        // console.log("walk API res: ", result);
+        console.log("totalTime: ", result.features[0].properties.totalTime);
+        duration = result.features[0].properties.totalTime;
+
+        break;
+        break;
+    }
+
+    // console.log(duration); /////////////////
+
+    updateLineTime(line, duration);
+  };
+
+  //////////////////////////// 간선 동작 ////////////////////////////
+
+  const onLineBtnPointerDown = (e, cardId) => {
+    e.stopPropagation();
+    updateMyPresence({ lineStartCardId: cardId });
+    // 간선 생성 표시기 좌표 업데이트
+    setLineIndicatorEndPos({
+      x: e.clientX - canvasRef.current.getBoundingClientRect().left,
+      y: e.clientY - canvasRef.current.getBoundingClientRect().top,
+    });
+  };
+
   const onTransportBtnDown = useMutation(({ storage, self }, lineId, transportMethod) => {
     const pageId = self.presence.selectedPageId;
     const line = storage.get("pages").get(pageId).get("lines").get(lineId);
@@ -530,21 +636,9 @@ function Canvas({ pingEventList, setPingEventList }) {
         distance: dist,
       })
 
-      // calculateLineTime(line, transportMethod, shape1, shape2);
+      calculateLineTime(line, transportMethod, card1, card2);
     }
   }, []);
-
-  //////////////////////////// 간선 동작 ////////////////////////////
-
-  const onLineBtnPointerDown = (e, cardId) => {
-    e.stopPropagation();
-    updateMyPresence({ lineStartCardId: cardId });
-    // 간선 생성 표시기 좌표 업데이트
-    setLineIndicatorEndPos({
-      x: e.clientX - canvasRef.current.getBoundingClientRect().left,
-      y: e.clientY - canvasRef.current.getBoundingClientRect().top,
-    });
-  };
 
 
   //////////////////////////// 버튼 및 캔버스 동작 관련 ////////////////////////////
@@ -839,7 +933,10 @@ function Canvas({ pingEventList, setPingEventList }) {
 
 
   return (
-    <div className="relative overflow-hidden bg-gray-100 w-full h-full"
+    <div className="relative overflow-hidden bg-gray-100 w-full"
+      style={{
+        height: "calc(100% - 32px)",
+      }}
       ref={canvasRef}
       onPointerDown={onCanvasPointerDown}
       onPointerMove={onCanvasPointerMove}
@@ -948,6 +1045,7 @@ function PlaceCardContent({ id, card, onLineBtnPointerDown }) {
 }
 
 function MemoCardContent({ id, card, isSelected, onCardChange }) {
+  const textLines = card.memoText.split('\n').map((line) => (<div>{line}</div>));
   return (
     <>
       {
@@ -956,7 +1054,7 @@ function MemoCardContent({ id, card, isSelected, onCardChange }) {
             value={card.memoText}
             onChange={(e) => onCardChange(e, id)}
           />
-          : card.memoText
+          : textLines
       }
     </>
   );
@@ -1329,4 +1427,4 @@ function formatDur(dur) {
 const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 
 // 줌 배율 목록
-const ZOOMS = [0.2, 0.25, 0.33, 0.4, 0.5, 0.65, 0.8, 1];
+const ZOOMS = [0.2, 0.25, 0.33, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.55];

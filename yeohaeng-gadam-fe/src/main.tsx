@@ -12,12 +12,16 @@ import GoogleOauth from './login/GoogleLogin.tsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import GoogleLoginButton from './login/jwtgoogle.tsx';
 import KakaoLogin from './login/KakaoLogin.tsx';
-import Mypage from "./components/Mypage.jsx"
+import Mypage from "./pages/Mypage.tsx"
 import SettingModal from './components/SettingModal.jsx';
 import BoardList from './pages/TestBoard.tsx';
 import { CookiesProvider } from 'react-cookie';
 import Videochat from './videochat-proto/Videochat.jsx';
+<<<<<<< HEAD
 import Search from './pages/Search.tsx';
+=======
+import Search from "./pages/Search.tsx";
+>>>>>>> ee1ebecb774be6de419405ec1d8663dac158288b
 
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;

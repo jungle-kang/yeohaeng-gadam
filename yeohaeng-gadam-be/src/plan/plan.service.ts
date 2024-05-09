@@ -43,32 +43,46 @@ export class PlanService {
       emptyPlan.plans = plans;
       await this.planRepository.save(emptyPlan); // 변경 사항 저장
       return emptyPlan;
-    } else {
-      // 해당 조건을 만족하는 행이 없다면 새로운 행을 생성 - 새로운 행 생성하지 않고 그자리에서 업데이트 해도 될듯
-      const newPlan = this.planRepository.create({
-        day: day,
-        room_id: { id: roomId },
-        plans: plans,
-      });
-      await this.planRepository.save(newPlan);
-      return newPlan;
+      // } else { 
+      //   // 해당 조건을 만족하는 행이 없다면 새로운 행을 생성 - 새로운 행 생성하지 않고 그자리에서 업데이트 해도 될듯
+      //   // const newPlan = this.planRepository.create({
+      //   //   day: day,
+      //   //   room_id: { id: roomId },
+      //   //   plans: plans,
+      //   // });
+      //   emptyPlan.plans = plans;
+      //   await this.planRepository.save(emptyPlan);
+      //   return emptyPlan;
+      // }
     }
   }
 
+  async getPlan(day: number, roomId: string) {
+    const plan = await this.planRepository
+      .createQueryBuilder("plan")
+      .where("plan.room_id = :roomId AND plan.day = :day", { roomId, day })
+      .getMany();
 
-  // findAll() {
-  //   return `This action returns all plan`;
-  // }
+    return plan;
+  }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} plan`;
-  // }
 
-  // update(id: number, updatePlanDto: UpdatePlanDto) {
-  //   return `This action updates a #${id} plan`;
-  // }
+  async updatePlan(day: number, roomId: string, plans: string) {
+    // 1. 해당 날짜와 방 번호에 대한 계획을 찾음
+    const existingPlan = await this.planRepository
+      .createQueryBuilder("plan")
+      .where("plan.room_id = :roomId AND plan.day = :day", { roomId, day })
+      .getOne();
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} plan`;
-  // }
+    // 2. 찾은 계획에 대해 plans 필드 업데이트
+    if (existingPlan) {
+      existingPlan.plans = plans;
+      await this.planRepository.save(existingPlan); // 변경 사항 저장
+      return existingPlan;
+    } else {
+      throw new Error("계획을 찾을 수 없습니다.");
+    }
+  }
 }
+
+

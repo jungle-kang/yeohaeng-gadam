@@ -1045,6 +1045,7 @@ function PlaceCardContent({ id, card, onLineBtnPointerDown }) {
 }
 
 function MemoCardContent({ id, card, isSelected, onCardChange }) {
+  const textLines = card.memoText.split('\n').map((line) => (<div>{line}</div>));
   return (
     <>
       {
@@ -1053,7 +1054,7 @@ function MemoCardContent({ id, card, isSelected, onCardChange }) {
             value={card.memoText}
             onChange={(e) => onCardChange(e, id)}
           />
-          : card.memoText
+          : textLines
       }
     </>
   );
@@ -1426,4 +1427,4 @@ function formatDur(dur) {
 const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 
 // 줌 배율 목록
-const ZOOMS = [0.2, 0.25, 0.33, 0.4, 0.5, 0.65, 0.8, 1];
+const ZOOMS = [0.2, 0.25, 0.33, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.55];

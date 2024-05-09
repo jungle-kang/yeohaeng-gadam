@@ -44,23 +44,26 @@ const SettingModal = ({ isOpen, closeModal }) => {
   };
 
   return (
-    <div className={'modal-container'} ref={modalBackground} onClick={e => {
-      if (e.target === modalBackground.current) {
-        closeModal();
-      }
-    }}>
-      <div className={'modal-content rounded-lg'}>
+    <div className={'modal-container'}
+      style={{ position: "absolute", zIndex: 20000 }}
+      ref={modalBackground}
+      onClick={e => {
+        if (e.target === modalBackground.current) {
+          closeModal();
+        }
+      }}>
+      <div className='modal-content rounded-lg'>
         <div>
           <div className='text-center mt-3'>
             <button onClick={copyToClipboard}>링크 복사🔗</button>
           </div>
           <div className="text-center ">
-            <button onClick={()=>closeModal()} className="bg-slate-300 text-center p-2 mt-10 rounded-lg">메인화면</button>
-            <br/>
+            <button onClick={() => closeModal()} className="bg-slate-300 text-center p-2 mt-10 rounded-lg">메인화면</button>
+            <br />
             <button className="bg-slate-300 text-center p-2 mt-10 rounded-lg">확정하기</button>
-            <br/>            
-            <button onClick={()=>navigate("/")} className="bg-slate-300 text-center p-2 mt-10 rounded-lg">방나가기</button>           
-          </div>         
+            <br />
+            <button onClick={() => navigate("/")} className="bg-slate-300 text-center p-2 mt-10 rounded-lg">방나가기</button>
+          </div>
         </div>
         <div>
           <div className='ml-96 mb-96 top-20'></div>

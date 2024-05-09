@@ -8,12 +8,12 @@ import { UpdatePlanDto } from './dto/update-plan.dto';
 export class PlanController {
   constructor(private readonly planService: PlanService) { }
 
-  @Post('/createDay/:roomId')
+  @Post('/:roomId')
   async createDay(@Param('roomId') roomId: string) {
     return await this.planService.createDay(roomId);
   }
 
-  @Post('/createPlan/:roomId/:day')
+  @Post('/:roomId/:day')
   async createPlan(
     @Param('roomId') roomId: string,
     @Param('day') day: number,
@@ -21,20 +21,25 @@ export class PlanController {
     return this.planService.createPlan(day, roomId, createPlanDto.plans);
   }
 
-  // @Get('/:day/:roomId')
-  // async findbyDate() {
-  //   return this.planService.findAll();
-  // }
+  @Get('/:roomId/:day')
+  async getPlan(
+    @Param('roomId') roomId: string,
+    @Param('day') day: number,
+  ) {
+    return this.planService.getPlan(day, roomId);
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.planService.findOne(+id);
-  // }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updatePlanDto: UpdatePlanDto) {
-  //   return this.planService.update(+id, updatePlanDto);
-  // }
+
+  @Patch('/:roomId/:day')
+  async updatePlan(
+    @Param('roomId') roomId: string,
+    @Param('day') day: number,
+    @Body() updatePlanDto: { plans: string }
+  ) {
+    return this.planService.updatePlan(day, roomId, updatePlanDto.plans);
+  }
+
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

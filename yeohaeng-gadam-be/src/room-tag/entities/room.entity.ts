@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Tag } from "./tag.entity";
 import { Entry } from "../../entry/entities/entry.entity";
+import { Plan } from "src/plan/entities/plan.entity";
 
 @Entity("room", { schema: "yeohaeng_gadam" })
 export class Room {
@@ -75,4 +76,7 @@ export class Room {
 
   @OneToMany(() => Tag, (tag) => tag.room)
   tags: Tag[];
+
+  @OneToMany(() => Plan, (plan) => plan.room_id)
+  plans: Plan[];
 }

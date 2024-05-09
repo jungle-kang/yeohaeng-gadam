@@ -41,12 +41,13 @@ const RoomList = ()=>{
             tags:''
         };
         searchParams.forEach((value, key) => {
-            if(key === 'tags'){
-                value = value.replace(',','\",\"');
-                searchParamsObject[key] = `["${value}"]`;
-            }else{
-                searchParamsObject[key] = value;
-            }
+            searchParamsObject[key] = value;
+            // if(key === 'tags'){
+            //     value = value.replace(',','\",\"');
+            //     searchParamsObject[key] = `["${value}"]`;
+            // }else{
+            //     searchParamsObject[key] = value;
+            // }
         });
         // Convert to query string
         const queryString = searchFormToQueryString(searchParamsObject);

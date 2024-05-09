@@ -407,11 +407,8 @@ export default function Videochat() {
         autoPlay
       />
       {/* <Video key={socket.id} email="" stream={localStream} muted /> */}
-<<<<<<< HEAD
       {/* <button onClick={toggleVideo}>비디오 켜기/끄기</button> */}
       <div>other users</div>
-=======
->>>>>>> ee1ebecb774be6de419405ec1d8663dac158288b
       {users.map((user, index) => (
         // <Video key={user.id} email={user.email} stream={user.stream} />
         <div key={index}>

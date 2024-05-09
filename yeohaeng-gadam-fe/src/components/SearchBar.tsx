@@ -11,6 +11,7 @@ interface SearchFormType{
     location:string,
     start_date:string,
     end_date:string,
+    tags:string
     [key: string]: string;
 }
 
@@ -32,7 +33,8 @@ export default function SearchBar(){
     const[searchForm,setSearchForm]=useState({
         location:'',
         start_date:'',
-        end_date:''
+        end_date:'',
+        tags:''
     });
     const [selectedItem, setSelectedItem] = useState<string>('2');
     const [form,setForm]=useState({
@@ -79,15 +81,27 @@ export default function SearchBar(){
         setIsOpen(false);
     }
     const handleSearch = async ()=>{
+        // await setSearchForm(prevForm=>({
+        //     ...prevForm,
+        //     tags: activeTags.join(',')
+        // }))
+        // console.log('searchForm:',searchForm);
         // console.log(searchFormToQueryString(searchForm))
-        const searchFormQuery = searchFormToQueryString(searchForm);
+        // const searchFormQuery = searchFormToQueryString(searchForm);
         // const response = await fetch(`/api/room/?${searchFormQuery}`,{
         //     method:'GET',
         //     credentials: 'include'
         // })
         // const result = await response.json();
         // console.log(result);
-        navigate(`/search?${searchFormQuery}`)
+        // navigate(`/search?${searchFormQuery}`)
+                const tagsString = activeTags.join(',');
+            const searchParams = new URLSearchParams({
+                ...searchForm,
+                tags: tagsString
+            }).toString();
+
+            navigate(`/search?${searchParams}`);
     }
 
     useEffect(() => {

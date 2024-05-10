@@ -36,22 +36,22 @@ export class AuthController {
   async googleAuthRedirect(@Req() req, @Res() res) {
     console.log('GET oauth2/redirect/google - googleAuthRedirect 실행');
     const token = await this.authService.googleLogin(req);
-    // res.cookie('access_token', token.access_token, 
-    //   {
-    //     // domain: "http://ec2-13-125-5-177.ap-northeast-2.compute.amazonaws.com:3000",
-    //     // domain: "http://13.125.5.177:3000",
-    //     // domain: "http://13.125.5.177:5173",
-    //     // path: "/",
-    //     // sameSite: "lax",
-    //   }
-    // );
+    res.cookie('access_token', token.access_token, 
+      {
+        // domain: "http://ec2-13-125-5-177.ap-northeast-2.compute.amazonaws.com:3000",
+        // domain: "http://13.125.5.177:3000",
+        // domain: "http://13.125.5.177:5173",
+        // path: "/",
+        // sameSite: "lax",
+      }
+    );
+    
     // res.redirect("http://ec2-13-125-5-177.ap-northeast-2.compute.amazonaws.com:3000");
     // res.redirect("http://13.125.5.177:3000");
     // res.redirect("http://13.125.5.177:5173");
+    res.redirect(FRONTEND_URL);
 
     // res.redirect("새 페이지");
-
-    return (token.access_token);
   }
 
   @Get('/me/:id')

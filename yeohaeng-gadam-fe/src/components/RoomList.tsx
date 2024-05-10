@@ -4,6 +4,7 @@ interface SearchFormType{
     location:string,
     start_date:string,
     end_date:string,
+    tags:string,
     [key: string]: string;
 }
 const RoomList = ()=>{
@@ -36,17 +37,22 @@ const RoomList = ()=>{
         const searchParamsObject: SearchFormType = {
             location:'',
             start_date:'',
-            end_date:''
+            end_date:'',
+            tags:''
         };
         searchParams.forEach((value, key) => {
             searchParamsObject[key] = value;
+            // if(key === 'tags'){
+            //     value = value.replace(',','\",\"');
+            //     searchParamsObject[key] = `["${value}"]`;
+            // }else{
+            //     searchParamsObject[key] = value;
+            // }
         });
-
         // Convert to query string
         const queryString = searchFormToQueryString(searchParamsObject);
-
         // Log the queryString
-        console.log(queryString);
+        // console.log(queryString);
 
         const fetchData = async () =>{
             const response = await fetch(`/api/room/?${queryString}`,{

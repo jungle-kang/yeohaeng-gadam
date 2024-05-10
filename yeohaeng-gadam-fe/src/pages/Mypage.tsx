@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { getCookie } from "./TestBoard.tsx";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import Room from "../components/Roomcomponent.tsx";
+// import Room from "../components/Roomcomponent.tsx";
+import RoomCards from "../components/RoomCards.tsx";
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -31,17 +32,7 @@ const Mypage = () => {
   }, []);
 
   return (
-    <div className="mt-5">
-      {(Array.isArray(post) && post.length === 0) ? (
-        <div className="mt-10">글이 없습니다.</div>
-      ) : (
-        <div>
-          {post.map((room) => (
-            <Room key={room.room_id} {...room} />
-          ))}
-        </div>
-      )}
-    </div>
+    <RoomCards post={post} />
   );
 }
 

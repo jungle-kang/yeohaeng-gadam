@@ -32,7 +32,7 @@ const AUDIO_SETTINGS = {
   autoGainControl: true,
 };
 
-export default function Videochat() {
+export default function Videochat({ roomId }) {
   const localVideoRef = useRef(null); // 내 영상 표시할 video element
   let localStream = null;
   // const [localStream, setLocalStream] = useState(null); // 내 영상
@@ -46,22 +46,18 @@ export default function Videochat() {
   const [savedSocketId, setSavedSocketId] = useState(null);
   // const socket = useSocket();
 
-  const getLocalStream = async () => {
+  const setLocalStream = async () => {
     if (localStream) {
       console.log("setLocalStream(): localStream already set");
       return;
     }
 
     localStream = await navigator.mediaDevices.getUserMedia({
-      // const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: AUDIO_SETTINGS,
     });
 
-    // setLocalStream(stream);
-
     if (localVideoRef.current) {
-      // localVideoRef.current.srcObject = stream;
       localVideoRef.current.srcObject = localStream;
       console.log("setLocalStream(): success");
     } else {
@@ -158,7 +154,7 @@ export default function Videochat() {
       return;
     }
 
-    await getLocalStream();
+    await setLocalStream();
 
     console.log("onConnectHandler(): start");
 
@@ -166,7 +162,7 @@ export default function Videochat() {
       setSavedSocketId(socket.id); ///////////
 
       socket.emit('join_room', {
-        room: 'test_room',
+        room: `yhgd-${roomId}`,
         email: 'sample@naver.com',
       });
       console.log("onConnectHandler(): join_room emitted", `(socket id: ${socket.id})`); ////////
@@ -330,19 +326,6 @@ export default function Videochat() {
   socket.on("get_candidate", onGetCandidateHandler);
   socket.on("user_exit", onUserExitHandler);
 
-  // const toggleVideo = () => {
-  // // function toggleVideo() {
-  //   console.log("toggleVideo(): start");
-  //   console.log("localStream: ", localStream);
-  //   if (localStream) {
-  //     console.log("toggleVideo(): start");
-  //     localStream.getVideoTracks().forEach(track => {
-  //       console.log("toggleVideo(): " + track.enabled);
-  //       track.enabled = !track.enabled; // 현재 상태의 반대로 설정
-  //     });
-  //   }
-  // };
-
 
 
   const Video = ({ email, stream, muted = false }) => {
@@ -380,13 +363,14 @@ export default function Videochat() {
     );
   };
 
-
-
-
   useEffect(() => {
     return (() => {
       if (socket) {
         socket.disconnect();
+      }
+
+      if (localStream) {
+        localStream.getTracks().forEach((track) => {track.stop()});
       }
     })
   }, [])
@@ -407,8 +391,6 @@ export default function Videochat() {
         autoPlay
       />
       {/* <Video key={socket.id} email="" stream={localStream} muted /> */}
-      {/* <button onClick={toggleVideo}>비디오 켜기/끄기</button> */}
-      <div>other users</div>
       {users.map((user, index) => (
         // <Video key={user.id} email={user.email} stream={user.stream} />
         <div key={index}>

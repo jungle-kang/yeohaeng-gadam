@@ -17,9 +17,11 @@ import { authService } from './auth.service';
 import { GoogleRequest } from './dto/auth.googleuser.dto';
 import { GoogleAuthGuard } from './auth.guard';
 
+const FRONTEND_URL = process.env.FRONTEND_URL;
+
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: authService) {}
+  constructor(private readonly authService: authService) { }
 
   /* google login */
   @Get('google')
@@ -34,8 +36,22 @@ export class AuthController {
   async googleAuthRedirect(@Req() req, @Res() res) {
     console.log('GET oauth2/redirect/google - googleAuthRedirect 실행');
     const token = await this.authService.googleLogin(req);
-    res.cookie('access_token', token.access_token, {});
-    res.redirect('http://localhost:5173');
+    res.cookie('access_token', token.access_token, 
+      {
+        // domain: "http://ec2-13-125-5-177.ap-northeast-2.compute.amazonaws.com:3000",
+        // domain: "http://13.125.5.177:3000",
+        // domain: "http://13.125.5.177:5173",
+        // path: "/",
+        // sameSite: "lax",
+      }
+    );
+    
+    // res.redirect("http://ec2-13-125-5-177.ap-northeast-2.compute.amazonaws.com:3000");
+    // res.redirect("http://13.125.5.177:3000");
+    // res.redirect("http://13.125.5.177:5173");
+    res.redirect(FRONTEND_URL);
+
+    // res.redirect("새 페이지");
   }
 
   @Get('/me/:id')

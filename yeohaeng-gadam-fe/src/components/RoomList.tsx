@@ -52,7 +52,7 @@ const RoomList = ()=>{
         // Convert to query string
         const queryString = searchFormToQueryString(searchParamsObject);
         // Log the queryString
-        console.log(queryString);
+        // console.log(queryString);
 
         const fetchData = async () =>{
             const response = await fetch(`/api/room/?${queryString}`,{

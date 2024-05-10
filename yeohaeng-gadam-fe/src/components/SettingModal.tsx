@@ -7,6 +7,8 @@ import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
+
 const SettingModal = ({ isOpen, closeModal }) => {
   const modalBackground = useRef();
   const navigate = useNavigate();
@@ -14,7 +16,7 @@ const SettingModal = ({ isOpen, closeModal }) => {
   if (!isOpen) return null;
 
   const { roomId } = useParams(); // URL 파라미터에서 roomId 추출
-  const url = `http://localhost:5173/${roomId}`;
+  const url = `${FRONTEND_URL}${roomId}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(url)

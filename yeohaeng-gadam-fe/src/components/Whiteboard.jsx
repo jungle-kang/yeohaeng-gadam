@@ -537,12 +537,12 @@ function Canvas({ pingEventList, setPingEventList }) {
         // 걷기: SK TMAP API
         res = await fetch(
           "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json&callback=result"
-          +`&startX=${card1.get("placeX")}`
-          +`&startY=${card1.get("placeY")}`
-          +`&endX=${card2.get("placeX")}`
-          +`&endY=${card2.get("placeY")}`
-          +`&startName=${card1.get("placeName")}`
-          +`&endName=${card2.get("placeName")}`,
+          + `&startX=${card1.get("placeX")}`
+          + `&startY=${card1.get("placeY")}`
+          + `&endX=${card2.get("placeX")}`
+          + `&endY=${card2.get("placeY")}`
+          + `&startName=${card1.get("placeName")}`
+          + `&endName=${card2.get("placeName")}`,
           {
             method: "POST",
             headers: { "appKey": SK_API_KEY },
@@ -579,10 +579,10 @@ function Canvas({ pingEventList, setPingEventList }) {
         // 자동차: SK TMAP API
         res = await fetch(
           "https://apis.openapi.sk.com/tmap/routes?version=1&format=json&callback=result"
-          +`&startX=${card1.get("placeX")}`
-          +`&startY=${card1.get("placeY")}`
-          +`&endX=${card2.get("placeX")}`
-          +`&endY=${card2.get("placeY")}`,
+          + `&startX=${card1.get("placeX")}`
+          + `&startY=${card1.get("placeY")}`
+          + `&endX=${card2.get("placeX")}`
+          + `&endY=${card2.get("placeY")}`,
           {
             method: "POST",
             headers: { "appKey": SK_API_KEY },
@@ -1045,7 +1045,9 @@ function PlaceCardContent({ id, card, onLineBtnPointerDown }) {
 }
 
 function MemoCardContent({ id, card, isSelected, onCardChange }) {
-  const textLines = card.memoText.split('\n').map((line) => (<div>{line}</div>));
+  const textLines = card.memoText.split('\n').map((line, i) => (
+    <div key={i}>{line}</div>
+  ));
   return (
     <>
       {
@@ -1077,6 +1079,10 @@ function MapCardContent({ id, card }) {
   const lines = useStorage((root) => root.pages.get(selectedPageId).lines);
 
   useEffect(() => {
+    if (!kakao) {
+      console.log("no kakao detected");
+      return;
+    }
     const options = {
       center: new kakao.maps.LatLng(33.450701, 126.570667),
       level: 3,

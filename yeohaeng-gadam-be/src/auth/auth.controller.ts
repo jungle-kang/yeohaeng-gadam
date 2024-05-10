@@ -1,25 +1,20 @@
 import {
-  BadRequestException,
-  Body,
   Controller,
   Get,
   HttpStatus,
   Param,
-  Post,
   Req,
   Res,
-  Response,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { authService } from './auth.service';
-import { GoogleRequest } from './dto/auth.googleuser.dto';
-import { GoogleAuthGuard } from './auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('oAuth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: authService) {}
+  constructor(private readonly authService: authService) { }
 
   /* google login */
   @Get('google')
@@ -35,7 +30,7 @@ export class AuthController {
     console.log('GET oauth2/redirect/google - googleAuthRedirect 실행');
     const token = await this.authService.googleLogin(req);
     res.cookie('access_token', token.access_token, {});
-    res.redirect('http://localhost:5173');
+    res.redirect(process.env.FRONTEND_URL);
   }
 
   @Get('/me/:id')

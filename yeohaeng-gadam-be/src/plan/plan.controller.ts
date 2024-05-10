@@ -46,8 +46,8 @@ export class PlanController {
 
   @Patch('/:roomId/:day')
   @ApiOperation({
-    summary: '계획 조회',
-    description: ' roomId와 day에 해당하는 계획 생성',
+    summary: '계획 수정',
+    description: ' roomId와 day에 해당하는 계획 수정',
   })
   async updatePlan(
     @Param('roomId') roomId: string,

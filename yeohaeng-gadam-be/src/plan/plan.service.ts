@@ -66,6 +66,16 @@ export class PlanService {
     return plan;
   }
 
+  async getPlansByRoomId(roomId: string) {
+    const plans = await this.planRepository
+      .createQueryBuilder("plan")
+      .where("plan.room_id = :roomId", { roomId })
+      .getMany();
+
+    return plans;
+  }
+
+
 
   async updatePlan(day: number, roomId: string, plans: string) {
     // 1. 해당 날짜와 방 번호에 대한 계획을 찾음

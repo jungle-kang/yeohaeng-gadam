@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { setupSwagger } from './util/swagger';
-import * as dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
 import { WebsocketAdapter } from './chat/websocket-adapter';
 async function bootstrap() {

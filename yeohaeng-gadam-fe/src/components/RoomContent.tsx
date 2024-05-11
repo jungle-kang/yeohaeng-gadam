@@ -18,6 +18,7 @@ const RoomContent = ({ roomId }) => {
   // const {roomId} = useParams<{roomId:string}>();
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
+  // const [myColor, setMyColor] = useState(null);
 
   // liveblocks에 새로운 shape를 추가
   const insertCard = useMutation(({ storage, self }, data) => {
@@ -40,21 +41,6 @@ const RoomContent = ({ roomId }) => {
     storage.get("pages").get(pageId).get("cards").set(cardId, card);
     // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
   }, []);
-
-  // const insertCard = useMutation(({ storage, self, setMyPresence }, data) => {
-  //   const shapeId = nanoid();
-  //   const shape = new LiveObject({
-  //     x: 300,
-  //     y: 300,
-  //     fill: "rgb(147, 197, 253)",
-  //     text: data.place_name,
-  //     // placeName: data.place_name,
-  //     // placeX: data.x,
-  //     // placeY: data.y,
-  //   });
-  //   storage.get("pages").set(shapeId, shape);
-  //   setMyPresence({ selectedShape: shapeId }, { addToHistory: true });
-  // }, []);
 
   return (
       <div>

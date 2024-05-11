@@ -32,7 +32,7 @@ export class PlanController {
 
   @Get('/:roomId/:day')
   @ApiOperation({
-    summary: '계획 조회',
+    summary: 'roomId와 day에 해당하는 계획 조회',
     description: ' roomId와 day에 해당하는 계획 조회',
   })
   async getPlan(
@@ -40,6 +40,17 @@ export class PlanController {
     @Param('day') day: number,
   ) {
     return this.planService.getPlan(day, roomId);
+  }
+
+  @Get('/:roomId')
+  @ApiOperation({
+    summary: 'roomId에 해당하는 계획 조회',
+    description: 'roomId에 해당하는 모든 계획을 조회합니다.',
+  })
+  async getPlansByRoomId(
+    @Param('roomId') roomId: string,
+  ) {
+    return this.planService.getPlansByRoomId(roomId);
   }
 
 

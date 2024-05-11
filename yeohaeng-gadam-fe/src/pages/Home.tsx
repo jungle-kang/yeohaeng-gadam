@@ -1,3 +1,4 @@
+import { ToastContainer, toast } from "react-toastify";
 import SearchBar from "../components/SearchBar.tsx";
 import RoomList from "../components/RoomList.tsx";
 import PopularLocation from "../components/PopularLocation.tsx";

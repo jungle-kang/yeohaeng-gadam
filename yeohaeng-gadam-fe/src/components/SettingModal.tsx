@@ -6,10 +6,12 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { getCookie } from "../pages/TestBoard.tsx";
+import { jwtDecode } from "jwt-decode";
 
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
 
-const SettingModal = ({ isOpen, closeModal }) => {
+const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
   const modalBackground = useRef();
   const navigate = useNavigate();
 
@@ -17,6 +19,61 @@ const SettingModal = ({ isOpen, closeModal }) => {
 
   const { roomId } = useParams(); // URL 파라미터에서 roomId 추출
   const url = `${FRONTEND_URL}${roomId}`;
+
+  const handleRoomExit = async () => {
+    const accessToken = getCookie('access_token');
+    if (!accessToken) {
+      toast.error('로그인이 필요합니다.');
+      navigate('/');
+      return;
+    }
+    const userId = jwtDecode(accessToken).id;
+
+    try {
+      const response = await fetch(`/api/room/exit?room_id=${roomId}&user_id=${userId}`, {
+        method: 'PATCH',
+        credentials: 'include'
+      });
+      const result = await response.json();
+      if (response.ok) {
+        toast.success(result.statusMsg);
+        navigate('/'); // Redirect to home after exit
+      } else {
+        toast.error(result.statusMsg);
+      }
+    } catch (error) {
+      console.error('Exit failed:', error);
+      toast.error('방 나가기 실패');
+    }
+    onExitSucess();
+    closeModal();
+  };
+
+  // <ToastContainer
+  // position="top-center"
+  // autoClose={1500}
+  // hideProgressBar={false}
+  // newestOnTop={false}
+  // closeOnClick
+  // rtl={false}
+  // pauseOnFocusLoss
+  // draggable
+  // pauseOnHover
+  // theme="light"
+  // // transition="bounce"
+// />
+
+// toast.success('방에서 성공적으로 나왔습니다!', {
+//   position: "top-center",
+//   autoClose: 1500,
+//   hideProgressBar: false,
+//   closeOnClick: true,
+//   pauseOnHover: true,
+//   draggable: true,
+//   theme: "light",
+//   transition: "bounce"
+// });
+
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(url)
@@ -64,7 +121,7 @@ const SettingModal = ({ isOpen, closeModal }) => {
             <br />
             <button className="bg-slate-300 text-center p-2 mt-10 rounded-lg">확정하기</button>
             <br />
-            <button onClick={() => navigate("/")} className="bg-slate-300 text-center p-2 mt-10 rounded-lg">방나가기</button>
+            <button onClick={() => handleRoomExit()} className="bg-slate-300 text-center p-2 mt-10 rounded-lg">방나가기</button>
           </div>
         </div>
         <div>

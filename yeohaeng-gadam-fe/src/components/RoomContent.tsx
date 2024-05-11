@@ -17,6 +17,7 @@ const RoomContent = ({ roomId }) => {
   // const {roomId} = useParams<{roomId:string}>();
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
+  const [myColor, setMyColor] = useState(null);
 
   // liveblocks에 새로운 shape를 추가
   const insertCard = useMutation(({ storage, self }, data) => {
@@ -40,21 +41,6 @@ const RoomContent = ({ roomId }) => {
     // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
   }, []);
 
-  // const insertCard = useMutation(({ storage, self, setMyPresence }, data) => {
-  //   const shapeId = nanoid();
-  //   const shape = new LiveObject({
-  //     x: 300,
-  //     y: 300,
-  //     fill: "rgb(147, 197, 253)",
-  //     text: data.place_name,
-  //     // placeName: data.place_name,
-  //     // placeX: data.x,
-  //     // placeY: data.y,
-  //   });
-  //   storage.get("pages").set(shapeId, shape);
-  //   setMyPresence({ selectedShape: shapeId }, { addToHistory: true });
-  // }, []);
-
   return (
     <div className="flex"
       style={{
@@ -66,7 +52,7 @@ const RoomContent = ({ roomId }) => {
         <SearchPanel insertCard={insertCard} />
       </div>
       <div className="flex-col w-7/12 h-full">
-        <Whiteboard />
+        <Whiteboard setMyColor={setMyColor} />
         {/* <div 
       className="  bg-slate-300"
       style={{height: "25%", width: "100%", float: "left"}}
@@ -81,6 +67,12 @@ const RoomContent = ({ roomId }) => {
             onClick={() => setModalOpen(true)}>방 설정</button>
         </div>
         <div className="h-5/6 mt-5">
+          {/* {useSelf()} */}
+          {/* {
+            useSelf()
+              ? <Videochat roomId={roomId} myConnectionId={useSelf((me) => me.connectionId)} />
+              : <div>No Self</div>
+          } */}
           <Videochat roomId={roomId} />
         </div>
       </div>

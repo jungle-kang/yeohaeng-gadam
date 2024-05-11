@@ -305,6 +305,7 @@ function Canvas({ pingEventList, setPingEventList }) {
         color={COLORS[connectionId % COLORS.length]}
         x={x}
         y={y}
+        id={connectionId}
       />
     );
   })
@@ -1000,6 +1001,8 @@ function Canvas({ pingEventList, setPingEventList }) {
       <div>selectedCardId: {selectedCardId}</div>
       <div>lineStartCardId: {lineStartCardId}</div>
       <div>Zoom Level: {ZOOMS[canvasZoomLevel]}</div>
+      <div>My ID: {useSelf().connectionId}</div>
+      <div>Others ID: {others.map(({ connectionId }) => connectionId)}</div>
     </div>
   );
 }

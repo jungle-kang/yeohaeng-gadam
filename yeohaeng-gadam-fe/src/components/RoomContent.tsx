@@ -17,7 +17,7 @@ const RoomContent = ({ roomId }) => {
   // const {roomId} = useParams<{roomId:string}>();
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
-  const [myColor, setMyColor] = useState(null);
+  // const [myColor, setMyColor] = useState(null);
 
   // liveblocks에 새로운 shape를 추가
   const insertCard = useMutation(({ storage, self }, data) => {
@@ -52,7 +52,7 @@ const RoomContent = ({ roomId }) => {
         <SearchPanel insertCard={insertCard} />
       </div>
       <div className="flex-col w-7/12 h-full">
-        <Whiteboard setMyColor={setMyColor} />
+        <Whiteboard />
         {/* <div 
       className="  bg-slate-300"
       style={{height: "25%", width: "100%", float: "left"}}
@@ -67,12 +67,6 @@ const RoomContent = ({ roomId }) => {
             onClick={() => setModalOpen(true)}>방 설정</button>
         </div>
         <div className="h-5/6 mt-5">
-          {/* {useSelf()} */}
-          {/* {
-            useSelf()
-              ? <Videochat roomId={roomId} myConnectionId={useSelf((me) => me.connectionId)} />
-              : <div>No Self</div>
-          } */}
           <Videochat roomId={roomId} />
         </div>
       </div>

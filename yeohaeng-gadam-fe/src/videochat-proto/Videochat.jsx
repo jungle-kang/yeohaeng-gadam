@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 // import { SocketProvider, useSocket } from './SocketContext';
-import { useSelf } from "/liveblocks.config";
+// import { useSelf } from "/liveblocks.config";
 
 // connection settings
 const SIGNALING_SERVER_URL = import.meta.env.VITE_SIGNALING_SERVER_URL;
@@ -379,7 +379,7 @@ export default function Videochat({ roomId }) {
   return (
     <div className="mx-2">
       {/* <div>{savedSocketId}</div> */}
-      <div>My ID: {useSelf((me) => me.connectionId)}</div>
+      {/* <div>My ID: {useSelf((me) => me.connectionId)}</div> */}
       <video className="my-2"
         style={{
           aspectRatio: "4/3",

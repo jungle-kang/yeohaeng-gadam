@@ -51,23 +51,38 @@ export class RoomController {
 
   @Get('/tag')
   @ApiOperation({ summary: '태그들 중 하나라도 포함하고 있는 방 조회', description: '[\"tag1\", \"tag2\", \"tag3\"] ... 형식으로 데이터 요청 시 tag1 또는 tag2 또는 tag3를 포함하고 있는 room_id 조회' })
-  @ApiQuery({ name: 'tags', description: '["tag1", "tag2", "tag3"]<br>**태그는 최소 1개 이상이어야 합니다.**', required: true })
+  @ApiQuery({ name: 'tags', description: '["tag1", "tag2", "tag3"]<br>**데이터 요청 시 반드시 [] 형식이어야 합니다. []과 [""]은 다릅니다.**', required: true })
   async findRoomWithOrTags(@Query('tags') tags: string): Promise<Room[]> {
-    // console.log('컨트롤러/tags >', tags);
-    const roomTagsList = await this.roomService.findRoomWithOrTags(tags);
+    console.log('room-tag.controller > findRoomWithOrTags > tags :', tags);
+    console.log('room-tag.controller > findRoomWithOrTags > tags.length :', tags.length);
     
-    return Object.assign({
-      data: roomTagsList,
-      statusCode: HttpStatus.OK,
-      statusMsg: `데이터 조회 성공`
-    });
+    const orTagArray = JSON.parse(tags);
+
+    console.log('room-tag.controller > findRoomWithOrTags > orTagArray :', orTagArray);
+    console.log('room-tag.controller > findRoomWithOrTags > orTagArray.length :', orTagArray.length);
+
+    if (orTagArray.length === 0) {
+      return Object.assign({
+        data: null,
+        statusCode: HttpStatus.BAD_REQUEST,
+        statusMsg: `데이터 조회 실패`
+      });
+    } else {
+      const roomTagsList = await this.roomService.findRoomWithOrTags(orTagArray);
+      
+      return Object.assign({
+        data: roomTagsList,
+        statusCode: HttpStatus.OK,
+        statusMsg: `데이터 조회 성공`
+      });
+    }
   }
 
   @Get('/date')
   @ApiOperation({ summary: '여행 시작 날짜부터 여행 종료 날짜 사이의 방 조회', description: 'room 테이블의 start_date, end_date 사이의 방 조회 후 tag 테이블과 join하여 전체 조회' })
-  @ApiQuery({ name: 'start_date', description: '여행 시작 날짜', required: true })
-  @ApiQuery({ name: 'end_date', description: '여행 종료 날짜', required: true })
-  async findRoomByDate(@Query('start_date') start_date: string, @Query('end_date') end_date: string): Promise<any[]> {
+  @ApiQuery({ name: 'start_date', description: '여행 시작 날짜', required: false })
+  @ApiQuery({ name: 'end_date', description: '여행 종료 날짜', required: false })
+  async findRoomByDate(@Query('start_date') start_date?: string, @Query('end_date') end_date?: string): Promise<any[]> {
     const roomTagsList = await this.roomService.findRoomByDate(start_date, end_date);
     
     return Object.assign({
@@ -85,10 +100,10 @@ export class RoomController {
   @ApiQuery({ name: 'state', required: false })
   @ApiQuery({ name: 'hc_attend', required: false })
   @ApiQuery({ name: 'hc_max', required: false })
-  @ApiQuery({ name: 'start_date', description: '**end_date와 함께 기입해 주셔야 합니다.**', required: false })
-  @ApiQuery({ name: 'end_date', description: '**start_date와 함께 기입해 주셔야 합니다.**', required: false })
-  @ApiQuery({ name: 'tags', description: '["tag1", "tag2", "tag3"]<br>**태그는 최소 1개 이상이어야 합니다.**', required: false })
-  async find(
+  @ApiQuery({ name: 'start_date', required: false })
+  @ApiQuery({ name: 'end_date', required: false })
+  @ApiQuery({ name: 'tags', description: '["tag1", "tag2", "tag3"]<br>**데이터 요청 시 반드시 [] 형식이어야 합니다. []과 [""]은 다릅니다.**', required: false })
+  async findRoomWithTagsAndConditions(
     @Query('id') id?: string,
     @Query('title') title?: string,
     @Query('location') location?: string,
@@ -110,6 +125,7 @@ export class RoomController {
       "end_date": end_date,
       "tags": tags
     };
+
     const roomTagsList = await this.roomService.findRoomWithTagsAndConditions(roomTagsDTO);
     
     return {
@@ -159,7 +175,7 @@ export class RoomController {
 
   @Patch('/tag')
   @ApiOperation({ summary: '태그들 수정', description: '[\"tag1\", \"tag2\", \"tag3\"] ... 형식으로 전달받은 데이터를 tag 테이블에 room 테이블의 id와 tag의 개별 값을 매핑하여 저장' })
-  @ApiBody({ type: UpdateTagDto, description: '<br>**태그는 최소 1개 이상이어야 하며, 반드시 선택된 모든 태그 값을 전달해야 합니다.**' })
+  @ApiBody({ type: UpdateTagDto, description: '**데이터 요청 시 반드시 [] 형식이어야 합니다. []과 [""]은 다릅니다. 선택된 모든 태그 값을 전달해야 합니다.**' })
   // @ApiQuery({ name: 'tags', description: '["tag1", "tag2", "tag3"]', required: true })
   async changeTag(@Body() tagDTO: UpdateTagDto): Promise<Room[]> {
   // async changeTag(@Param('room_id') room_id: string, @Query('tags') tags: string): Promise<Room[]> {

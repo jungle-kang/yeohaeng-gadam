@@ -125,7 +125,7 @@ export default function SearchBar() {
     }, []);
 
     return (
-        <div className="sticky top-0 z-[100] bg-white pt-1 pb-3 shadow">
+        <div className="sticky top-0 z-[100] bg-white pt-1 pb-3 shadow mt-10">
             <div className="flex flex-low px-10 mt-2">
                 <div className="basis-1/5">
                     <input type="text"

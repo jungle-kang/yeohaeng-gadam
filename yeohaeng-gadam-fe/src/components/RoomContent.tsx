@@ -31,6 +31,7 @@ const RoomContent = ({ roomId, userId }) => {
       placeName: data.place_name,
       placeX: data.x,
       placeY: data.y,
+      placeCategory: data.category_name,
       likedUsers: [],
       // likes: 0,
       // text: data.place_name,

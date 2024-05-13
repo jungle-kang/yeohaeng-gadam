@@ -32,7 +32,6 @@ const MapContainer = ({ searchPlace, insertCard }) => {
         map.setBounds(bounds);
 
         setPlaces(data);
-        data.map((res, i) => { console.log(res) });
       }
     }
 
@@ -46,8 +45,6 @@ const MapContainer = ({ searchPlace, insertCard }) => {
         infowindow.open(map, marker);
       });
     }
-
-
   }, [searchPlace]);
 
   return (

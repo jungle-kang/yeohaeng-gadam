@@ -14,6 +14,10 @@ export class CreateEntryDto {
   @IsString()
   user_id?: string;
 
+  @ApiProperty({ type: Number, description: '커서 색상' })
+  @IsString()
+  color?: number;
+
   constructor(partial: Partial<CreateEntryDto>) {
     Object.assign(this, partial);
   }

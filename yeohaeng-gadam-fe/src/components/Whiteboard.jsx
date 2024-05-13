@@ -1286,7 +1286,7 @@ function Card({
         </div>
       }
       <button
-        className="bg-black text-white flex justify-center items-center rounded-full font-bold w-6 h-6"
+        className="bg-black text-white flex justify-center items-center rounded-full font-bold w-6 h-6 ml-3"
         style={{ position: "absolute", top: "0", left: "100%", transform: "translate(-50%, -50%)" }}
         onPointerDown={(e) => deleteCard(e, id)}
       >

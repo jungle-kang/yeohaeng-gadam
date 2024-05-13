@@ -17,7 +17,7 @@ const PopularLocation = () => {
         }
     };
     return (
-        <div className="px-10 pt-4 relative">
+        <div className="px-10 pt-4 relative mt-3">
             <h2 className="font-bold">국내 인기 여행지</h2>
             <div className="flex overflow-x-hidden scroll-smooth" ref={scrollRef}>
                 <div className="flex-shrink-0 px-2">
@@ -102,6 +102,42 @@ const PopularLocation = () => {
                     </div>
                     <div className="mt-2 text-sm">
                         가평
+                    </div>
+                </div>
+                <div className="flex-shrink-0 px-2">
+                    <div className="relative overflow-hidden group mt-2">
+                        <img className="object-cover h-[150px] w-[200px] rounded-2xl"
+                             src="https://i.pinimg.com/564x/12/6f/fb/126ffbc05f2eeecc30847cc8352945ab.jpg"
+                             alt="전주 사진"/>
+                        <div
+                            className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity rounded-2xl"></div>
+                    </div>
+                    <div className="mt-2 text-sm">
+                        전주
+                    </div>
+                </div>
+                <div className="flex-shrink-0 px-2">
+                    <div className="relative overflow-hidden group mt-2">
+                        <img className="object-cover h-[150px] w-[200px] rounded-2xl"
+                             src="https://i.pinimg.com/564x/d0/e2/d9/d0e2d9020262f360cf3ed34c05d4021e.jpg"
+                             alt="여수 사진"/>
+                        <div
+                            className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity rounded-2xl"></div>
+                    </div>
+                    <div className="mt-2 text-sm">
+                        여수
+                    </div>
+                </div>
+                <div className="flex-shrink-0 px-2">
+                    <div className="relative overflow-hidden group mt-2">
+                        <img className="object-cover h-[150px] w-[200px] rounded-2xl"
+                             src="https://i.pinimg.com/564x/2e/87/47/2e87475d9224219fc7b73617a5d26259.jpg"
+                             alt="속초 사진"/>
+                        <div
+                            className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity rounded-2xl"></div>
+                    </div>
+                    <div className="mt-2 text-sm">
+                        속초
                     </div>
                 </div>
             </div>

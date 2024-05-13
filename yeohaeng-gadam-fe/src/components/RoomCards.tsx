@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import "../index.css";
 
 const RoomCards = ({ post }) => {
     const navigate = useNavigate();
@@ -34,7 +35,18 @@ const RoomCards = ({ post }) => {
                     </div>
                 )
             ) : (
-                <div>찾으시는 내용이 없습니다.</div>
+                <div>
+                    <div className="ml-32 black-han-sans-regular">
+                        <p>찾으시는 내용이 없습니다.</p>
+                    </div>
+
+                    <br/>
+                    <div className="ml-32">
+                        <b>제안사항</b>
+                        <p>-다른 키워드를 입력해주세요.</p>
+                        <p>-방에 아직 입장하지 않으셨습니다.</p>
+                    </div>
+                </div>
             )}
         </div>
     );

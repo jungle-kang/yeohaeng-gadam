@@ -366,6 +366,7 @@ export default function Videochat({ roomId }) {
             // width: 240,
             // height: 240,
             // height: "20vh",
+            height: "200px",
             // margin: 5,
             backgroundColor: 'black'
           }}
@@ -409,6 +410,7 @@ export default function Videochat({ roomId }) {
           width: "100%",
           // height: "",
           // height: "20vh",
+          height: "200px",
           // margin: 5,
           backgroundColor: 'black',
         }}

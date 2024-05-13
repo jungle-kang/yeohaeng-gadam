@@ -46,7 +46,7 @@ const RoomContent = ({ roomId }) => {
       <div>
         <div className="flex"
              style={{
-               height: "calc(100vh - 80px - 300px)",
+               height: "calc(100vh - 80px - 180px)",
              }}
         >
           <div className="bg-blue-300 w-3/12 h-full p-2 overflow-scroll overflow-x-hidden"
@@ -78,7 +78,7 @@ const RoomContent = ({ roomId }) => {
           <SettingModal isOpen={modalOpen} closeModal={() => setModalOpen(false)}/>
 
         </div>
-        <div className="h-[300px]">
+        <div className="h-auto">
           <Plan/>
         </div>
       </div>

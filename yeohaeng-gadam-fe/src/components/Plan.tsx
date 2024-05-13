@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
+import SelectBox from "./SelectBox.tsx";
 
 interface TabProps {
     label: string;
@@ -64,7 +65,103 @@ const Plan: React.FC = () => {
         id: '',
         plans: ''
     }])
+    const [inputs, setInputs] = useState([]);
+    const [inputData, setInputData] = useState({
+        day:'',
+        type:'card',
+        info:''
+    })
+    const [add,setAdd] = useState(false);
+    const handleSelectChange = (item:string) => {
+        setInputData(prevForm => ({
+                ...prevForm,
+                type: item
+        }))
+    }
+    const handleButton =  () =>{
+        setAdd(false);
+        //todo 현재 inputData의 day와 같은 inputs에 plans에 type과 info가 있는 json을 plans에 append 해야함 .
+        //만약 inputs에 inputData의 day가 없다면, 추가
+        const { day, type, info } = inputData;
+
+        // 입력된 정보가 유효한지 확인
+        if (!day.trim() || !type.trim() || !info.trim()) {
+            console.error('Day, type, 또는 info가 비어 있습니다.');
+            return;
+        }
+
+        // 해당하는 day가 이미 inputs에 있는지 확인
+        const existingDayIndex = inputs.findIndex(input => input.day === day);
+
+        if (existingDayIndex !== -1) {
+            // 이미 해당하는 day가 inputs에 존재하는 경우
+            const updatedInputs = [...inputs];
+            const existingPlans = updatedInputs[existingDayIndex].plans;
+
+            updatedInputs[existingDayIndex].plans = [
+                ...existingPlans,
+                { type, info }
+            ];
+            const patchPlan = async () => {
+                const patchbody = JSON.stringify({plans: JSON.stringify([
+                    ...existingPlans,
+                    {type,info}
+                ])});
+                console.log('patchbody?',patchbody);
+                try{
+                    const response = await fetch(`api/plan/${roomId}/${day}`,{
+                        method:'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials:'include',
+                        body: patchbody,
+                    }).then(res=>res.json())
+                    console.log(response);
+                }catch(e){
+                    console.log('patch plan error: ',e);
+                }
+            }
+            patchPlan();
+            setInputs(updatedInputs);
+        } else {
+            // 해당하는 day가 inputs에 없는 경우
+            setInputs(prevInputs => [
+                ...prevInputs,
+                {
+                    room_id:roomId,
+                    day,
+                    plans: [{ type, info }]
+                }
+            ]);
+            const postPlan = async() => {
+                const postBody = JSON.stringify({plans: JSON.stringify([
+                        {type,info}
+                    ])});
+                console.log('postBody:',postBody);
+                const response = await fetch(`api/plan/${roomId}/${day}`,
+                    {
+                        method:'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials:'include',
+                        body: postBody,
+                    });
+                console.log(response);
+            }
+            postPlan();
+        }
+        // inputData 초기화
+        setInputData({
+            day: '',
+            type: 'card',
+            info: ''
+        });
+        setAdd(true);
+    }
     useEffect(() => {
+        console.log(inputs);
         console.log('roomId:', roomId);
         const dataFetch = async () => {
             try {
@@ -72,19 +169,27 @@ const Plan: React.FC = () => {
                     method: 'GET',
                     credentials: 'include'
                 }).then(res => res.json())
-
-                setPost(response);
+                    .then(res=>res.map(item=>({
+                        room_id: item.id.toString(),
+                        day:item.day.toString(),
+                        plans: JSON.parse(item.plans)
+                    })))
+                console.log('response:',response);
+                setInputs(response);
             } catch (e) {
                 console.log('plan data fetch error : ', e);
             }
         }
         dataFetch();
     }, [])
+    useEffect(() => {
+        console.log('inputs:',inputs);
+    }, [add]);
 
     return (
         <>
             <div className="flex">
-                {Array.isArray(post) && post.map(({ day }, idx) => (
+                {Array.isArray(inputs) && inputs.map(({day}, idx) => (
                     <Tab
                         key={idx}
                         label={day + "일차"}
@@ -92,14 +197,35 @@ const Plan: React.FC = () => {
                         isActive={activeTab === Number(day)}
                     />
                 ))}
+                <div className="flex pl-2 pt-2">
+                    <input
+                        value={inputData.day}
+                        onChange={e => {
+                            setInputData({
+                                ...inputData,
+                                day: e.target.value,
+                            })
+                        }}
+                        className="border rounded-lg h-9 w-12 mr-2" placeholder="일차" type="text"/>
+                    <SelectBox selectList={['card', 'transportation']} defaultValue={'card'}
+                               onSelectChange={handleSelectChange}/>
+                    <input
+                        value={inputData.info}
+                        onChange={e => {
+                            setInputData({
+                                ...inputData,
+                                info: e.target.value,
+                            })
+                        }}
+                        className="border rounded-lg w-42 h-9 ml-4" placeholder="내용" type="text"/>
+                    <button
+                        onClick={handleButton}
+                        type="button" className="ml-4 bg-orange-300 w-12 rounded-lg font-bold text-sm hover:bg-orange-400">추가</button>
+                </div>
             </div>
-            {Array.isArray(post) && post.map(({ day, plans }, idx) => (
+            {Array.isArray(inputs) && inputs.map(({day, plans}, idx) => (
                 <Content key={idx} isActive={activeTab === Number(day)}>
-                    {plans && typeof plans === 'string' && plans.trim() !== '' ? (
-                        <DataCard data={JSON.parse(plans)} />
-                    ) : (
-                        <p>No plans available for this day</p>
-                    )}
+                    <DataCard data={plans}/>
                 </Content>
             ))}
 

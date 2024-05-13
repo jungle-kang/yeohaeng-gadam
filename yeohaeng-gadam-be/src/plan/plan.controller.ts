@@ -27,7 +27,8 @@ export class PlanController {
     @Param('roomId') roomId: string,
     @Param('day') day: number,
     @Body() createPlanDto: CreatePlanDto) {
-    return this.planService.createPlan(day, roomId, createPlanDto.plans);
+    await this.planService.createDay(roomId);
+    return await this.planService.createPlan(day, roomId, createPlanDto.plans);
   }
 
   @Get('/:roomId/:day')

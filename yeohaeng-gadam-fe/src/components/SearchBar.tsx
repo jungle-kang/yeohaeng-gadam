@@ -6,6 +6,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import RoomCreateModal from "./RoomCreateModal";
 
+
+
 interface SearchFormType {
     location: string,
     start_date: string,

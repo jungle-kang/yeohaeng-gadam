@@ -28,6 +28,9 @@ export class Entry {
   })
   user_id: string;
 
+  @Column("int", { name: "color", comment: "커서 색상" })
+  color: number;
+
   @ManyToOne(() => Room, (room) => room.entries, {
     onDelete: "CASCADE",
     onUpdate: "NO ACTION",

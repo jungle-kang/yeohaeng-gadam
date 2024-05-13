@@ -9,6 +9,7 @@ import {
 import { Room } from "../../room-tag/entities/room.entity";
 
 @Index("room_id", ["room_id"], {})
+@Index("IDX_entry_user_id", ["user_id"], {}) // 유니크한 인덱스 이름 추가
 @Entity("entry", { schema: "yeohaeng_gadam" })
 export class Entry {
   @PrimaryGeneratedColumn({

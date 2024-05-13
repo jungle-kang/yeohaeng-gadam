@@ -358,7 +358,7 @@ export default function Videochat({ roomId }) {
             aspectRatio: "4/3",
             // width: "100%",
             // width: 240,
-            // height: 240,
+            height: "200px",
             // margin: 5,
             backgroundColor: 'black'
           }}
@@ -397,7 +397,7 @@ export default function Videochat({ roomId }) {
         style={{
           aspectRatio: "4/3",
           width: "100%",
-          // height: "",
+          height: "200px",
           // margin: 5,
           backgroundColor: 'black',
         }}

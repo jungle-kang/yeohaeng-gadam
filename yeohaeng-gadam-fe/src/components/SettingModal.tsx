@@ -23,7 +23,7 @@ const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
   const handleRoomExit = async () => {
     const accessToken = getCookie('access_token');
     if (!accessToken) {
-      toast.error('로그인이 필요합니다.');
+      toast.error('로그인이 필요합니다😣');
       navigate('/');
       return;
     }
@@ -78,7 +78,7 @@ const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(url)
       .then(() => {
-        toast('URL이 클립보드에 복사되었습니다!', {
+        toast.success('URL이 클립보드에 복사되었습니다!🔗', {
           position: "top-center",
           autoClose: 1500,
           hideProgressBar: true,

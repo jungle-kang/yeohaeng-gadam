@@ -1,11 +1,9 @@
-import RoomCreateModal from "./RoomCreateModal";
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "../pages/TestBoard.tsx";
 import { jwtDecode } from "jwt-decode";
-
-
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface SearchFormType {
     location: string,
@@ -14,7 +12,6 @@ interface SearchFormType {
     tags: string
     [key: string]: string;
 }
-
 
 export default function SearchBar() {
     const accessToken: string = getCookie('access_token') ? getCookie('access_token') : '';
@@ -81,27 +78,8 @@ export default function SearchBar() {
         setIsOpen(false);
     }
     const handleSearch = async () => {
-        // await setSearchForm(prevForm=>({
-        //     ...prevForm,
-        //     tags: activeTags.join(',')
-        // }))
-        // console.log('searchForm:',searchForm);
-        // console.log(searchFormToQueryString(searchForm))
-        // const searchFormQuery = searchFormToQueryString(searchForm);
-        // const response = await fetch(`/api/room/?${searchFormQuery}`,{
-        //     method:'GET',
-        //     credentials: 'include'
-        // })
-        // const result = await response.json();
-        // console.log(result);
-        // navigate(`/search?${searchFormQuery}`)
-        // const tagsString = activeTags.join(',');
-        // const tagsString =  `["${activeTags.join('\",\"')}"]`;
         const tagsString = JSON.stringify(activeTags);
-        // console.log(searchForm);
-        // console.log("activeTags: ", activeTags);
-        // console.log("stringify: ", JSON.stringify(activeTags));
-        // console.log("joined str: ", `["${activeTags.join('\",\"')}"]`);
+
         const searchParams = new URLSearchParams(
             activeTags.length > 0
                 ? {
@@ -112,10 +90,26 @@ export default function SearchBar() {
         ).toString();
 
         navigate(`/search?${searchParams}`);
+
+        // 방 찾기에 성공한 경우 알림창 띄우기
+        toast.success('검색 결과입니다!😎');
+
+        <ToastContainer
+                position="top-center"
+                autoClose={1500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                // transition: 'Bounce'
+            />
     }
 
     useEffect(() => {
-
         const fetchData = async () => {
             await fetch('/tags.json')
                 .then(res => res.json())
@@ -172,7 +166,6 @@ export default function SearchBar() {
                 </div>
             </div>
             <div className="ml-8 mt-8">
-                {/* <TagButtons tags={tags} activeTags={activeTags} onTagClick={handleTagClick} /> */}
                 {tags.map(({ id, name }) => (
                     <button key={id}
                         className={`${activeTags.includes(name) ? "bg-blue-300" : "bg-blue-100"
@@ -187,6 +180,7 @@ export default function SearchBar() {
             {isOpen && (
                 <RoomCreateModal onClose={closeModal} />
             )}
+            
         </div>
     );
 }

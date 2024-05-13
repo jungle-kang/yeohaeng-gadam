@@ -38,6 +38,9 @@ export default function Videochat({ roomId }) {
   let localStream = null;
   // const [localStream, setLocalStream] = useState(null); // 내 영상
   const [users, setUsers] = useState([]); // 참가중인 다른 이용자 목록
+  
+  const [tt, sett] = useState(0); ///////////////////////////////////////////////////////
+
   let pcs = {}; // createPeerConnection으로 생성된 pc와 그 상대의 정보를 저장
   let localSdps = {};
   let remoteSdps = {};
@@ -376,8 +379,18 @@ export default function Videochat({ roomId }) {
     })
   }, [])
 
+
+  const ontt = () => {
+    const nt = tt +1;
+    sett(nt);
+  }
+
   return (
     <div className="mx-2">
+
+      <div>{tt}</div>
+      <button onClick={ontt}>HIT ME</button>
+
       {/* <div>{savedSocketId}</div> */}
       {/* <div>My ID: {useSelf((me) => me.connectionId)}</div> */}
       <video className="my-2"

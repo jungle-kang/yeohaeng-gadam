@@ -32,7 +32,7 @@ const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_MAP_API // calculateTime 전�
 const SK_API_KEY = import.meta.env.VITE_SK_MAP_API // calculateTime 전용
 
 
-export default function Whiteboard() {
+export default function Whiteboard({ userId }) {
   const [{ selectedPageId }, updateMyPresence] = useMyPresence();
   // 클라이언트가 현재 사용중인 페이지의 ID
   // const [curPageId, setCurPageId] = useState(null);
@@ -146,22 +146,23 @@ export default function Whiteboard() {
 
   //////////////////////////// 핑 이벤트 관련 ////////////////////////////
 
-  useEventListener(({ event, user, connectionId }) => {
+  useEventListener(({ event, user }) => {
     if (event.type === "PING") {
       setPingEventList((prev) => {
         const modifiedPingEventList = prev.filter((pingEvent) => (
-          pingEvent.userId !== connectionId
+          pingEvent.userId !== user.presence.userId
         )); // 핑을 찍은 사용자의 이전 핑은 삭제
         const newPingEvent = {
-          userId: connectionId,
+          userId: user.presence.userId,
           pageId: event.pageId,
           x: event.x,
           y: event.y,
+          color: event.color,
         };
         return ([...modifiedPingEventList, newPingEvent]);
       });
       // console.log(event, user, connectionId); //////////////
-      console.log("new ping event: ", event, ", from user ", user, ", conID: ", connectionId); ///
+      console.log("new ping event: ", event, ", from user ", user); ///
       console.log("updated pingEventList: ", pingEventList);
 
       // if (event.pageId !== selectedPageId && !pingedPageList.includes(event.pageId)) {
@@ -188,7 +189,10 @@ export default function Whiteboard() {
     // 로딩 완료 시 첫 탭을 현재 탭으로
     if (pages != null) {
       // setCurPageId(pageIds[0]);
-      updateMyPresence({ selectedPageId: pageIds[0] });
+      updateMyPresence({
+        selectedPageId: pageIds[0],
+        userId: userId,
+      });
     }
   }, [pages == null])
 
@@ -272,6 +276,7 @@ function Canvas({ pingEventList, setPingEventList }) {
 
   // const page = useStorage((root) => root.pages.get(pageId));
 
+  const self = useSelf();
   //////////////////////////// 커서 공유 관련 ////////////////////////////
   const others = useOthers();
 
@@ -323,11 +328,12 @@ function Canvas({ pingEventList, setPingEventList }) {
       pageId: selectedPageId,
       x: canvasPos.x,
       y: canvasPos.y,
+      color: COLORS[self.connectionId % COLORS.length]
     });
   };
 
   const removePingEvent = (userId) => {
-    // userId에 해당하는 핑 이벤트를 pingEventList에서 삭제제
+    // userId에 해당하는 핑 이벤트를 pingEventList에서 삭제
     setPingEventList((prev) => prev.filter(((pingEvent) => (
       pingEvent.userId !== userId
     ))))
@@ -368,7 +374,8 @@ function Canvas({ pingEventList, setPingEventList }) {
       fill: "rgb(255, 255, 204)",
       cardType: "memo",
       memoText: "",
-      likes: 0,
+      likedUsers: [],
+      // likes: 0,
     });
     // console.log("created card at ", x, ", ", y); /////////////
     storage.get("pages").get(pageId).get("cards").set(cardId, card);
@@ -432,8 +439,26 @@ function Canvas({ pingEventList, setPingEventList }) {
     // const pageId = self.presence.selectedPageId;
     const page = storage.get("pages").get(self.presence.selectedPageId);
     const card = page.get("cards").get(cardId);
+    const likedUsers = card.get("likedUsers");
+
+    console.log("likedUsers: ", likedUsers);
+
+    let newLikedUsers = [];
+
+    if (likedUsers.includes(self.presence.userId)) {
+      console.log("contains me");
+      newLikedUsers = likedUsers.filter((userId) => (userId !== self.presence.userId));
+    } else {
+      console.log("does not contain me");
+      newLikedUsers = [...likedUsers, self.presence.userId];
+    }
+
+    
+
+    // console.log("newLikedUsers: ", newLikedUsers);
+
     card.update({
-      likes: card.get("likes") + 1,
+      likedUsers: newLikedUsers,
     });
     // storage.get("pages").get(pageId).get("cards").delete(cardId);
   }, []);
@@ -563,452 +588,457 @@ function Canvas({ pingEventList, setPingEventList }) {
         //   `/maps/api/directions/json?destination=${shape2.get("placeName")}&origin=${shape1.get("placeName")}&departure_time=1714532400&mode=transit&key=${API_KEY}`
         // );
 
-        console.log("Google API req: ", `/maps/api/directions/json?destination=${card2.get("placeY")},${card2.get("placeX")}&origin=${card1.get("placeY")},${card1.get("placeX")}&departure_time=1714532400&mode=transit&key={GOOGLE_API_KEY}`);
+        // console.log("Google API req: ", `/maps/api/directions/json?destination=${card2.get("placeY")},${card2.get("placeX")}&origin=${card1.get("placeY")},${card1.get("placeX")}&departure_time=1714532400&mode=transit&key={GOOGLE_API_KEY}`);
+        const curTime = Math.floor(Date.now() / 1000);
+        const today = Math.floor(curTime / 86400) * 86400;
+
         res = await fetch(
           `/maps/api/directions/json`
           + `?destination=${card2.get("placeY")},${card2.get("placeX")}`
           + `&origin=${card1.get("placeY")},${card1.get("placeX")}`
-          + `&departure_time=1714532400&mode=transit&key=${GOOGLE_API_KEY}`
+          + `&departure_time=${today + 10800}` // 오늘 정오
+          + `&mode=transit&key=${GOOGLE_API_KEY}`
         );
-        result = await res.json();
-        duration = result.routes.length > 0
-          ? result.routes[0].legs[0].duration.value
-          : 0;
-        console.log(result); ///////////////////////
-        break;
+  result = await res.json();
+  duration = result.routes.length > 0
+    ? result.routes[0].legs[0].duration.value
+    : 0;
+  console.log(result); ///////////////////////
+  break;
       case TRANS_METHOD_CAR:
-        // 자동차: SK TMAP API
-        res = await fetch(
-          "https://apis.openapi.sk.com/tmap/routes?version=1&format=json&callback=result"
-          + `&startX=${card1.get("placeX")}`
-          + `&startY=${card1.get("placeY")}`
-          + `&endX=${card2.get("placeX")}`
-          + `&endY=${card2.get("placeY")}`,
-          {
-            method: "POST",
-            headers: { "appKey": SK_API_KEY },
-          }
-        );
-        result = await res.json();
-
-        // console.log("walk API res: ", result);
-        console.log("totalTime: ", result.features[0].properties.totalTime);
-        duration = result.features[0].properties.totalTime;
-
-        break;
-        break;
+  // 자동차: SK TMAP API
+  res = await fetch(
+    "https://apis.openapi.sk.com/tmap/routes?version=1&format=json&callback=result"
+    + `&startX=${card1.get("placeX")}`
+    + `&startY=${card1.get("placeY")}`
+    + `&endX=${card2.get("placeX")}`
+    + `&endY=${card2.get("placeY")}`,
+    {
+      method: "POST",
+      headers: { "appKey": SK_API_KEY },
     }
+  );
+  result = await res.json();
 
-    // console.log(duration); /////////////////
+  // console.log("walk API res: ", result);
+  console.log("totalTime: ", result.features[0].properties.totalTime);
+  duration = result.features[0].properties.totalTime;
 
-    updateLineTime(line, duration);
+  break;
+  break;
+}
+
+// console.log(duration); /////////////////
+
+updateLineTime(line, duration);
   };
 
-  //////////////////////////// 간선 동작 ////////////////////////////
+//////////////////////////// 간선 동작 ////////////////////////////
 
-  const onLineBtnPointerDown = (e, cardId) => {
-    e.stopPropagation();
-    updateMyPresence({ lineStartCardId: cardId });
-    // 간선 생성 표시기 좌표 업데이트
-    setLineIndicatorEndPos({
-      x: e.clientX - canvasRef.current.getBoundingClientRect().left,
-      y: e.clientY - canvasRef.current.getBoundingClientRect().top,
-    });
-  };
+const onLineBtnPointerDown = (e, cardId) => {
+  e.stopPropagation();
+  updateMyPresence({ lineStartCardId: cardId });
+  // 간선 생성 표시기 좌표 업데이트
+  setLineIndicatorEndPos({
+    x: e.clientX - canvasRef.current.getBoundingClientRect().left,
+    y: e.clientY - canvasRef.current.getBoundingClientRect().top,
+  });
+};
 
-  const onTransportBtnDown = useMutation(({ storage, self }, lineId, transportMethod) => {
-    const pageId = self.presence.selectedPageId;
-    const line = storage.get("pages").get(pageId).get("lines").get(lineId);
+const onTransportBtnDown = useMutation(({ storage, self }, lineId, transportMethod) => {
+  const pageId = self.presence.selectedPageId;
+  const line = storage.get("pages").get(pageId).get("lines").get(lineId);
 
-    if (line) {
-      const card1 = storage.get("pages").get(pageId).get("cards").get(line.get("card1Id"));
-      const card2 = storage.get("pages").get(pageId).get("cards").get(line.get("card2Id"));
+  if (line) {
+    const card1 = storage.get("pages").get(pageId).get("cards").get(line.get("card1Id"));
+    const card2 = storage.get("pages").get(pageId).get("cards").get(line.get("card2Id"));
 
-      const dist = getDistFromCord(
-        card1.get("placeX"),
-        card1.get("placeY"),
-        card2.get("placeX"),
-        card2.get("placeY"),
-      );
+    const dist = getDistFromCord(
+      card1.get("placeX"),
+      card1.get("placeY"),
+      card2.get("placeX"),
+      card2.get("placeY"),
+    );
 
-      line.update({
-        isChoosingTrans: false,
-        transportMethod: transportMethod,
-        distance: dist,
-      })
+    line.update({
+      isChoosingTrans: false,
+      transportMethod: transportMethod,
+      distance: dist,
+    })
 
-      calculateLineTime(line, transportMethod, card1, card2);
-    }
-  }, []);
-
-
-  //////////////////////////// 버튼 및 캔버스 동작 관련 ////////////////////////////
-  const onCanvasPointerDown = (e) => {
-    // console.log(isDraggingCanvas); ////////////
-    // e.stopPropagation();
-    // console.log(canvasRef.current); ///////////
-    // console.log(e); ////////////
-    setIsDraggingCanvas(true);
-    updateMyPresence({ selectedCardId: null });
-  };
-
-  // const onCanvasPointerMove = useMutation(({ setMyPresence, self }, e) => {
-  const onCanvasPointerMove = (e) => {
-    e.preventDefault();
-
-    const dx = e.movementX / ZOOMS[canvasZoomLevel];
-    const dy = e.movementY / ZOOMS[canvasZoomLevel];
-
-    if (isDraggingCanvas) {
-      // 캔버스를 움직임
-      setCanvasPos({
-        x: canvasPos.x - dx,
-        y: canvasPos.y - dy,
-      });
-    } else {
-      // 커서만 움직이거나 카드 또는 간선 버튼을 움직임
-      if (canvasRef.current) {
-        updateMyCursor(
-          Math.round(canvasPos.x
-            + (e.clientX - canvasRef.current.getBoundingClientRect().left
-              - canvasRef.current.offsetWidth / 2)
-            / ZOOMS[canvasZoomLevel]),
-          Math.round(canvasPos.y
-            + (e.clientY - canvasRef.current.getBoundingClientRect().top
-              - canvasRef.current.offsetHeight / 2)
-            / ZOOMS[canvasZoomLevel])
-        );
-      }
-      // updateMyCursor(
-      //   Math.round(canvasPos.x
-      //     + (e.nativeEvent.offsetX - canvasRef.current.offsetWidth / 2)
-      //     / ZOOMS[canvasZoomLevel]),
-      //   Math.round(canvasPos.y
-      //     + (e.nativeEvent.offsetY - canvasRef.current.offsetHeight / 2)
-      //     / ZOOMS[canvasZoomLevel])
-      // );
-
-      if (draggingCardId) {
-        // 카드 이동
-        moveCard(draggingCardId, dx, dy);
-      }
-
-      if (lineStartCardId) {
-        // 간선 생성 표시기 좌표 업데이트
-        setLineIndicatorEndPos({
-          x: e.clientX - canvasRef.current.getBoundingClientRect().left,
-          y: e.clientY - canvasRef.current.getBoundingClientRect().top,
-        });
-      }
-    }
-    // }, []);
-  };
-
-  // const onCanvasPointerMove = (e) => {
-  //   // const dx = 
-
-
-  //   console.log(e); ////////////
-  //   updateMyCursor(
-  //     canvasPos.x + Math.round(e.nativeEvent.offsetX / canvasZoom),
-  //     canvasPos.y + Math.round(e.nativeEvent.offsetY / canvasZoom)
-  //   );
-  // };
-
-  const onCanvasPointerUp = () => {
-    // console.log(canvasRef.current.offsetWidth); //////////
-    // console.log(canvasRef.current.offsetHeight); //////////
-    setIsDraggingCanvas(false);
-    setDraggingCardId(null);
-    updateMyPresence({ lineStartCardId: null });
-    // setLineStartCardId(null);
-    history.resume();
-  };
-
-  const onCanvasPointerLeave = () => {
-    onCanvasPointerUp();
-    updateMyPresence({
-      cursor: null,
-    });
-  };
-
-  const onCanvasWheel = (e) => {
-    e.preventDefault();
-    // console.log(e); /////////////
-    if (e.deltaY > 0) {
-      zoomOut();
-    } else {
-      zoomIn();
-    }
+    calculateLineTime(line, transportMethod, card1, card2);
   }
+}, []);
 
-  const zoomOut = () => {
-    if (canvasZoomLevel > 0) {
-      setCanvasZoomLevel(canvasZoomLevel - 1);
-    }
-  };
 
-  const zoomIn = () => {
-    if (canvasZoomLevel < ZOOMS.length - 1) {
-      setCanvasZoomLevel(canvasZoomLevel + 1);
-    }
-  };
+//////////////////////////// 버튼 및 캔버스 동작 관련 ////////////////////////////
+const onCanvasPointerDown = (e) => {
+  // console.log(isDraggingCanvas); ////////////
+  // e.stopPropagation();
+  // console.log(canvasRef.current); ///////////
+  // console.log(e); ////////////
+  setIsDraggingCanvas(true);
+  updateMyPresence({ selectedCardId: null });
+};
 
-  //////////////////////////// HELPERS ////////////////////////////
+// const onCanvasPointerMove = useMutation(({ setMyPresence, self }, e) => {
+const onCanvasPointerMove = (e) => {
+  e.preventDefault();
 
-  // x, y위치에 있는 물체가 캔버스 내부에 있는지 여부 반환
-  // bufX, bufY만큼의 여유를 줌
-  function isInsideCanvas(x, y, bufX, bufY) {
-    const offX = Math.abs(x - canvasPos.x) * ZOOMS[canvasZoomLevel];
-    const offY = Math.abs(y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+  const dx = e.movementX / ZOOMS[canvasZoomLevel];
+  const dy = e.movementY / ZOOMS[canvasZoomLevel];
+
+  if (isDraggingCanvas) {
+    // 캔버스를 움직임
+    setCanvasPos({
+      x: canvasPos.x - dx,
+      y: canvasPos.y - dy,
+    });
+  } else {
+    // 커서만 움직이거나 카드 또는 간선 버튼을 움직임
     if (canvasRef.current) {
-
-      // console.log("offset: ", offX, offY); ///////////
-      // console.log("WH: ", canvasRef.current.offsetWidth, canvasRef.current.offsetHeight); ///
+      updateMyCursor(
+        Math.round(canvasPos.x
+          + (e.clientX - canvasRef.current.getBoundingClientRect().left
+            - canvasRef.current.offsetWidth / 2)
+          / ZOOMS[canvasZoomLevel]),
+        Math.round(canvasPos.y
+          + (e.clientY - canvasRef.current.getBoundingClientRect().top
+            - canvasRef.current.offsetHeight / 2)
+          / ZOOMS[canvasZoomLevel])
+      );
     }
-    return (
-      canvasRef.current
-      && offX < canvasRef.current.offsetWidth / 2 + bufX
-      && offY < canvasRef.current.offsetHeight / 2 + bufY
-    );
-    // return (
-    //   canvasRef.current
-    //   && x > canvasPos.x - bufX
-    //   && x < canvasPos.x + canvasRef.current.offsetWidth / ZOOMS[canvasZoomLevel] + bufX
-    //   && y > canvasPos.y - bufY
-    //   && y < canvasPos.y + canvasRef.current.offsetHeight / ZOOMS[canvasZoomLevel] + bufY
+    // updateMyCursor(
+    //   Math.round(canvasPos.x
+    //     + (e.nativeEvent.offsetX - canvasRef.current.offsetWidth / 2)
+    //     / ZOOMS[canvasZoomLevel]),
+    //   Math.round(canvasPos.y
+    //     + (e.nativeEvent.offsetY - canvasRef.current.offsetHeight / 2)
+    //     / ZOOMS[canvasZoomLevel])
     // );
+
+    if (draggingCardId) {
+      // 카드 이동
+      moveCard(draggingCardId, dx, dy);
+    }
+
+    if (lineStartCardId) {
+      // 간선 생성 표시기 좌표 업데이트
+      setLineIndicatorEndPos({
+        x: e.clientX - canvasRef.current.getBoundingClientRect().left,
+        y: e.clientY - canvasRef.current.getBoundingClientRect().top,
+      });
+    }
+  }
+  // }, []);
+};
+
+// const onCanvasPointerMove = (e) => {
+//   // const dx = 
+
+
+//   console.log(e); ////////////
+//   updateMyCursor(
+//     canvasPos.x + Math.round(e.nativeEvent.offsetX / canvasZoom),
+//     canvasPos.y + Math.round(e.nativeEvent.offsetY / canvasZoom)
+//   );
+// };
+
+const onCanvasPointerUp = () => {
+  // console.log(canvasRef.current.offsetWidth); //////////
+  // console.log(canvasRef.current.offsetHeight); //////////
+  setIsDraggingCanvas(false);
+  setDraggingCardId(null);
+  updateMyPresence({ lineStartCardId: null });
+  // setLineStartCardId(null);
+  history.resume();
+};
+
+const onCanvasPointerLeave = () => {
+  onCanvasPointerUp();
+  updateMyPresence({
+    cursor: null,
+  });
+};
+
+const onCanvasWheel = (e) => {
+  e.preventDefault();
+  // console.log(e); /////////////
+  if (e.deltaY > 0) {
+    zoomOut();
+  } else {
+    zoomIn();
+  }
+}
+
+const zoomOut = () => {
+  if (canvasZoomLevel > 0) {
+    setCanvasZoomLevel(canvasZoomLevel - 1);
+  }
+};
+
+const zoomIn = () => {
+  if (canvasZoomLevel < ZOOMS.length - 1) {
+    setCanvasZoomLevel(canvasZoomLevel + 1);
+  }
+};
+
+//////////////////////////// HELPERS ////////////////////////////
+
+// x, y위치에 있는 물체가 캔버스 내부에 있는지 여부 반환
+// bufX, bufY만큼의 여유를 줌
+function isInsideCanvas(x, y, bufX, bufY) {
+  const offX = Math.abs(x - canvasPos.x) * ZOOMS[canvasZoomLevel];
+  const offY = Math.abs(y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+  if (canvasRef.current) {
+
+    // console.log("offset: ", offX, offY); ///////////
+    // console.log("WH: ", canvasRef.current.offsetWidth, canvasRef.current.offsetHeight); ///
+  }
+  return (
+    canvasRef.current
+    && offX < canvasRef.current.offsetWidth / 2 + bufX
+    && offY < canvasRef.current.offsetHeight / 2 + bufY
+  );
+  // return (
+  //   canvasRef.current
+  //   && x > canvasPos.x - bufX
+  //   && x < canvasPos.x + canvasRef.current.offsetWidth / ZOOMS[canvasZoomLevel] + bufX
+  //   && y > canvasPos.y - bufY
+  //   && y < canvasPos.y + canvasRef.current.offsetHeight / ZOOMS[canvasZoomLevel] + bufY
+  // );
+}
+
+//////////////////////////// 렌더링 ////////////////////////////
+
+const pingIndicatorList = pingEventList.map((pingEvent) => {
+  if (pingEvent.pageId !== selectedPageId) {
+    return null;
   }
 
-  //////////////////////////// 렌더링 ////////////////////////////
+  if (!isInsideCanvas(pingEvent.x, pingEvent.y, 0, 0)) {
+    return null;
+  }
 
-  const pingIndicatorList = pingEventList.map((pingEvent) => {
-    if (pingEvent.pageId !== selectedPageId) {
-      return null;
-    }
-
-    if (!isInsideCanvas(pingEvent.x, pingEvent.y, 0, 0)) {
-      return null;
-    }
-
-    const x = canvasRef.current.offsetWidth / 2
-      + (pingEvent.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
-    const y = canvasRef.current.offsetHeight / 2
-      + (pingEvent.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
-
-    return (
-      <PingIndicator
-        x={x}
-        y={y}
-        userId={pingEvent.userId}
-        removePingEvent={removePingEvent} />
-    )
-  });
-
-  const cardList = cardIds.map((cardId) => {
-    if (!canvasRef.current) { ////////////////
-      return null;
-    }
-
-    // const { cardX, cardY } = useStorage((root) => root.cards.get(cardId));
-    const card = cards.get(cardId);
-    if (!isInsideCanvas(card.x, card.y, 100, 100)) {
-      return null;
-    }
-
-    const x = canvasRef.current.offsetWidth / 2
-      + (card.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
-    const y = canvasRef.current.offsetHeight / 2
-      + (card.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
-
-    return (
-      <Card
-        key={cardId}
-        id={cardId}
-        card={card}
-        x={x}
-        y={y}
-        zoom={ZOOMS[canvasZoomLevel]}
-        onCardPointerDown={onCardPointerDown}
-        onCardPointerUp={onCardPointerUp}
-        deleteCard={deleteCard}
-        onLineBtnPointerDown={onLineBtnPointerDown} // place card
-        onLikeBtnClick={onLikeBtnClick}
-        onCardChange={onCardChange} // memo card
-      />
-    );
-  });
-
-  const lineList = lineIds.map((lineId) => {
-    if (!canvasRef.current) { ///////////
-      return null;
-    }
-
-    const line = lines.get(lineId);
-    const card1 = cards.get(line.card1Id);
-    const card2 = cards.get(line.card2Id);
-
-    // if (!isInsideCanvas(card1.x, card1.y, 0, 0)
-    //   && !isInsideCanvas(card2.x, card2.y, 0, 0)) {
-    //   return null;
-    // }
-
-    const x1 = canvasRef.current.offsetWidth / 2
-      + (card1.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
-    const y1 = canvasRef.current.offsetHeight / 2
-      + (card1.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
-    const x2 = canvasRef.current.offsetWidth / 2
-      + (card2.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
-    const y2 = canvasRef.current.offsetHeight / 2
-      + (card2.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
-
-    if (Math.max(x1, x2) < 0
-      || Math.min(x1, x2) > canvasRef.current.getBoundingClientRect().width
-      || Math.max(y1, y2) < 0
-      || Math.min(y1, y2) > canvasRef.current.getBoundingClientRect().height) {
-      return null;
-    }
-
-    return (
-      <Line
-        key={lineId}
-        id={lineId}
-        line={line}
-        x1={x1}
-        y1={y1}
-        x2={x2}
-        y2={y2}
-        zoom={ZOOMS[canvasZoomLevel]}
-        onTransportBtnDown={onTransportBtnDown}
-        deleteLine={deleteLine}
-      />
-    );
-  });
-
-  function LineIndicator() {
-    if (!lineStartCardId) {
-      return null;
-    }
-
-    const card = cards.get(lineStartCardId);
-
-    const x1 = canvasRef.current.offsetWidth / 2
-      + (card.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
-    const y1 = canvasRef.current.offsetHeight / 2
-      + (card.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
-    const x2 = lineIndicatorEndPos.x;
-    const y2 = lineIndicatorEndPos.y;
-
-    const r = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-    const x = (x1 + x2) / 2;
-    const y = (y1 + y2) / 2;
-    const theta = Math.atan((y2 - y1) / (x2 - x1));
-
-    return (
-      <>
-        <div className="absolute bg-black h-[5px] z-[1000]"
-          style={{
-            position: "absolute",
-            height: 5 * ZOOMS[canvasZoomLevel],
-            zIndex: "1000",
-            // zIndex: "-9000",
-            //////////////////////
-            transform: `translate(${x}px, ${y}px) translateX(-50%) rotate(${theta}rad)`,
-            width: `${r}px`,
-          }}
-        />
-        <div
-          className="bg-yellow-200 flex justify-center items-center rounded-full font-bold border-black ring-1 w-8 h-8"
-          style={{
-            position: "absolute",
-            transform: `translate(${x2}px, ${y2}px) translate(-50%, -50%)`,
-            zIndex: "1000",
-            // zIndex: "-9000",
-          }}
-        >
-          <img className="w-6" src={routesearchIcon} />
-        </div>
-      </>
-    );
-  };
-
+  const x = canvasRef.current.offsetWidth / 2
+    + (pingEvent.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
+  const y = canvasRef.current.offsetHeight / 2
+    + (pingEvent.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
 
   return (
-    <div className="relative overflow-hidden bg-gray-100 w-full"
-      style={{
-        height: "calc(100% - 32px)",
-      }}
-      ref={canvasRef}
-      onPointerDown={onCanvasPointerDown}
-      onPointerMove={onCanvasPointerMove}
-      onPointerUp={onCanvasPointerUp}
-      onPointerLeave={onCanvasPointerLeave}
-      onWheel={onCanvasWheel}
-    >
-      {othersCursorList}
-      {pingIndicatorList}
-      {cardList}
-      {lineList}
-      <LineIndicator />
+    <PingIndicator
+      x={x}
+      y={y}
+      color={pingEvent.color}
+      userId={pingEvent.userId}
+      removePingEvent={removePingEvent} />
+  )
+});
 
-      {/* DEBUG */}
-      <button className="bg-red-500"
-        onClick={onClickPingBtn}
-      >
-        PING!!
-      </button>
-      <button className="bg-gray-400"
-        onClick={() => history.undo()}
-      >
-        Undo
-      </button>
-      <button className="bg-gray-400"
-        onClick={() => history.redo()}
-      >
-        Redo
-      </button>
-      <button className="bg-black text-white"
-        onClick={zoomOut}
-      >
-        Zoom Out
-      </button>
-      <button className="bg-black text-white"
-        onClick={zoomIn}
-      >
-        Zoom In
-      </button>
-      <button className="bg-blue-600 text-white"
-        onClick={() => insertPlaceCard(canvasPos.x + 100, canvasPos.y + 100)}
-      >
-        Place
-      </button>
-      <button className="bg-blue-600 text-white"
-        onClick={() => insertMemoCard(canvasPos.x + 100, canvasPos.y + 100)}
-      >
-        Memo
-      </button>
-      <button className="bg-blue-600 text-white"
-        onClick={() => insertMapCard(canvasPos.x + 100, canvasPos.y + 100)}
-      >
-        Map
-      </button>
+const cardList = cardIds.map((cardId) => {
+  if (!canvasRef.current) { ////////////////
+    return null;
+  }
 
-      {/* DEBUG */}
-      <div>Page ID: {selectedPageId}</div>
-      <div>Middle: {canvasPos.x}, {canvasPos.y}</div>
-      <div>isDraggingCanvas: {isDraggingCanvas ? "true" : "false"}</div>
-      <div>draggingCardId: {draggingCardId}</div>
-      <div>selectedCardId: {selectedCardId}</div>
-      <div>lineStartCardId: {lineStartCardId}</div>
-      <div>Zoom Level: {ZOOMS[canvasZoomLevel]}</div>
-      <div>My ID: {useSelf().connectionId}</div>
-      <div>Others ID: {others.map(({ connectionId }) => connectionId)}</div>
-    </div>
+  // const { cardX, cardY } = useStorage((root) => root.cards.get(cardId));
+  const card = cards.get(cardId);
+  if (!isInsideCanvas(card.x, card.y, 100, 100)) {
+    return null;
+  }
+
+  const x = canvasRef.current.offsetWidth / 2
+    + (card.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
+  const y = canvasRef.current.offsetHeight / 2
+    + (card.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+
+  return (
+    <Card
+      key={cardId}
+      id={cardId}
+      card={card}
+      x={x}
+      y={y}
+      zoom={ZOOMS[canvasZoomLevel]}
+      onCardPointerDown={onCardPointerDown}
+      onCardPointerUp={onCardPointerUp}
+      deleteCard={deleteCard}
+      onLineBtnPointerDown={onLineBtnPointerDown} // place card
+      onLikeBtnClick={onLikeBtnClick}
+      onCardChange={onCardChange} // memo card
+    />
   );
+});
+
+const lineList = lineIds.map((lineId) => {
+  if (!canvasRef.current) { ///////////
+    return null;
+  }
+
+  const line = lines.get(lineId);
+  const card1 = cards.get(line.card1Id);
+  const card2 = cards.get(line.card2Id);
+
+  // if (!isInsideCanvas(card1.x, card1.y, 0, 0)
+  //   && !isInsideCanvas(card2.x, card2.y, 0, 0)) {
+  //   return null;
+  // }
+
+  const x1 = canvasRef.current.offsetWidth / 2
+    + (card1.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
+  const y1 = canvasRef.current.offsetHeight / 2
+    + (card1.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+  const x2 = canvasRef.current.offsetWidth / 2
+    + (card2.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
+  const y2 = canvasRef.current.offsetHeight / 2
+    + (card2.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+
+  if (Math.max(x1, x2) < 0
+    || Math.min(x1, x2) > canvasRef.current.getBoundingClientRect().width
+    || Math.max(y1, y2) < 0
+    || Math.min(y1, y2) > canvasRef.current.getBoundingClientRect().height) {
+    return null;
+  }
+
+  return (
+    <Line
+      key={lineId}
+      id={lineId}
+      line={line}
+      x1={x1}
+      y1={y1}
+      x2={x2}
+      y2={y2}
+      zoom={ZOOMS[canvasZoomLevel]}
+      onTransportBtnDown={onTransportBtnDown}
+      deleteLine={deleteLine}
+    />
+  );
+});
+
+function LineIndicator() {
+  if (!lineStartCardId) {
+    return null;
+  }
+
+  const card = cards.get(lineStartCardId);
+
+  const x1 = canvasRef.current.offsetWidth / 2
+    + (card.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
+  const y1 = canvasRef.current.offsetHeight / 2
+    + (card.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+  const x2 = lineIndicatorEndPos.x;
+  const y2 = lineIndicatorEndPos.y;
+
+  const r = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+  const x = (x1 + x2) / 2;
+  const y = (y1 + y2) / 2;
+  const theta = Math.atan((y2 - y1) / (x2 - x1));
+
+  return (
+    <>
+      <div className="absolute bg-black h-[5px] z-[1000]"
+        style={{
+          position: "absolute",
+          height: 5 * ZOOMS[canvasZoomLevel],
+          zIndex: "1000",
+          // zIndex: "-9000",
+          //////////////////////
+          transform: `translate(${x}px, ${y}px) translateX(-50%) rotate(${theta}rad)`,
+          width: `${r}px`,
+        }}
+      />
+      <div
+        className="bg-yellow-200 flex justify-center items-center rounded-full font-bold border-black ring-1 w-8 h-8"
+        style={{
+          position: "absolute",
+          transform: `translate(${x2}px, ${y2}px) translate(-50%, -50%)`,
+          zIndex: "1000",
+          // zIndex: "-9000",
+        }}
+      >
+        <img className="w-6" src={routesearchIcon} />
+      </div>
+    </>
+  );
+};
+
+
+return (
+  <div className="relative overflow-hidden bg-gray-100 w-full"
+    style={{
+      height: "calc(100% - 32px)",
+    }}
+    ref={canvasRef}
+    onPointerDown={onCanvasPointerDown}
+    onPointerMove={onCanvasPointerMove}
+    onPointerUp={onCanvasPointerUp}
+    onPointerLeave={onCanvasPointerLeave}
+    onWheel={onCanvasWheel}
+  >
+    {othersCursorList}
+    {pingIndicatorList}
+    {cardList}
+    {lineList}
+    <LineIndicator />
+
+    {/* DEBUG */}
+    <button className="bg-red-500"
+      onClick={onClickPingBtn}
+    >
+      PING!!
+    </button>
+    <button className="bg-gray-400"
+      onClick={() => history.undo()}
+    >
+      Undo
+    </button>
+    <button className="bg-gray-400"
+      onClick={() => history.redo()}
+    >
+      Redo
+    </button>
+    <button className="bg-black text-white"
+      onClick={zoomOut}
+    >
+      Zoom Out
+    </button>
+    <button className="bg-black text-white"
+      onClick={zoomIn}
+    >
+      Zoom In
+    </button>
+    <button className="bg-blue-600 text-white"
+      onClick={() => insertPlaceCard(canvasPos.x + 100, canvasPos.y + 100)}
+    >
+      Place
+    </button>
+    <button className="bg-blue-600 text-white"
+      onClick={() => insertMemoCard(canvasPos.x + 100, canvasPos.y + 100)}
+    >
+      Memo
+    </button>
+    <button className="bg-blue-600 text-white"
+      onClick={() => insertMapCard(canvasPos.x + 100, canvasPos.y + 100)}
+    >
+      Map
+    </button>
+
+    {/* DEBUG */}
+    <div>Page ID: {selectedPageId}</div>
+    <div>Middle: {canvasPos.x}, {canvasPos.y}</div>
+    <div>isDraggingCanvas: {isDraggingCanvas ? "true" : "false"}</div>
+    <div>draggingCardId: {draggingCardId}</div>
+    <div>selectedCardId: {selectedCardId}</div>
+    <div>lineStartCardId: {lineStartCardId}</div>
+    <div>Zoom Level: {ZOOMS[canvasZoomLevel]}</div>
+    <div>My ID: {useSelf().connectionId}</div>
+    <div>Others ID: {others.map(({ connectionId }) => connectionId)}</div>
+  </div>
+);
 }
 
 
-function PingIndicator({ x, y, userId, removePingEvent }) {
+function PingIndicator({ x, y, color, userId, removePingEvent }) {
   return (
     <div className="absolute flex justify-center items-center bg-red-200 rounded-full"
       style={{
@@ -1022,7 +1052,7 @@ function PingIndicator({ x, y, userId, removePingEvent }) {
       <div
         style={{
           fontSize: "100px",
-          color: "red",
+          color: color,
           transform: "translateY(-25%)",
         }}
       >
@@ -1248,7 +1278,7 @@ function Card({
           <button onClick={() => onLikeBtnClick(id)}>
             ❤️
           </button>
-          {card.likes}
+          {card.likedUsers}
         </div>
       }
       <button

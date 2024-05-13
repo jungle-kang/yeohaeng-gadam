@@ -13,7 +13,7 @@ import SettingModal from "../components/SettingModal.tsx"
 import Videochat from "../videochat-proto/Videochat.jsx";
 // import VideoChat from "../webRTC/VideoChat.tsx";
 
-const RoomContent = ({ roomId }) => {
+const RoomContent = ({ roomId, userId }) => {
   // const {roomId} = useParams<{roomId:string}>();
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
@@ -31,7 +31,8 @@ const RoomContent = ({ roomId }) => {
       placeName: data.place_name,
       placeX: data.x,
       placeY: data.y,
-      likes: 0,
+      likedUsers: [],
+      // likes: 0,
       // text: data.place_name,
       // placeName: memoInputRef.current.value,
       // placeCord: "0,0",
@@ -52,7 +53,7 @@ const RoomContent = ({ roomId }) => {
         <SearchPanel insertCard={insertCard} />
       </div>
       <div className="flex-col w-7/12 h-full">
-        <Whiteboard />
+        <Whiteboard userId={userId}/>
         {/* <div 
       className="  bg-slate-300"
       style={{height: "25%", width: "100%", float: "left"}}

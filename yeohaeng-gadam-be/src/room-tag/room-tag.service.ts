@@ -398,7 +398,7 @@ export class RoomService {
 
     // 최대 인원으로 색상표 생성
     const allColorArray: number[] = [];
-    for (let i = 1; i <= rsRoomEnter[0].hc_max; i++) {
+    for (let i = 0; i < rsRoomEnter[0].hc_max; i++) {
       allColorArray.push(i);
     }
 

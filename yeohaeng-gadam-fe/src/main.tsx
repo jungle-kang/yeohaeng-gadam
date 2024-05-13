@@ -19,6 +19,8 @@ import { CookiesProvider } from 'react-cookie';
 import Videochat from './videochat-proto/Videochat.jsx';
 import Search from './pages/Search.tsx';
 
+import Recommend from './map/recommendProto.jsx';
+
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -81,7 +83,12 @@ const router = createBrowserRouter([
     {
         path: "/zoom",
         element: <Videochat />
+    },
+    {
+        path: "/recommend",
+        element: <Recommend />
     }
+    
 
 
 

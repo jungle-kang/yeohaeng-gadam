@@ -34,7 +34,15 @@ const RoomCards = ({ post }) => {
                     </div>
                 )
             ) : (
-                <div>찾으시는 내용이 없습니다.</div>
+                <div>
+                    <div className=" ml-32">
+                    <p>찾으시는 내용이 없습니다.</p>
+                    </div>
+                    <div>
+                        <p>다른 키워드를 입력해주세요.</p>
+                        <p>방에 아직 입장하지 않으셨습니다.</p>
+                    </div>
+                </div>
             )}
         </div>
     );

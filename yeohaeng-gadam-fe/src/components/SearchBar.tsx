@@ -160,7 +160,7 @@ export default function SearchBar() {
                 <div className="basis-1/5">
                     <button
                         onClick={handleSearch}
-                        className="logo-font font-bold h-full text-center block w-full rounded-md border-0 py-1.5 px-auto text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-200 hover:text-gray-500 bg-gray-300">
+                        className="logo-font ml-1 font-bold h-full text-center block w-full rounded-md border-0 py-1.5 px-auto text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-200 hover:text-gray-500 bg-gray-300">
                         방 찾기
                     </button>
                 </div>
@@ -171,7 +171,7 @@ export default function SearchBar() {
                     </button>
                 </div>
             </div>
-            <div className="ml-10 mt-2">
+            <div className="ml-8 mt-8">
                 {/* <TagButtons tags={tags} activeTags={activeTags} onTagClick={handleTagClick} /> */}
                 {tags.map(({ id, name }) => (
                     <button key={id}

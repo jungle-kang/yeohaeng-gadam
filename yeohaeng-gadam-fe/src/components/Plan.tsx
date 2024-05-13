@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from "react-router-dom";
 
 interface TabProps {
     label: string;
@@ -25,46 +26,83 @@ interface ContentProps {
 }
 
 const Content: React.FC<ContentProps> = ({ children, isActive }) => {
-    return isActive ? <div className="p-4">{children}</div> : null;
+    return isActive ? <div className="p-4 flex justify-start items-center">{children}</div> : null;
+};
+
+const DataCard = ({ data }) => {
+    const dataObject = data;
+    const getBgColor = (type) => {
+        switch (type) {
+            case "card":
+                return "bg-blue-200";
+            case "transportation":
+                return "bg-green-200";
+            default:
+                return "bg-gray-200";
+        }
+    };
+
+    return (
+        <div className="flex flex-wrap">
+            {Array.isArray(dataObject) && dataObject.map(({ info, type }, index) => (
+                <div
+                    key={index}
+                    className={`w-auto h-auto p-4 mb-4 mr-4 border border-gray-300 rounded-lg ${getBgColor(type)}`}
+                >
+                    {info}
+                </div>
+            ))}
+        </div>
+    );
 };
 
 const Plan: React.FC = () => {
+    const { roomId } = useParams<{ roomId: string }>();
     const [activeTab, setActiveTab] = useState<number>(0);
     const [post, setPost] = useState([{
-
+        day: '',
+        id: '',
+        plans: ''
     }])
-    useEffect(()=>{
+    useEffect(() => {
+        console.log('roomId:', roomId);
+        const dataFetch = async () => {
+            try {
+                const response = await fetch(`/api/plan/${roomId}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                }).then(res => res.json())
 
-    },[])
+                setPost(response);
+            } catch (e) {
+                console.log('plan data fetch error : ', e);
+            }
+        }
+        dataFetch();
+    }, [])
 
     return (
         <>
             <div className="flex">
-                <Tab
-                    label="Tab 1"
-                    onClick={() => setActiveTab(0)}
-                    isActive={activeTab === 0}
-                />
-                <Tab
-                    label="Tab 2"
-                    onClick={() => setActiveTab(1)}
-                    isActive={activeTab === 1}
-                />
-                <Tab
-                    label="Tab 3"
-                    onClick={() => setActiveTab(2)}
-                    isActive={activeTab === 2}
-                />
+                {Array.isArray(post) && post.map(({ day }, idx) => (
+                    <Tab
+                        key={idx}
+                        label={day + "일차"}
+                        onClick={() => setActiveTab(Number(day))}
+                        isActive={activeTab === Number(day)}
+                    />
+                ))}
             </div>
-            <Content isActive={activeTab === 0}>
-                <p>Content for Tab 1</p>
-            </Content>
-            <Content isActive={activeTab === 1}>
-                <p>Content for Tab 2</p>
-            </Content>
-            <Content isActive={activeTab === 2}>
-                <p>Content for Tab 3</p>
-            </Content>
+            {Array.isArray(post) && post.map(({ day, plans }, idx) => (
+                <Content key={idx} isActive={activeTab === Number(day)}>
+                    {plans && typeof plans === 'string' && plans.trim() !== '' ? (
+                        <DataCard data={JSON.parse(plans)} />
+                    ) : (
+                        <p>No plans available for this day</p>
+                    )}
+                </Content>
+            ))}
+
         </>
     );
 };

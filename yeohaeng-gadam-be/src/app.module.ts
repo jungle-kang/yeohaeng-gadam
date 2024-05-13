@@ -37,6 +37,7 @@ dotenv.config();
                 __dirname + '/**/*.entity{.ts,.js}'
             ],
             synchronize: true,
+            logging: true,
         }),
         AuthModule,
         BoardsModule,

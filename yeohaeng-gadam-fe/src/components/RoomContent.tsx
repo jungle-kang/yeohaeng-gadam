@@ -78,7 +78,7 @@ const RoomContent = ({ roomId }) => {
           <SettingModal isOpen={modalOpen} closeModal={() => setModalOpen(false)}/>
 
         </div>
-        <div className="h-[300px] bg-green-200">
+        <div className="h-[300px]">
           <Plan/>
         </div>
       </div>

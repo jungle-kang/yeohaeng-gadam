@@ -4,6 +4,7 @@ import { getCookie } from "../pages/TestBoard.tsx";
 import { jwtDecode } from "jwt-decode";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import RoomCreateModal from "./RoomCreateModal";
 
 interface SearchFormType {
     location: string,
@@ -93,7 +94,6 @@ export default function SearchBar() {
 
         // 방 찾기에 성공한 경우 알림창 띄우기
         toast.success('검색 결과입니다!😎');
-
         <ToastContainer
                 position="top-center"
                 autoClose={1500}
@@ -105,7 +105,6 @@ export default function SearchBar() {
                 draggable
                 pauseOnHover
                 theme="light"
-                // transition: 'Bounce'
             />
     }
 
@@ -119,7 +118,7 @@ export default function SearchBar() {
     }, []);
 
     return (
-        <div className="sticky top-0 z-[100] bg-white pt-1 pb-3 shadow mt-10">
+        <div className="sticky top-0 z-[100] bg-white pt-1 pb-3 shadow">
             <div className="flex flex-low px-10 mt-2">
                 <div className="basis-1/5">
                     <input type="text"
@@ -165,7 +164,7 @@ export default function SearchBar() {
                     </button>
                 </div>
             </div>
-            <div className="ml-8 mt-8">
+            <div className="ml-10 mt-2">
                 {tags.map(({ id, name }) => (
                     <button key={id}
                         className={`${activeTags.includes(name) ? "bg-blue-300" : "bg-blue-100"

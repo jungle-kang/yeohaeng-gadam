@@ -1,9 +1,10 @@
-import RoomCreateModal from "./RoomCreateModal";
 import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "../pages/TestBoard.tsx";
 import { jwtDecode } from "jwt-decode";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import RoomCreateModal from "./RoomCreateModal";
 
 
 
@@ -14,7 +15,6 @@ interface SearchFormType {
     tags: string
     [key: string]: string;
 }
-
 
 export default function SearchBar() {
     const accessToken: string = getCookie('access_token') ? getCookie('access_token') : '';
@@ -81,27 +81,8 @@ export default function SearchBar() {
         setIsOpen(false);
     }
     const handleSearch = async () => {
-        // await setSearchForm(prevForm=>({
-        //     ...prevForm,
-        //     tags: activeTags.join(',')
-        // }))
-        // console.log('searchForm:',searchForm);
-        // console.log(searchFormToQueryString(searchForm))
-        // const searchFormQuery = searchFormToQueryString(searchForm);
-        // const response = await fetch(`/api/room/?${searchFormQuery}`,{
-        //     method:'GET',
-        //     credentials: 'include'
-        // })
-        // const result = await response.json();
-        // console.log(result);
-        // navigate(`/search?${searchFormQuery}`)
-        // const tagsString = activeTags.join(',');
-        // const tagsString =  `["${activeTags.join('\",\"')}"]`;
         const tagsString = JSON.stringify(activeTags);
-        // console.log(searchForm);
-        // console.log("activeTags: ", activeTags);
-        // console.log("stringify: ", JSON.stringify(activeTags));
-        // console.log("joined str: ", `["${activeTags.join('\",\"')}"]`);
+
         const searchParams = new URLSearchParams(
             activeTags.length > 0
                 ? {
@@ -112,10 +93,24 @@ export default function SearchBar() {
         ).toString();
 
         navigate(`/search?${searchParams}`);
+
+        // 방 찾기에 성공한 경우 알림창 띄우기
+        toast.success('검색 결과입니다!😎');
+        <ToastContainer
+                position="top-center"
+                autoClose={1500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
     }
 
     useEffect(() => {
-
         const fetchData = async () => {
             await fetch('/tags.json')
                 .then(res => res.json())
@@ -126,7 +121,7 @@ export default function SearchBar() {
 
     return (
         <div className="sticky top-0 z-[100] bg-white pt-1 pb-3 shadow">
-            <div className="flex flex-low px-10 mt-4">
+            <div className="flex flex-low px-10 mt-2">
                 <div className="basis-1/5">
                     <input type="text"
                         value={searchForm.location}
@@ -160,7 +155,7 @@ export default function SearchBar() {
                 <div className="basis-1/5">
                     <button
                         onClick={handleSearch}
-                        className="logo-font font-bold h-full text-center block w-full rounded-md border-0 py-1.5 px-auto text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-200 hover:text-gray-500 bg-gray-300">
+                        className="logo-font ml-1 font-bold h-full text-center block w-full rounded-md border-0 py-1.5 px-auto text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-200 hover:text-gray-500 bg-gray-300">
                         방 찾기
                     </button>
                 </div>
@@ -171,10 +166,7 @@ export default function SearchBar() {
                     </button>
                 </div>
             </div>
-            <div className="ml-10 mt-10">
-                <p>태그로 검색</p>
-
-                {/* <TagButtons tags={tags} activeTags={activeTags} onTagClick={handleTagClick} /> */}
+            <div className="ml-10 mt-2">
                 {tags.map(({ id, name }) => (
                     <button key={id}
                         className={`${activeTags.includes(name) ? "bg-blue-300" : "bg-blue-100"
@@ -189,6 +181,7 @@ export default function SearchBar() {
             {isOpen && (
                 <RoomCreateModal onClose={closeModal} />
             )}
+            
         </div>
     );
 }

@@ -9,6 +9,9 @@ import RoomContent from "../components/RoomContent";
 import {getCookie} from "./TestBoard.tsx";
 import {jwtDecode} from "jwt-decode";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const API_KEY = import.meta.env.VITE_LIVEBLOCKS_API_PUBLIC;
 
 
@@ -26,9 +29,22 @@ const Room = () => {
     const navigate = useNavigate();
     const {roomId} = useParams<{roomId:string}>();
     const roomProviderId = "whiteboard-" + roomId
-
+    
     useEffect(() => {
+        
         const enter = async () => {
+            <ToastContainer
+            position="top-center"
+            autoClose={1500}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            />
             try{
                 console.log('room id:',roomId,', user id:',id);
                 const response = await fetch(`/api/room/enter?room_id=${roomId}&user_id=${id}`,{
@@ -63,7 +79,8 @@ const Room = () => {
         if (accessToken){
             meCheck();
         }else {
-            alert('로그인이 필요합니다.333');
+            // alert('방에 참가하려면 로그인을 해주세요.');
+            toast.error("방에 참여하려면 로그인을 해주세요😉")
             navigate('/');
         }
     }, []);
@@ -85,9 +102,10 @@ const Room = () => {
             // lines: new LiveMap(),
           }}
         >
-          <RoomContent />
+          <RoomContent roomId={roomId} userId={id}/>
         </RoomProvider>
         )
+        
 }
 
 export default Room

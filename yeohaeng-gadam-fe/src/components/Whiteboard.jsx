@@ -32,7 +32,7 @@ const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_MAP_API // calculateTime 전�
 const SK_API_KEY = import.meta.env.VITE_SK_MAP_API // calculateTime 전용
 
 
-export default function Whiteboard() {
+export default function Whiteboard({ userId }) {
   const [{ selectedPageId }, updateMyPresence] = useMyPresence();
   // 클라이언트가 현재 사용중인 페이지의 ID
   // const [curPageId, setCurPageId] = useState(null);
@@ -146,22 +146,23 @@ export default function Whiteboard() {
 
   //////////////////////////// 핑 이벤트 관련 ////////////////////////////
 
-  useEventListener(({ event, user, connectionId }) => {
+  useEventListener(({ event, user }) => {
     if (event.type === "PING") {
       setPingEventList((prev) => {
         const modifiedPingEventList = prev.filter((pingEvent) => (
-          pingEvent.userId !== connectionId
+          pingEvent.userId !== user.presence.userId
         )); // 핑을 찍은 사용자의 이전 핑은 삭제
         const newPingEvent = {
-          userId: connectionId,
+          userId: user.presence.userId,
           pageId: event.pageId,
           x: event.x,
           y: event.y,
+          color: event.color,
         };
         return ([...modifiedPingEventList, newPingEvent]);
       });
       // console.log(event, user, connectionId); //////////////
-      console.log("new ping event: ", event, ", from user ", user, ", conID: ", connectionId); ///
+      console.log("new ping event: ", event, ", from user ", user); ///
       console.log("updated pingEventList: ", pingEventList);
 
       // if (event.pageId !== selectedPageId && !pingedPageList.includes(event.pageId)) {
@@ -188,7 +189,10 @@ export default function Whiteboard() {
     // 로딩 완료 시 첫 탭을 현재 탭으로
     if (pages != null) {
       // setCurPageId(pageIds[0]);
-      updateMyPresence({ selectedPageId: pageIds[0] });
+      updateMyPresence({
+        selectedPageId: pageIds[0],
+        userId: userId,
+      });
     }
   }, [pages == null])
 
@@ -272,6 +276,7 @@ function Canvas({ pingEventList, setPingEventList }) {
 
   // const page = useStorage((root) => root.pages.get(pageId));
 
+  const self = useSelf();
   //////////////////////////// 커서 공유 관련 ////////////////////////////
   const others = useOthers();
 
@@ -323,11 +328,12 @@ function Canvas({ pingEventList, setPingEventList }) {
       pageId: selectedPageId,
       x: canvasPos.x,
       y: canvasPos.y,
+      color: COLORS[self.connectionId % COLORS.length]
     });
   };
 
   const removePingEvent = (userId) => {
-    // userId에 해당하는 핑 이벤트를 pingEventList에서 삭제제
+    // userId에 해당하는 핑 이벤트를 pingEventList에서 삭제
     setPingEventList((prev) => prev.filter(((pingEvent) => (
       pingEvent.userId !== userId
     ))))
@@ -368,7 +374,8 @@ function Canvas({ pingEventList, setPingEventList }) {
       fill: "rgb(255, 255, 204)",
       cardType: "memo",
       memoText: "",
-      likes: 0,
+      likedUsers: [],
+      // likes: 0,
     });
     // console.log("created card at ", x, ", ", y); /////////////
     storage.get("pages").get(pageId).get("cards").set(cardId, card);
@@ -432,8 +439,26 @@ function Canvas({ pingEventList, setPingEventList }) {
     // const pageId = self.presence.selectedPageId;
     const page = storage.get("pages").get(self.presence.selectedPageId);
     const card = page.get("cards").get(cardId);
+    const likedUsers = card.get("likedUsers");
+
+    console.log("likedUsers: ", likedUsers);
+
+    let newLikedUsers = [];
+
+    if (likedUsers.includes(self.presence.userId)) {
+      console.log("contains me");
+      newLikedUsers = likedUsers.filter((userId) => (userId !== self.presence.userId));
+    } else {
+      console.log("does not contain me");
+      newLikedUsers = [...likedUsers, self.presence.userId];
+    }
+
+
+
+    // console.log("newLikedUsers: ", newLikedUsers);
+
     card.update({
-      likes: card.get("likes") + 1,
+      likedUsers: newLikedUsers,
     });
     // storage.get("pages").get(pageId).get("cards").delete(cardId);
   }, []);
@@ -563,12 +588,16 @@ function Canvas({ pingEventList, setPingEventList }) {
         //   `/maps/api/directions/json?destination=${shape2.get("placeName")}&origin=${shape1.get("placeName")}&departure_time=1714532400&mode=transit&key=${API_KEY}`
         // );
 
-        console.log("Google API req: ", `/maps/api/directions/json?destination=${card2.get("placeY")},${card2.get("placeX")}&origin=${card1.get("placeY")},${card1.get("placeX")}&departure_time=1714532400&mode=transit&key={GOOGLE_API_KEY}`);
+        // console.log("Google API req: ", `/maps/api/directions/json?destination=${card2.get("placeY")},${card2.get("placeX")}&origin=${card1.get("placeY")},${card1.get("placeX")}&departure_time=1714532400&mode=transit&key={GOOGLE_API_KEY}`);
+        const curTime = Math.floor(Date.now() / 1000);
+        const today = Math.floor(curTime / 86400) * 86400;
+
         res = await fetch(
           `/maps/api/directions/json`
           + `?destination=${card2.get("placeY")},${card2.get("placeX")}`
           + `&origin=${card1.get("placeY")},${card1.get("placeX")}`
-          + `&departure_time=1714532400&mode=transit&key=${GOOGLE_API_KEY}`
+          + `&departure_time=${today + 10800}` // 오늘 정오
+          + `&mode=transit&key=${GOOGLE_API_KEY}`
         );
         result = await res.json();
         duration = result.routes.length > 0
@@ -800,6 +829,7 @@ function Canvas({ pingEventList, setPingEventList }) {
       <PingIndicator
         x={x}
         y={y}
+        color={pingEvent.color}
         userId={pingEvent.userId}
         removePingEvent={removePingEvent} />
     )
@@ -812,7 +842,7 @@ function Canvas({ pingEventList, setPingEventList }) {
 
     // const { cardX, cardY } = useStorage((root) => root.cards.get(cardId));
     const card = cards.get(cardId);
-    if (!isInsideCanvas(card.x, card.y, 100, 100)) {
+    if (!isInsideCanvas(card.x, card.y, 200, 200)) {
       return null;
     }
 
@@ -1008,7 +1038,7 @@ function Canvas({ pingEventList, setPingEventList }) {
 }
 
 
-function PingIndicator({ x, y, userId, removePingEvent }) {
+function PingIndicator({ x, y, color, userId, removePingEvent }) {
   return (
     <div className="absolute flex justify-center items-center bg-red-200 rounded-full"
       style={{
@@ -1022,7 +1052,7 @@ function PingIndicator({ x, y, userId, removePingEvent }) {
       <div
         style={{
           fontSize: "100px",
-          color: "red",
+          color: color,
           transform: "translateY(-25%)",
         }}
       >
@@ -1208,19 +1238,23 @@ function Card({
     ? 175
     : card.cardType === "memo"
       ? 150
-      : 200;
+      : 400; // map
 
   const height = card.cardType === "place"
     ? 100
     : card.cardType === "memo"
       ? 120
-      : 200;
+      : 400; // map
+
+  const zIndex = card.cardType === "map"
+    ? 0
+    : 5000; // place, memo
 
   return (
     <div className="absolute rounded-lg"
       style={{
         borderWidth: "3px",
-        zIndex: "5000",
+        zIndex: zIndex,
         // zIndex: "-5000",
         ///////////////////////
         width: width,
@@ -1248,11 +1282,11 @@ function Card({
           <button onClick={() => onLikeBtnClick(id)}>
             ❤️
           </button>
-          {card.likes}
+          {card.likedUsers}
         </div>
       }
       <button
-        className="bg-black text-white flex justify-center items-center rounded-full font-bold w-6 h-6"
+        className="bg-black text-white flex justify-center items-center rounded-full font-bold w-6 h-6 ml-3"
         style={{ position: "absolute", top: "0", left: "100%", transform: "translate(-50%, -50%)" }}
         onPointerDown={(e) => deleteCard(e, id)}
       >

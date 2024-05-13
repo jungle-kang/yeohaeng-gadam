@@ -3,6 +3,8 @@ import io from 'socket.io-client';
 // import { SocketProvider, useSocket } from './SocketContext';
 // import { useSelf } from "/liveblocks.config";
 
+import { socket } from './socket';
+
 // connection settings
 const SIGNALING_SERVER_URL = import.meta.env.VITE_SIGNALING_SERVER_URL;
 
@@ -45,9 +47,10 @@ export default function Videochat({ roomId }) {
   let localSdps = {};
   let remoteSdps = {};
 
-  const socket = io(SIGNALING_SERVER_URL); // signaling server와 통신하는 소켓
+  // const socket = io(SIGNALING_SERVER_URL); // signaling server와 통신하는 소켓
+
   // let savedSocketId = null;
-  const [savedSocketId, setSavedSocketId] = useState(null);
+  // const [savedSocketId, setSavedSocketId] = useState(null);
   // const socket = useSocket();
 
   const setLocalStream = async () => {
@@ -152,18 +155,18 @@ export default function Videochat({ roomId }) {
   //////////////////////////
 
   const onConnectHandler = async () => {
-    if (savedSocketId !== null) {
-      console.log("duplicate on connect detected", `(socket id: ${socket.id})`);
-      socket.disconnect();
-      return;
-    }
+    // if (savedSocketId !== null) {
+    //   console.log("duplicate on connect detected", `(socket id: ${socket.id})`);
+    //   socket.disconnect();
+    //   return;
+    // }
 
     await setLocalStream();
 
     console.log("onConnectHandler(): start");
 
     if (socket.connected) {
-      setSavedSocketId(socket.id); ///////////
+      // setSavedSocketId(socket.id); ///////////
 
       socket.emit('join_room', {
         room: `yhgd-${roomId}`,
@@ -322,8 +325,8 @@ export default function Videochat({ roomId }) {
   //   }
   // }, [localStream === null]);
 
-  socket.on("connect", onConnectHandler);
   // onConnectHandler();
+  socket.on("connect", onConnectHandler);
   socket.on("all_users", onAllUsersHandler);
   socket.on("get_offer", onGetOfferHandler);
   socket.on("get_answer", onGetAnswerHandler);
@@ -337,16 +340,19 @@ export default function Videochat({ roomId }) {
     // const [isMuted, setIsMuted] = useState(muted);
 
     // Set the video element's source object to the stream
+    // useEffect(() => {
+    //   if (stream && ref.current) {
+    //     ref.current.srcObject = stream;
+    //     console.log("stream-video: ", ref.current.srcObject);
+    //     console.log("stream user: ", users)
+    //   }
+    //   // console.log(ref);
+    //   // setIsMuted(muted);
+    //   // }, [stream, muted]);
+    // }, [stream === null]);
     useEffect(() => {
-      if (stream && ref.current) {
-        ref.current.srcObject = stream;
-        console.log("stream-video: ", ref.current.srcObject);
-        console.log("stream user: ", users)
-      }
-      console.log(ref)
-      // setIsMuted(muted);
-      // }, [stream, muted]);
-    }, [stream]);
+      ref.current.srcObject = stream;
+    }, [])
 
     return (
       <div className="my-2">
@@ -356,9 +362,10 @@ export default function Videochat({ roomId }) {
           autoPlay
           style={{
             aspectRatio: "4/3",
-            // width: "100%",
+            width: "100%",
             // width: 240,
             // height: 240,
+            // height: "20vh",
             // margin: 5,
             backgroundColor: 'black'
           }}
@@ -368,9 +375,12 @@ export default function Videochat({ roomId }) {
   };
 
   useEffect(() => {
+    socket.connect();
+
     return (() => {
       if (socket) {
         socket.disconnect();
+        socket.removeAllListeners();
       }
 
       if (localStream) {
@@ -386,7 +396,7 @@ export default function Videochat({ roomId }) {
   }
 
   return (
-    <div className="mx-2">
+    <div className="flex flex-col mx-2">
 
       <div>{tt}</div>
       <button onClick={ontt}>HIT ME</button>
@@ -398,6 +408,7 @@ export default function Videochat({ roomId }) {
           aspectRatio: "4/3",
           width: "100%",
           // height: "",
+          // height: "20vh",
           // margin: 5,
           backgroundColor: 'black',
         }}

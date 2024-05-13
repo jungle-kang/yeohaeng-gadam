@@ -30,7 +30,7 @@ const Mypage = () => {
     if (accessToken !== '') {
       id = jwtDecode(accessToken).id;
     } else {
-      toast.error('로그인이 필요합니다.');
+      toast.error('로그인이 필요합니다😣');
       navigate('/');
     }
     const fetchData = async () => {

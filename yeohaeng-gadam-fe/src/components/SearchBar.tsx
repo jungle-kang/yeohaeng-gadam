@@ -126,7 +126,7 @@ export default function SearchBar() {
 
     return (
         <div className="sticky top-0 z-[100] bg-white pt-1 pb-3 shadow">
-            <div className="flex flex-low px-10 mt-4">
+            <div className="flex flex-low px-10 mt-2">
                 <div className="basis-1/5">
                     <input type="text"
                         value={searchForm.location}
@@ -171,9 +171,7 @@ export default function SearchBar() {
                     </button>
                 </div>
             </div>
-            <div className="ml-10 mt-10">
-                <p>태그로 검색</p>
-
+            <div className="ml-10 mt-2">
                 {/* <TagButtons tags={tags} activeTags={activeTags} onTagClick={handleTagClick} /> */}
                 {tags.map(({ id, name }) => (
                     <button key={id}

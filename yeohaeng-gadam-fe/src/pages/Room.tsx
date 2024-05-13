@@ -85,7 +85,7 @@ const Room = () => {
             // lines: new LiveMap(),
           }}
         >
-          <RoomContent />
+          <RoomContent roomId={roomId} userId={id}/>
         </RoomProvider>
         )
 }

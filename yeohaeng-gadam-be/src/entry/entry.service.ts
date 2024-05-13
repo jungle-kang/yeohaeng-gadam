@@ -48,8 +48,6 @@ export class EntryService {
     ORDER BY 
       room.start_date ASC, room.state ASC, room.hc_attend ASC, room.hc_max ASC;
     `);
-
-
   }
 
   async findUserByRoom(room_id: string): Promise<any[]> {

@@ -383,9 +383,11 @@ export class RoomService {
   async changeRoomEnter(room_id: string, user_id: string): Promise<any> {
     const rsRoomEnter = await this.roomRepository.query(`
       SELECT 
+        hc_max, 
         room.id AS room_id, 
         IF(hc_attend < hc_max, 'true', 'false') AS room_enter,
-        JSON_ARRAYAGG(entry.user_id) AS users
+        JSON_ARRAYAGG(entry.user_id) AS users,
+        JSON_ARRAYAGG(entry.color) AS colors
       FROM 
         yeohaeng_gadam.room
       LEFT JOIN 
@@ -393,6 +395,21 @@ export class RoomService {
       WHERE
         room.id = ${room_id};
     `);
+
+    // 최대 인원으로 색상표 생성
+    const allColorArray: number[] = [];
+    for (let i = 1; i <= rsRoomEnter[0].hc_max; i++) {
+      allColorArray.push(i);
+    }
+
+    console.log('room-tag.service > allColorArray :', allColorArray)
+
+    // 색상표 배열과 존재하는 색상의 차집합을 계산해 추가할 수 있는 색상들 저장
+    const addColorArray: number[] = allColorArray.filter(color => !(rsRoomEnter[0].colors).includes(color));
+    
+    addColorArray.sort()
+
+    console.log('room-tag.service > addColorArray :', addColorArray[0]);
     
     const existUserArray: string[] = rsRoomEnter[0].users
 
@@ -408,7 +425,8 @@ export class RoomService {
     
       const entryDTO: CreateEntryDto = {
         room_id: room_id,
-        user_id: user_id
+        user_id: user_id,
+        color: addColorArray[0]
       }
       const saveEntry = this.entryRepository.create(entryDTO);
       const savedEntry = await this.entryRepository.save(saveEntry);
@@ -444,6 +462,7 @@ export class RoomService {
     `);
 
     const existUserArray: string[] = rsRoomExit[0].users
+
     const hd_id = rsRoomExit[0].hd_id;
 
     // 참가 인원이 1명보다 많고
@@ -550,3 +569,7 @@ export class RoomService {
   }
   
 }
+function createArrayWithInt(hc_max: any) {
+  throw new Error('Function not implemented.');
+}
+

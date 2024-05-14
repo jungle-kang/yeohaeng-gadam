@@ -184,35 +184,35 @@ export class RoomService {
       `);
     } else if (start_date === undefined) {
       return await this.roomRepository.query(`
-          SELECT
-            room.id AS room_id, 
-            room.title, 
-            room.location, 
-            room.state, 
-            room.hc_attend,
-            room.hc_max, 
-            room.hd_id, 
-            DATE_FORMAT(room.start_date, '%Y-%m-%d') AS start_date,
-            DATE_FORMAT(room.end_date, '%Y-%m-%d') AS end_date,
-            JSON_ARRAYAGG(tag.tag) AS tags
-          FROM 
-            yeohaeng_gadam.room
-          LEFT JOIN 
-            yeohaeng_gadam.tag ON room.id = tag.room_id
-          WHERE 
-            room.id IN (
-              SELECT
-                id 
-              FROM
-                room
-              WHERE
-                end_date <= '${end_date}'
-            )
-          GROUP BY 
-            room.id
-          ORDER BY 
-            room.start_date ASC, room.state ASC, room.hc_attend ASC, room.hc_max ASC;
-        `);
+        SELECT
+          room.id AS room_id, 
+          room.title, 
+          room.location, 
+          room.state, 
+          room.hc_attend,
+          room.hc_max, 
+          room.hd_id, 
+          DATE_FORMAT(room.start_date, '%Y-%m-%d') AS start_date,
+          DATE_FORMAT(room.end_date, '%Y-%m-%d') AS end_date,
+          JSON_ARRAYAGG(tag.tag) AS tags
+        FROM 
+          yeohaeng_gadam.room
+        LEFT JOIN 
+          yeohaeng_gadam.tag ON room.id = tag.room_id
+        WHERE 
+          room.id IN (
+            SELECT
+              id 
+            FROM
+              room
+            WHERE
+              end_date <= '${end_date}'
+          )
+        GROUP BY 
+          room.id
+        ORDER BY 
+          room.start_date ASC, room.state ASC, room.hc_attend ASC, room.hc_max ASC;
+      `);
     } else {
       return await this.roomRepository.query(`
         SELECT

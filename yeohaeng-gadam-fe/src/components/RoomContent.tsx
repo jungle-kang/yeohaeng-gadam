@@ -11,10 +11,9 @@ import Whiteboard from "../components/Whiteboard.jsx";
 import { Navigate, useNavigate } from "react-router-dom";
 import SettingModal from "../components/SettingModal.tsx"
 import Videochat from "../videochat-proto/Videochat.jsx";
-import Plan from "./Plan.tsx";
 // import VideoChat from "../webRTC/VideoChat.tsx";
 
-const RoomContent = ({ roomId, userId }) => {
+const RoomContent = ({ roomId, userId, colorId }) => {
   // const {roomId} = useParams<{roomId:string}>();
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
@@ -48,7 +47,7 @@ const RoomContent = ({ roomId, userId }) => {
       <div>
         <div className="flex"
              style={{
-               height: "calc(100vh - 80px - 180px)",
+               height: "calc(100vh - 80px)",
              }}
         >
           <div className="bg-blue-300 w-3/12 h-full p-2 overflow-scroll overflow-x-hidden"
@@ -56,13 +55,7 @@ const RoomContent = ({ roomId, userId }) => {
             <SearchPanel insertCard={insertCard}/>
           </div>
           <div className="flex-col w-7/12 h-full">
-            <Whiteboard/>
-            {/* <div
-      className="  bg-slate-300"
-      style={{height: "25%", width: "100%", float: "left"}}
-      >
-        <p>여행 확정</p>
-      </div> */}
+            <Whiteboard myUserId={userId} myColorId={colorId} />
           </div>
 
           <div className="w-2/12 h-full bg-blue-600">
@@ -76,12 +69,7 @@ const RoomContent = ({ roomId, userId }) => {
               <Videochat roomId={roomId}/>
             </div>
           </div>
-
           <SettingModal isOpen={modalOpen} closeModal={() => setModalOpen(false)}/>
-
-        </div>
-        <div className="h-auto">
-          <Plan/>
         </div>
       </div>
 

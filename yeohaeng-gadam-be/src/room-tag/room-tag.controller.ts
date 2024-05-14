@@ -11,7 +11,7 @@ import { Room } from './entities/room.entity';
 @ApiTags('room')
 @Controller('room')
 export class RoomController {
-  constructor(private readonly roomService: RoomService) {}
+  constructor(private readonly roomService: RoomService) { }
 
   @Post('/')
   @ApiOperation({ summary: '방 생성', description: 'room 테이블에 데이터 저장 후 [\"tag1\", \"tag2\", \"tag3\"] ... 형식으로 전달받은 데이터를 tag 테이블에 room 테이블의 id와 tag의 개별 값을 매핑하여 저장' })
@@ -24,7 +24,7 @@ export class RoomController {
       statusMsg: `데이터 저장 성공`
     };
   }
-  
+
   @Get('/all')
   @ApiOperation({ summary: '방 전체 조회', description: 'room 테이블 전체 조회' })
   async findAll(): Promise<Room[]> {
@@ -53,13 +53,13 @@ export class RoomController {
   @ApiOperation({ summary: '태그들 중 하나라도 포함하고 있는 방 조회', description: '[\"tag1\", \"tag2\", \"tag3\"] ... 형식으로 데이터 요청 시 tag1 또는 tag2 또는 tag3를 포함하고 있는 room_id 조회' })
   @ApiQuery({ name: 'tags', description: '["tag1", "tag2", "tag3"]<br>**데이터 요청 시 반드시 [] 형식이어야 합니다. []과 [""]은 다릅니다.**', required: true })
   async findRoomWithOrTags(@Query('tags') tags: string): Promise<Room[]> {
-    console.log('room-tag.controller > findRoomWithOrTags > tags :', tags);
-    console.log('room-tag.controller > findRoomWithOrTags > tags.length :', tags.length);
-    
+    // console.log('room-tag.controller > findRoomWithOrTags > tags :', tags);
+    // console.log('room-tag.controller > findRoomWithOrTags > tags.length :', tags.length);
+
     const orTagArray = JSON.parse(tags);
 
-    console.log('room-tag.controller > findRoomWithOrTags > orTagArray :', orTagArray);
-    console.log('room-tag.controller > findRoomWithOrTags > orTagArray.length :', orTagArray.length);
+    // console.log('room-tag.controller > findRoomWithOrTags > orTagArray :', orTagArray);
+    // console.log('room-tag.controller > findRoomWithOrTags > orTagArray.length :', orTagArray.length);
 
     if (orTagArray.length === 0) {
       return Object.assign({
@@ -69,7 +69,7 @@ export class RoomController {
       });
     } else {
       const roomTagsList = await this.roomService.findRoomWithOrTags(orTagArray);
-      
+
       return Object.assign({
         data: roomTagsList,
         statusCode: HttpStatus.OK,
@@ -84,11 +84,11 @@ export class RoomController {
   @ApiQuery({ name: 'end_date', description: '여행 종료 날짜', required: false })
   async findRoomByDate(@Query('start_date') start_date?: string, @Query('end_date') end_date?: string): Promise<any[]> {
     const roomTagsList = await this.roomService.findRoomByDate(start_date, end_date);
-    
+
     return Object.assign({
-        data: roomTagsList,
-        statusCode: HttpStatus.OK,
-        statusMsg: '데이터 조회 성공'
+      data: roomTagsList,
+      statusCode: HttpStatus.OK,
+      statusMsg: '데이터 조회 성공'
     });
   }
 
@@ -127,7 +127,7 @@ export class RoomController {
     };
 
     const roomTagsList = await this.roomService.findRoomWithTagsAndConditions(roomTagsDTO);
-    
+
     return {
       data: roomTagsList,
       statusCode: HttpStatus.OK,
@@ -136,10 +136,10 @@ export class RoomController {
   }
 
   @Patch('/state')
-  @ApiOperation({ summary: '사용자 방 상태 수정'})
+  @ApiOperation({ summary: '사용자 방 상태 수정' })
   @ApiBody({ type: UpdateRoomDto, description: 'id, state만 전달하시면 됩니다.' })
   async changeState(@Body() roomDTO: UpdateRoomDto): Promise<Room[]> {
-  // async changeState(@Query('id') id?: string, @Query('state') state?: string): Promise<Room[]> {
+    // async changeState(@Query('id') id?: string, @Query('state') state?: string): Promise<Room[]> {
     const rsRoomState = await this.roomService.changeState(roomDTO);
 
     return Object.assign({
@@ -178,9 +178,9 @@ export class RoomController {
   @ApiBody({ type: UpdateTagDto, description: '**데이터 요청 시 반드시 [] 형식이어야 합니다. []과 [""]은 다릅니다. 선택된 모든 태그 값을 전달해야 합니다.**' })
   // @ApiQuery({ name: 'tags', description: '["tag1", "tag2", "tag3"]', required: true })
   async changeTag(@Body() tagDTO: UpdateTagDto): Promise<Room[]> {
-  // async changeTag(@Param('room_id') room_id: string, @Query('tags') tags: string): Promise<Room[]> {
+    // async changeTag(@Param('room_id') room_id: string, @Query('tags') tags: string): Promise<Room[]> {
     const tagList = await this.roomService.changeTag(tagDTO);
-    
+
     return Object.assign({
       data: tagList,
       statusCode: HttpStatus.OK,
@@ -193,12 +193,12 @@ export class RoomController {
   @ApiParam({ name: 'id', description: '방 기본키', required: true })
   async remove(@Param('id') id: string): Promise<void> {
     await this.roomService.remove(id);
-    
+
     return Object.assign({
       data: id,
       statusCode: HttpStatus.OK,
       statusMsg: `데이터 삭제 성공`
     });
   }
-  
+
 }

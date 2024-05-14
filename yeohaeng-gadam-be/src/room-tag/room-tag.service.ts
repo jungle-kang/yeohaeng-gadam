@@ -18,7 +18,7 @@ export class RoomService {
     @InjectRepository(Room) private roomRepository: Repository<Room>,
     @InjectRepository(Tag) private tagRepository: Repository<Tag>,
     @InjectRepository(Entry) private entryRepository: Repository<Entry>
-  ) {}
+  ) { }
 
   async save(roomTagDTO: CreateRoomTagDto): Promise<CreateRoomTagDto> {
     const roomDTO: CreateRoomDto = {
@@ -43,9 +43,9 @@ export class RoomService {
           room_id: savedRoomDTO.id,
           tag: addTagArray[i]
         };
-    
+
         const saveTag = this.tagRepository.create(tagDTO);
-    
+
         await this.tagRepository.save(saveTag);
       }
     }
@@ -62,11 +62,11 @@ export class RoomService {
       end_date: roomTagDTO.end_date,
       tags: roomTagDTO.tags
     };
-    
+
     return rsRoomTagDTO;
   }
 
-  async findAll(): Promise<Room[]>{
+  async findAll(): Promise<Room[]> {
     return await this.roomRepository.find();
   }
 
@@ -95,7 +95,7 @@ export class RoomService {
   // ["tag1", "tag2"] tag1과 tag2 중 하나라도 포함하고 있는 room 테이블의 id를 배열로 반환
   async findRoomWithOrTags(orTagArray: string[]): Promise<any[]> {
     // const orTagArray = JSON.parse(tags);
-    console.log('room-tag.service > findRoomWithOrTags > orTagArray :', orTagArray);
+    // console.log('room-tag.service > findRoomWithOrTags > orTagArray :', orTagArray);
 
     let orConditions = '';
     for (let i = 1; i < orTagArray.length; i++) {
@@ -135,7 +135,7 @@ export class RoomService {
   // ["tag1", "tag2"] tag1과 tag2를 모두 포함하고 있는 room 테이블의 id를 배열로 반환
   async findRoomIdWithOrTags(tags: string): Promise<any[]> {
     const orTagArray = JSON.parse(tags);
-    
+
     // console.log('room-tag.service > findRoomIdWithOrTags > orTagArray :', orTagArray);
 
     const roomIdList: string[] = (await this.roomRepository.query(`
@@ -183,7 +183,7 @@ export class RoomService {
           room.start_date ASC, room.state ASC, room.hc_attend ASC, room.hc_max ASC;
       `);
     } else if (start_date === undefined) {
-        return await this.roomRepository.query(`
+      return await this.roomRepository.query(`
           SELECT
             room.id AS room_id, 
             room.title, 
@@ -331,12 +331,12 @@ export class RoomService {
           })
           .getRawMany();
       } else {  // roomTagsDTO.tags가 있으면
-        console.log('room-tag.service > findRoomWithTagsAndConditions > JSON.parse(roomTagsDTO.tags).length :', JSON.parse(roomTagsDTO.tags).length);
-        
+        // console.log('room-tag.service > findRoomWithTagsAndConditions > JSON.parse(roomTagsDTO.tags).length :', JSON.parse(roomTagsDTO.tags).length);
+
         const roomIdList = await this.findRoomIdWithOrTags(roomTagsDTO.tags);
 
-        console.log('room-tag.service > findRoomWithTagsAndConditions > roomIdList :', roomIdList);
-        
+        // console.log('room-tag.service > findRoomWithTagsAndConditions > roomIdList :', roomIdList);
+
         if (roomIdList.length > 0) {
           return await this.roomRepository.createQueryBuilder('room')
             .leftJoinAndSelect('room.tags', 'tag')
@@ -360,7 +360,7 @@ export class RoomService {
               'room.state': 'ASC',
               'room.hc_attend': 'ASC',
               'room.hc_max': 'ASC'
-            })        
+            })
             .getRawMany();
         }
       }
@@ -402,15 +402,15 @@ export class RoomService {
       allColorArray.push(i);
     }
 
-    console.log('room-tag.service > allColorArray :', allColorArray)
+    // console.log('room-tag.service > allColorArray :', allColorArray)
 
     // 색상표 배열과 존재하는 색상의 차집합을 계산해 추가할 수 있는 색상들 저장
     const addColorArray: number[] = allColorArray.filter(color => !(rsRoomEnter[0].colors).includes(color));
-    
+
     addColorArray.sort()
 
-    console.log('room-tag.service > addColorArray :', addColorArray[0]);
-    
+    // console.log('room-tag.service > addColorArray :', addColorArray[0]);
+
     const existUserArray: string[] = rsRoomEnter[0].users
 
     // 참가 인원이 최대 인원보다 작고
@@ -420,9 +420,9 @@ export class RoomService {
       await this.roomRepository.update(room_id, {
         hc_attend: () => 'hc_attend + 1',
       });
-    
-      console.log('room-tag.service > changeRoomEnter : 참가 완료');
-    
+
+      // console.log('room-tag.service > changeRoomEnter : 참가 완료');
+
       const entryDTO: CreateEntryDto = {
         room_id: room_id,
         user_id: user_id,
@@ -430,16 +430,16 @@ export class RoomService {
       }
       const saveEntry = this.entryRepository.create(entryDTO);
       const savedEntry = await this.entryRepository.save(saveEntry);
-      
-      console.log('room-tag.service > changeRoomEnter > savedEntry :', savedEntry);
-      
+
+      // console.log('room-tag.service > changeRoomEnter > savedEntry :', savedEntry);
+
       return true;
     } else if (existUserArray.includes(user_id)) {  // 사용자가 이미 참가한 방이라면
-      console.log('room-tag.service > changeRoomEnter : 이미 참가');
+      // console.log('room-tag.service > changeRoomEnter : 이미 참가');
 
       return true;
     } else {
-      console.log('room-tag.service > changeRoomEnter : 참가 불가');
+      // console.log('room-tag.service > changeRoomEnter : 참가 불가');
 
       return false;
     }
@@ -467,7 +467,7 @@ export class RoomService {
 
     // 참가 인원이 1명보다 많고
     // 사용자가 참가한 방이라면
-    if(rsRoomExit[0].room_exit === 'true' && existUserArray.includes(user_id)) {
+    if (rsRoomExit[0].room_exit === 'true' && existUserArray.includes(user_id)) {
       if (hd_id === user_id) {  // 방장이 나가면 방장 위임
         await this.roomRepository.update(room_id, {
           hd_id: existUserArray[1]
@@ -486,7 +486,7 @@ export class RoomService {
       // room 테이블의 id를 외래키로 가지고 있는 행을 삭제
       await this.entryRepository.delete({ room_id: room_id });
       await this.tagRepository.delete({ room_id: room_id });
-      
+
       // 방 삭제
       await this.roomRepository.delete({ id: room_id });
 
@@ -524,14 +524,14 @@ export class RoomService {
       for (let i = 1; i < removeTagArray.length; i++) {
         orConditions += `OR tag = '${removeTagArray[i]}' `;
       }
-      
+
       // console.log('room-tag.service > changeTag > removeTagArray :', removeTagArray);
 
       // 변경할 태그와 존재했던 태그 배열의 차집합을 계산해 신규 선택할 태그들 저장
       const addTagArray: string[] = changeTagArray.filter(tag => !existTagArray.includes(tag));
       let values = '';
       for (let i = 0; i < addTagArray.length; i++) {
-        if(i !== ((addTagArray.length)-1)){
+        if (i !== ((addTagArray.length) - 1)) {
           values += `(${tagDTO.room_id}, '${addTagArray[i]}'),`;
         } else {
           values += `(${tagDTO.room_id}, '${addTagArray[i]}')`;
@@ -567,7 +567,7 @@ export class RoomService {
   async remove(id: string): Promise<void> {
     await this.roomRepository.delete({ id: id });
   }
-  
+
 }
 function createArrayWithInt(hc_max: any) {
   throw new Error('Function not implemented.');

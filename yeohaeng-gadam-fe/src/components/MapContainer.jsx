@@ -101,7 +101,7 @@ function ResultCard({res, i, insertCard}) {
 
             ) : (
                 <button
-                    className="bg-gray-200 rounded-md h-full w-full text-2xl font-bold text-gray-400"
+                    className="bg-gray-200 hover:bg-gray-300 rounded-md h-full w-full text-2xl font-bold text-gray-400"
                     onClick={() => onClickHandler(res)}
                 >
                     +

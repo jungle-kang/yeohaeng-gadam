@@ -15,192 +15,312 @@ import {
 import { LiveMap, LiveObject } from "@liveblocks/client";
 import { shallow } from "@liveblocks/react";
 
-const distanceMatrix = null;
+const DEAFULT_PLACE_NUM = 4;
+const MAX_LIKES = 4; // 최대 좋아요 수; 이상적으로는 방 정보에서 받아옴
+const MAX_DISCOUNT = 0.8; // 좋아요 수에 비례한 최대 거리 감쇠 계수
+const PLACE_LIMIT = 16; // 경로 계산 목적지 수 한도; 초과하면 휴리스틱 적용
 
 export default function SuggestCourse() {
-  const [distRec, setDistRec] = useState([]);
-  const [likeRec, setLikeRec] = useState([]);
-  const [placeNum, setPlaceNum] = useState(6);
+  // const [distRec, setDistRec] = useState([]);
+  // const [likeRec, setLikeRec] = useState([]);
+  const [pathDisc, setPathDisc] = useState("");
+  const [placeNum, setPlaceNum] = useState(DEAFULT_PLACE_NUM);
   const [suggestIds, setSuggestIds] = useState([]);
   // let suggestIds = [];
 
   const [{ userId, cursor, selectedPageId, selectedCardId, lineStartCardId }, updateMyPresence] = useMyPresence();
   const pages = useStorage((root) => root.pages);
-  // const cardIds = useStorage(
-  //   (root) => Array.from(root.pages.get(selectedPageId).cards.keys()),
-  //   shallow
-  // );
-
-  // function generateRecommend() {
-  //     // TODO
-  //     setDistRec(11);
-  //     setLikeRec(13);
-  // }
 
   // 장소 간 거리 행렬
-  const distMatrix = distanceMatrix;
+  // const distMatrix = null;
+  // const [distMatrix, setDistMatrix] = useState();
 
   // 순열 생성 함수
-  const getPermutations = (arr, selectNumber) => {
-    const results = [];
-    if (selectNumber === 1) return arr.map((value) => [value]);
-    arr.forEach((fixed, index, origin) => {
-      const rest = [...origin.slice(0, index), ...origin.slice(index + 1)];
-      const permutations = getPermutations(rest, selectNumber - 1);
-      const attached = permutations.map((permutation) => [fixed, ...permutation]);
-      results.push(...attached);
-    });
-    return results;
+  // const getPermutations = (arr, selectNumber) => {
+  //   const results = [];
+  //   if (selectNumber === 1) return arr.map((value) => [value]);
+  //   arr.forEach((fixed, index, origin) => {
+  //     const rest = [...origin.slice(0, index), ...origin.slice(index + 1)];
+  //     const permutations = getPermutations(rest, selectNumber - 1);
+  //     const attached = permutations.map((permutation) => [fixed, ...permutation]);
+  //     results.push(...attached);
+  //   });
+  //   return results;
+  // };
+
+  // 거리 행렬 생성
+  const getDistMatrix = (places) => {
+    return (
+      places.map((place1) =>
+        places.map((place2) =>
+          scoreFuncLikeSub(place1, place2)
+        )
+      )
+    );
+  };
+
+  // 목적지 수가 너무 많으면 프림 알고리즘으로 먼 목적지를 제외시킴
+  const trimCandidates = (distMatrix, candidateNum, initialCandidates) => {
+    let candidates = initialCandidates;
+    // candidateNum만큼의 목적지를 선택
+    for (let i = initialCandidates.length; i < candidateNum; i++) {
+      // 현재 candidates에 인접한 다른 candidate중에서 가장 거리가 작은 목적지를 선택
+      let minScore = Infinity;
+      let minCandidate = null;
+
+      candidates.forEach((candidate) => {
+        const distArr = distMatrix[candidate];
+        distArr.forEach((curScore, idx) => {
+          if (candidates.includes(idx)) {
+            return;
+          }
+
+          if (curScore < minScore) {
+            minScore = curScore;
+            minCandidate = idx;
+          }
+        });
+      });
+
+      candidates = [...candidates, minCandidate];
+    }
+
+    console.log("trimCandidates: result ", candidates);
+
+    return candidates;
+
+    // placePerm.forEach((perm) => {
+    //   const path = [start, ...perm, end];
+    //   const curScore = path.reduce((acc, cur, i) => {
+    //     if (i === path.length - 1) return acc;
+    //     const curDist = distMatrix[cur][path[i + 1]];
+    //     return acc + curDist;
+    //   }, 0);
+
+    //   if (curScore < minScore) {
+    //     minScore = curScore;
+    //     bestPath = path;
+    //   }
+    // });
   };
 
   // 가장 짧은 경로 찾는 함수
-  const findShortestPath = (waypoints, distMatrix, places, start, end, placeNum, scoreFunc) => {
-    console.log("waypoints: ", waypoints);
+  const findShortestPath = (waypoints, distMatrix, start, end, placeNum) => {
+    // console.log("waypoints: ", waypoints);
+    let minScore = Infinity;
+    let bestPath = [];
 
-    let shortestDistance = Infinity;
-    let shortestPath = [];
+    const startIdx = waypoints.findIndex((i) => i === start);
+    const endIdx = waypoints.findIndex((i) => i === end);
 
-    const restWaypoints = start < end
-      ? [...waypoints.slice(0, start), ...waypoints.slice(start + 1, end), ...waypoints.slice(end + 1)]
-      : [...waypoints.slice(0, end), ...waypoints.slice(end + 1, start), ...waypoints.slice(start + 1)];
-    // const restWaypoints = waypoints.slice(0, 1);
+    const restWaypoints = startIdx < endIdx // 출발지와 도착지를 waypoints에서 제외
+      ? [...waypoints.slice(0, startIdx), ...waypoints.slice(startIdx + 1, endIdx), ...waypoints.slice(endIdx + 1)]
+      : [...waypoints.slice(0, endIdx), ...waypoints.slice(endIdx + 1, startIdx), ...waypoints.slice(startIdx + 1)];
 
-    console.log("restWaypoints: ", restWaypoints);
+    // console.log("restWaypoints: ", restWaypoints);
 
-    // const permutations = getPermutations(restWaypoints, placeNum - 2);
+    // 경로로 가능한 모든 경우의 수 계산
     const placePerm = permutations(restWaypoints, placeNum - 2);
 
-    console.log("permutations: ", placePerm);
+    // console.log("permutations: ", placePerm);
     placePerm.forEach((perm) => {
       const path = [start, ...perm, end];
-      const distance = path.reduce((acc, cur, i) => {
+      const curScore = path.reduce((acc, cur, i) => {
         if (i === path.length - 1) return acc;
-        // const curDist = distMatrix[cur][path[i + 1]];
-        const curDist = scoreFunc(places[cur], places[path[i + 1]]);
+        const curDist = distMatrix[cur][path[i + 1]];
         return acc + curDist;
       }, 0);
 
-      if (distance < shortestDistance) {
-        shortestDistance = distance;
-        shortestPath = path;
+      if (curScore < minScore) {
+        minScore = curScore;
+        bestPath = path;
+        // console.log("findShortestPath(): updated path = ", path); /////////////////////
       }
     });
-    return { shortestPath, shortestDistance };
+
+    return { bestPath, minScore };
   };
 
+  // const findShortestPath = (waypoints, distMatrix, places, start, end, placeNum, scoreFunc) => {
+  //   console.log("waypoints: ", waypoints);
+
+  //   let shortestDistance = Infinity;
+  //   let shortestPath = [];
+
+  //   const restWaypoints = start < end
+  //     ? [...waypoints.slice(0, start), ...waypoints.slice(start + 1, end), ...waypoints.slice(end + 1)]
+  //     : [...waypoints.slice(0, end), ...waypoints.slice(end + 1, start), ...waypoints.slice(start + 1)];
+  //   // const restWaypoints = waypoints.slice(0, 1);
+
+  //   console.log("restWaypoints: ", restWaypoints);
+
+  //   // const permutations = getPermutations(restWaypoints, placeNum - 2);
+  //   const placePerm = permutations(restWaypoints, placeNum - 2);
+
+  //   console.log("permutations: ", placePerm);
+  //   placePerm.forEach((perm) => {
+  //     const path = [start, ...perm, end];
+  //     const distance = path.reduce((acc, cur, i) => {
+  //       if (i === path.length - 1) return acc;
+  //       // const curDist = distMatrix[cur][path[i + 1]];
+  //       const curDist = scoreFunc(places[cur], places[path[i + 1]]);
+  //       return acc + curDist;
+  //     }, 0);
+
+  //     if (distance < shortestDistance) {
+  //       shortestDistance = distance;
+  //       shortestPath = path;
+  //     }
+  //   });
+  //   return { shortestPath, shortestDistance };
+  // };
+
   // React 상태 및 실행 로직
-  const [result, setResult] = useState({ shortestPath: [], shortestDistance: 0 });
+  // const [result, setResult] = useState({ shortestPath: [], shortestDistance: 0 });
 
   const handleFindPath = (placeNum) => {
+    const plan = pages.get(selectedPageId).plan;
+    const startId = plan.startId;
+    const endId = plan.endId;
+    if (!startId || !endId) {
+      alert("출발지와 도착지를 설정해주세요!");
+      return;
+    }
+
     // Liveblocks로부터 카드 데이터 받기
     const cards = pages.get(selectedPageId).cards;
     const cardIds = Array.from(pages.get(selectedPageId).cards.keys());
-    const filteredCardIds = cardIds.filter((cardId) => (
+    const placeCardIds = cardIds.filter((cardId) => (
       cards.get(cardId).cardType === "place"
     ));
 
-    const places = filteredCardIds.map((cardId) => cards.get(cardId));
+    if (placeCardIds.length < placeNum) {
+      alert("목적지 수가 카드 수보다 많아요!");
+      return;
+    }
 
-    // console.log("Filtered cards: ", filteredCardIds);
+    const places = placeCardIds.map((cardId) => cards.get(cardId));
+    const startIdx = placeCardIds.findIndex((cardId) => cardId === startId);
+    const endIdx = placeCardIds.findIndex((cardId) => cardId === endId);
 
-    // filteredCardIds.map((cardId) => {
-    //   console.log(cards.get(cardId));
-    // })
+    const distMatrix = getDistMatrix(places); // 거리 행렬 생성
+
+    // let candidates = [...Array(places.length).keys()]; // 완전 탐색에 사용할 목적지 후보
+
+    // 목적지 수가 너무 많으면 휴리스틱 사용
+    if (placeCardIds.length > PLACE_LIMIT) {
+      console.log("handleFindPath(): too many places, use heuristics");
+      // 프림 알고리즘 사용하여 출발/도착지점과 가까운 목적지를 걸러내기
+      // candidates = trimCandidates(distMatrix, PLACE_LIMIT, [startIdx, endIdx]);
+    }
+
+    // 완전 탐색에 사용할 목적지 후보
+    const candidates = placeCardIds.length > PLACE_LIMIT
+    ? trimCandidates(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 프림 알고리즘으로 걸러내기
+    : [...Array(places.length).keys()] // 많지 않으면 모두 사용
+
+    // console.log("Filtered cards: ", placeCardIds);
 
     console.log("places: ", places);
 
-    // 거리 행렬을 계산합니다.
-    const distanceMatrix = places.map((place1) =>
-      places.map((place2) =>
-        getDistFromCord(place1.placeX, place1.placeY, place2.placeX, place2.placeY)
-      )
+    const result = findShortestPath(
+      candidates, // 입력할 방문 장소 인덱스의 배열
+      // places,     // 방문 장소 리스트 (좋아요 확인용)
+      distMatrix, // 거리 행렬
+      startIdx,   // 출발 장소 인덱스
+      endIdx,     // 도착 장소 인덱스
+      placeNum,   // 방문할 장소의 총 개수 (출발 도착 포함)
     );
 
-    // console.log("distmat: ", distanceMatrix); 
+    const bestPath = result["bestPath"];
 
-    // 거리 기반 추천
-    const { shortestPath, shortestDistance } = findShortestPath(
-      [...Array(places.length).keys()], // 입력할 방문 장소 인덱스의 배열
-      distanceMatrix,                   // 방문 장소의 거리 행렬
-      places,                           // 방문 장소 리스트 (좋아요 확인용)
-      0,                                // 출발 장소 인덱스
-      1,                                // 도착 장소 인덱스
-      placeNum,                         // 방문할 장소의 총 개수 (출발 도착 포함)
-      scoreFuncDist,                    // 두 장소에 대한 점수 계산 함수 (낮을수록 좋음)
-    );
+    console.log("bestPath ", bestPath);
 
-    // console.log("path: ", shortestPath, ", dist: ", shortestDistance);
+    setSuggestIds(bestPath.slice());
 
-    shortestPath.reduce((acc, cur, i) => {
-      if (i === shortestPath.length - 1) return acc;
-      const curDist = distanceMatrix[cur][shortestPath[i + 1]];
-      console.log(`${places[cur].placeName}(${cur}) to ${places[shortestPath[i + 1]].placeName}(${shortestPath[i + 1]}) dist: ${curDist}`);
-      return acc + curDist;
-    }, 0);
-
-    setDistRec(
-      shortestPath.reduce((acc, cur, i) => {
+    setPathDisc(
+      bestPath.reduce((acc, cur, i) => {
         if (i === 0) return places[cur].placeName;
         return acc + "->" + places[cur].placeName;
       }, "")
-      + `, 거리: ${shortestDistance}km`
     );
-
-    // 좋아요 기반 추천
-    const likeResult = findShortestPath(
-      [...Array(places.length).keys()], // 입력할 방문 장소 인덱스의 배열
-      distanceMatrix,                   // 방문 장소의 거리 행렬
-      places,                           // 방문 장소 리스트 (좋아요 확인용)
-      0,                                // 출발 장소 인덱스
-      1,                                // 도착 장소 인덱스
-      placeNum,                         // 방문할 장소의 총 개수 (출발 도착 포함)
-      scoreFuncLikeSub,                    // 두 장소에 대한 점수 계산 함수 (낮을수록 좋음)
-    );
-
-    const likePath = likeResult["shortestPath"];
-    const likeDistance = likeResult["shortestDistance"];
-
-    console.log("path: ", likePath, ", dist: ", likeDistance);
-
-    likePath.reduce((acc, cur, i) => {
-      if (i === likePath.length - 1) return acc;
-      const curDist = distanceMatrix[cur][likePath[i + 1]];
-      console.log(`${places[cur].placeName}(${cur}) to ${places[likePath[i + 1]].placeName}(${likePath[i + 1]}) dist: ${curDist}`);
-      return acc + curDist;
-    }, 0);
-
-    console.log("setting suggest ids: ", likePath); //////////
-
-    setSuggestIds(likePath.slice());
-
-    setLikeRec(
-      likePath.reduce((acc, cur, i) => {
-        if (i === 0) return places[cur].placeName;
-        return acc + "->" + places[cur].placeName;
-      }, "")
-      + `, 거리: ${likeDistance}km`
-    );
-
   };
 
   const handleSelectChange = (item) => {
     setPlaceNum(item);
   }
 
-  const onApplyBtnClick = useMutation(({ storage, self }, suggestPath) => {
-    const cards = pages.get(selectedPageId).cards;
-    const cardIds = Array.from(pages.get(selectedPageId).cards.keys());
-    const filteredCardIds = cardIds.filter((cardId) => (
-      cards.get(cardId).cardType === "place"
-    ));
-    // const places = filteredCardIds.map((cardId) => cards.get(cardId));
+  /////////////////////////////////// 패널 조작
+
+  const setCardAsStart = useMutation(({ storage, self }) => {
+    const selectedCardId = self.presence.selectedCardId;
+    if (selectedCardId == null) {
+      return;
+    }
+
+    const card = storage.get("pages").get(selectedPageId).get("cards").get(selectedCardId);
+    if (card.get("cardType") !== "place") {
+      return;
+    }
 
     const plan = storage.get("pages").get(selectedPageId).get("plan");
+
+    plan.update({
+      startId: selectedCardId,
+    })
+
+    if (plan.get("endId") === selectedCardId) {
+      plan.update({
+        endId: null,
+      })
+    }
+  }, []);
+
+  const setCardAsEnd = useMutation(({ storage, self }) => {
+    const selectedCardId = self.presence.selectedCardId;
+    if (selectedCardId == null) {
+      return;
+    }
+
+    const card = storage.get("pages").get(selectedPageId).get("cards").get(selectedCardId);
+    if (card.get("cardType") !== "place") {
+      return;
+    }
+
+    const plan = storage.get("pages").get(selectedPageId).get("plan");
+
+    plan.update({
+      endId: selectedCardId,
+    })
+
+    if (plan.get("startId") === selectedCardId) {
+      plan.update({
+        startId: null,
+      })
+    }
+  }, []);
+
+  const onApplyBtnClick = useMutation(({ storage, self }, suggestPath) => {
+    // const cards = pages.get(selectedPageId).cards;
+    const cards = storage.get("pages").get(selectedPageId).get("cards");
+    // console.log("cards ", cards);
+    const cardIds = Array.from(cards.keys());
+    // console.log("cardIds ", cardIds);
+    const placeCardIds = cardIds.filter((cardId) => (
+      // cards.get(cardId).cardType === "place"
+      cards.get(cardId).get("cardType") === "place"
+    ));
+    // const places = placeCardIds.map((cardId) => cards.get(cardId));
+
+    // console.log("placeCardIds ", placeCardIds);
+
+    const plan = storage.get("pages").get(selectedPageId).get("plan");
+
 
     console.log("suggest plan: ", suggestPath);
 
     const newPlan = suggestPath.reduce((acc, cur, i) => {
-      return [...acc, filteredCardIds[cur]];
+      return [...acc, placeCardIds[cur]];
     }, []);
 
     console.log("reduced plan: ", newPlan);
@@ -210,26 +330,60 @@ export default function SuggestCourse() {
     })
   }, []);
 
+  const cards = pages && pages.get(selectedPageId).cards;
+
+  const startCardId = useStorage((root) =>
+    root.pages.get(selectedPageId).plan.startId
+  );
+  const endCardId = useStorage((root) =>
+    root.pages.get(selectedPageId).plan.endId
+  );
+
+  const startPlaceName = cards && startCardId && cards.get(startCardId).placeName;
+  const endPlaceName = cards && endCardId && cards.get(endCardId).placeName;
+
   return (
-    <>
-      <div>코스 추천</div>
-      <SelectBox selectList={[2, 3, 4, 5, 6, 7, 8]} defaultValue={6}
-        onSelectChange={handleSelectChange} />
-      <button className=""
-        // onClick={generateRecommend}
-        onClick={() => handleFindPath(placeNum)}
-      >
-        추천하기
-      </button>
-      <button className=""
-        // onClick={generateRecommend}
-        onClick={() => onApplyBtnClick(suggestIds)}
-      >
-        적용하기
-      </button>
-      <div>거리 기반 추천: {distRec}</div>
-      <div>선호 기반 추천: {likeRec}</div>
-    </>
+    <div>
+      <div>
+        {/* <SelectBox selectList={[2, 3, 4, 5, 6, 7, 8]} defaultValue={6}
+          onSelectChange={handleSelectChange} /> */}
+
+        목적지 수
+        <input className="m-1"
+          type="number" min="2" max="8" defaultValue={DEAFULT_PLACE_NUM}
+          onChange={(e) => { setPlaceNum(e.target.value) }}
+        />
+
+        <button className="bg-white rounded-md m-1"
+          onClick={setCardAsStart}
+        >
+          출발설정
+        </button>
+        <button className="bg-white rounded-md m-1"
+          onClick={setCardAsEnd}
+        >
+          도착설정
+        </button>
+        <button className="bg-white rounded-md m-1"
+          // onClick={generateRecommend}
+          onClick={() => handleFindPath(placeNum)}
+        >
+          추천하기
+        </button>
+        <button className="bg-white rounded-md m-1"
+          onClick={() => onApplyBtnClick(suggestIds)}
+        >
+          적용하기
+        </button>
+      </div>
+
+      <div>출발 지점: {startPlaceName}</div>
+      <div>도착 지점: {endPlaceName}</div>
+
+      {/* <div>거리 기반 추천: {distRec}</div> */}
+      {/* <div>선호 기반 추천: {likeRec}</div> */}
+      <div>추천 경로: {pathDisc}</div>
+    </div>
   );
 }
 
@@ -249,13 +403,13 @@ function scoreFuncLike(place1, place2) {
   return score;
 }
 
-// 좋아요 하나당 거리 10% 차감
+// 좋아요 하나당 거리 20% 차감
 function scoreFuncLikeSub(place1, place2) {
   const score =
     getDistFromCord(place1.placeX, place1.placeY, place2.placeX, place2.placeY)
     // * (1 - 0.1125 * place1.likedUsers.length - 0.1125 * place2.likedUsers.length);
-    * (1 - 0.2 * place1.likedUsers.length)
-    * (1 - 0.2 * place2.likedUsers.length);
+    * (1 - MAX_DISCOUNT / MAX_LIKES * place1.likedUsers.length)
+    * (1 - MAX_DISCOUNT / MAX_LIKES * place2.likedUsers.length);
 
   return score;
 }

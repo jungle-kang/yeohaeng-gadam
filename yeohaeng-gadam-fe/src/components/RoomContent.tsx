@@ -20,12 +20,24 @@ const RoomContent = ({ roomId, userId, userName, colorId }) => {
   // const [myColor, setMyColor] = useState(null);
 
   // liveblocks에 새로운 shape를 추가
-  const insertCard = useMutation(({ storage, self }, data) => {
-    const pageId = self.presence.selectedPageId;
+  const insertCard = useMutation(({ storage, self, setMyPresence }, data) => {
+    const selectedPageId = self.presence.selectedPageId;
+    const selectedCardId = self.presence.selectedCardId;
+    
+    const prevCard = storage.get("pages").get(selectedPageId).get("cards").get(selectedCardId);
+
+    const x = prevCard ? prevCard.get("x") + 30 : 0;
+    const y = prevCard ? prevCard.get("y") + 30 : 0;
+
+    console.log("new card pos: ", x, y);
+    
+    // 새 카드
     const cardId = nanoid();
     const card = new LiveObject({
-      x: 300,
-      y: 300,
+      // x: 300,
+      // y: 300,
+      x: x,
+      y: y,
       fill: "rgb(147, 197, 253)",
       cardType: "place",
       placeName: data.place_name,
@@ -39,8 +51,9 @@ const RoomContent = ({ roomId, userId, userName, colorId }) => {
       // placeCord: "0,0",
     });
     // console.log("created card at ", x, ", ", y); /////////////
-    storage.get("pages").get(pageId).get("cards").set(cardId, card);
-    // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
+    storage.get("pages").get(selectedPageId).get("cards").set(cardId, card);
+
+    setMyPresence({ selectedCardId: cardId }, { addToHistory: true });
   }, []);
 
   return (
@@ -60,7 +73,7 @@ const RoomContent = ({ roomId, userId, userName, colorId }) => {
 
           <div className="w-2/12 h-full bg-blue-600">
             <div
-                className="flex justify-center h-10 bg-blue-50 text-center font-bold text-4l logo-font rounded-lg mt-5 mr-5 ml-5">
+                className="flex justify-center h-6 bg-blue-50 text-center font-bold text-4l logo-font rounded-lg mt-5 mr-5 ml-5">
               <button
                   onClick={() => setModalOpen(true)}>방 설정
               </button>

@@ -15,8 +15,8 @@ import {
 // import Recommend from '../../map/recommendProto.jsx';
 import SuggestCourse from './SuggestCourse.jsx';
 
-const PLAN_PANEL_HEIGHT = 200;
-const SUGGEST_PANEL_HEIGHT = 200;
+const PLAN_PANEL_HEIGHT = 150;
+const SUGGEST_PANEL_HEIGHT = 120;
 
 const Tab = ({ label, onClick, isActive }) => {
     return (
@@ -61,7 +61,7 @@ const DataCard = ({ data }) => {
     );
 };
 
-const Plan = () => {
+const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => {
     const { roomId } = useParams();
     const [activeTab, setActiveTab] = useState(0);
     const [post, setPost] = useState([{
@@ -210,6 +210,11 @@ const Plan = () => {
             return;
         }
 
+        const card = storage.get("pages").get(selectedPageId).get("cards").get(selectedCardId);
+        if (card.get("cardType") !== "place") {
+            return;
+        }
+
         const plan = storage.get("pages").get(selectedPageId).get("plan");
         const placeIds = plan.get("placeIds");
 
@@ -297,17 +302,68 @@ const Plan = () => {
 
 
 
-    const [isPlanOpen, setIsPlanOpen] = useState(false);
-    // 추천 기능
-    const [isSuggestOpen, setIsSuggetsOpen] = useState(false);
+    // const [isPlanOpen, setIsPlanOpen] = useState(false);
+    // // 추천 기능
+    // const [isSuggestOpen, setIsSuggetsOpen] = useState(false);
 
     const onPlanToggleClick = () => {
         setIsPlanOpen((prev) => !prev);
     }
 
     const toggleSuggest = () => {
-        setIsSuggetsOpen((prev) => !prev);
+        setIsSuggetOpen((prev) => !prev);
     }
+
+    ////////////////// 렌더링
+    const planCardList = placeIds.map((cardId) => {
+        const card = cards.get(cardId);
+        if (!card) {
+            return;
+        }
+
+        return (
+            <div className="relative bg-green-100 w-24 h-16 rounded-md my-4 mx-2"
+                key={cardId}
+            >
+                <div>
+                    {card.placeName}
+                </div>
+                <button className="bg-white w-6 rounded-full"
+                    style={{
+                        position: "absolute",
+                        top: "100%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%) translateX(-100%)",
+                    }}
+                    onClick={() => onCardMoveLeftClick(cardId)}
+                >
+                    {"<"}
+                </button>
+                <button className="bg-white w-6 rounded-full"
+                    style={{
+                        position: "absolute",
+                        top: "100%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%) translateX(100%)",
+                    }}
+                    onClick={() => onCardMoveRightClick(cardId)}
+                >
+                    {">"}
+                </button>
+                <button className="bg-black w-6 rounded-full text-white"
+                    style={{
+                        position: "absolute",
+                        left: "100%",
+                        top: "0",
+                        transform: "translate(-50%, -50%)",
+                    }}
+                    onClick={() => onCardDeleteClick(cardId)}
+                >
+                    X
+                </button>
+            </div>
+        );
+    });
 
     return (
         <>
@@ -344,42 +400,18 @@ const Plan = () => {
                 >
                     PLAN
                 </button>
-                <button className="bg-white"
+                <button className="bg-white rounded-md m-1"
                     onClick={insertCard}
                 >
                     일정추가
                 </button>
-                <button className="bg-white"
+                <button className="bg-white rounded-md m-1"
                     onClick={toggleSuggest}
                 >
                     코스추천
                 </button>
-                <div>
-                    {placeIds.map((cardId) => {
-                        const card = cards.get(cardId);
-                        return (
-                            <div className="bg-green-100"
-                                key={cardId}
-                            >
-                                {card.placeName}
-                                <button className="bg-white"
-                                    onClick={() => onCardMoveLeftClick(cardId)}
-                                >
-                                    {"<"}
-                                </button>
-                                <button className="bg-white"
-                                    onClick={() => onCardMoveRightClick(cardId)}
-                                >
-                                    {">"}
-                                </button>
-                                <button className="bg-white"
-                                    onClick={() => onCardDeleteClick(cardId)}
-                                >
-                                    X
-                                </button>
-                            </div>
-                        );
-                    })}
+                <div className="flex flex-row overflow-x-auto">
+                    {planCardList}
                 </div>
             </div>
         </>

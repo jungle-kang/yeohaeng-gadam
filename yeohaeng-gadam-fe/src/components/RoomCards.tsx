@@ -22,7 +22,7 @@ const RoomCards = ({ post }) => {
                                     <div className="flex mt-2">
                                         {tags[0] === null ? (<></>) : (tags.map((item, idx) => (
                                             <div key={idx} className="ring-1 w-14 h-7 bg-blue-200 ml-2 text-center pt-1 font-bold rounded-lg text-sm  hover:bg-blue-600"
-                                            onClick={()=>navigate(`/search?tags=${item}`)}
+                                            onClick={() => navigate(`/search?tags=${encodeURIComponent(JSON.stringify([item]))}`)}
                                             >{item}</div>
                                         )))}
                                     </div>

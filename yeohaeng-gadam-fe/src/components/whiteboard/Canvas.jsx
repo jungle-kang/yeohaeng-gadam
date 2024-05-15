@@ -45,6 +45,10 @@ export default function Canvas({ pingEventList, setPingEventList }) {
   // const [lineStartCardId, setLineStartCardId] = useState(null);
   const [lineIndicatorEndPos, setLineIndicatorEndPos] = useState({ x: 0, y: 0 });
 
+  // 추천 기능
+  const [isPlanOpen, setIsPlanOpen] = useState(false);
+  const [isSuggestOpen, setIsSuggetOpen] = useState(false);
+
   // const page = useStorage((root) => root.pages.get(pageId));
 
   const self = useSelf();
@@ -218,6 +222,18 @@ export default function Canvas({ pingEventList, setPingEventList }) {
       plan.update({
         placeIds: filteredPlan,
       })
+    }
+
+    if (plan.get("startId") === cardId) {
+      plan.update({
+        startId: null,
+      });
+    }
+
+    if (plan.get("endId") === cardId) {
+      plan.update({
+        endId: null,
+      });
     }
 
     // selected 상태라면 삭제
@@ -711,6 +727,59 @@ export default function Canvas({ pingEventList, setPingEventList }) {
     );
   });
 
+  // const plan = pages.get(selectedPageId).get("plan");
+  // const pages = useStorage((root) => root.pages);
+  // const plan = useStorage((root) => root.pages.get(selectedPageId).plan);
+  // console.log("plan ", plan);
+  // const placeIds = plan && plan.placeIds;
+  // console.log("placeIds ", placeIds);
+  const placeIds = useStorage((root) => root.pages.get(selectedPageId).plan.placeIds);
+  const planLineList = isPlanOpen ? placeIds.map((placeId, i) => {
+    if (i === 0) {
+      return;
+    }
+
+    if (!canvasRef.current) {
+      return null;
+    }
+
+    const card1 = cards.get(placeIds[i - 1]);
+    const card2 = cards.get(placeIds[i]);
+
+    if (!card1 || !card2) {
+      console.log("planLineList error: card1->", card1, " , card2->", card2);
+      return;
+    }
+
+    const x1 = canvasRef.current.offsetWidth / 2
+      + (card1.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
+    const y1 = canvasRef.current.offsetHeight / 2
+      + (card1.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+    const x2 = canvasRef.current.offsetWidth / 2
+      + (card2.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
+    const y2 = canvasRef.current.offsetHeight / 2
+      + (card2.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+
+    if (Math.max(x1, x2) < 0
+      || Math.min(x1, x2) > canvasRef.current.getBoundingClientRect().width
+      || Math.max(y1, y2) < 0
+      || Math.min(y1, y2) > canvasRef.current.getBoundingClientRect().height) {
+      return null;
+    }
+
+    return (
+      <PlanLine
+        key={i}
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        zoom={ZOOMS[canvasZoomLevel]}
+      />
+    );
+  })
+    : null;
+
   function LineIndicator() {
     if (!lineStartCardId) {
       return null;
@@ -736,7 +805,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
           style={{
             position: "absolute",
             height: 5 * ZOOMS[canvasZoomLevel],
-            zIndex: "1",
+            zIndex: "2",
             // zIndex: "-9000",
             //////////////////////
             transform: `translate(${x}px, ${y}px) translateX(-50%) rotate(${theta}rad)`,
@@ -748,7 +817,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
           style={{
             position: "absolute",
             transform: `translate(${x2}px, ${y2}px) translate(-50%, -50%)`,
-            zIndex: "1",
+            zIndex: "2",
             // zIndex: "-9000",
           }}
         >
@@ -776,6 +845,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
       {pingIndicatorList}
       {cardList}
       {lineList}
+      {planLineList}
       <LineIndicator />
 
       {/* DEBUG */}
@@ -842,7 +912,12 @@ export default function Canvas({ pingEventList, setPingEventList }) {
         }}
         onClick={(e) => { e.stopPropagation(); e.nativeEvent.stopImmediatePropagation() }}
       >
-        <Plan />
+        <Plan
+          isPlanOpen={isPlanOpen}
+          setIsPlanOpen={setIsPlanOpen}
+          isSuggestOpen={isSuggestOpen}
+          setIsSuggetOpen={setIsSuggetOpen}
+        />
       </div>
     </div>
   );
@@ -922,6 +997,8 @@ function MapCardContent({ id, card }) {
   );
   const lines = useStorage((root) => root.pages.get(selectedPageId).lines);
 
+  const placeIds = useStorage((root) => root.pages.get(selectedPageId).plan.placeIds);
+
   useEffect(() => {
     if (!kakao) {
       console.log("no kakao detected");
@@ -979,6 +1056,30 @@ function MapCardContent({ id, card }) {
       polyline.setMap(map);
     });
 
+    placeIds.map((placeId, i) => {
+      const card1 = cards.get(placeIds[i - 1]);
+      const card2 = cards.get(placeIds[i]);
+      if (!card1 || !card2) {
+        return;
+      }
+
+      const linePath = [
+        new kakao.maps.LatLng(card1.placeY, card1.placeX),
+        new kakao.maps.LatLng(card2.placeY, card2.placeX),
+      ];
+
+      const polyline = new kakao.maps.Polyline({
+        path: linePath, // 선을 구성하는 좌표배열 입니다
+        strokeWeight: 7, // 선의 두께 입니다
+        strokeColor: '#FF0000', // 선의 색깔입니다
+        strokeOpacity: 0.5, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+        strokeStyle: 'solid' // 선의 스타일입니다
+      });
+
+      // 지도에 선을 표시합니다 
+      polyline.setMap(map);
+    });
+
     // var infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
     // const container = document.getElementById('myMap');
     // const options = {
@@ -1013,7 +1114,7 @@ function MapCardContent({ id, card }) {
     //   });
     // }
 
-  }, [cardIds, lineIds]);
+  }, [cardIds, lineIds, placeIds]);
 
   return (
     <>
@@ -1295,6 +1396,27 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
         {infoBody}
       </div>
     </>
+  );
+}
+
+function PlanLine({ x1, y1, x2, y2, zoom }) {
+  const r = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+  const x = (x1 + x2) / 2;
+  const y = (y1 + y2) / 2;
+  const theta = Math.atan((y2 - y1) / (x2 - x1));
+
+  return (
+    <div className="absolute bg-red-500 h-[5px] z-[1000]"
+      style={{
+        position: "absolute",
+        height: 10 * zoom,
+        zIndex: "1",
+        // zIndex: "-5000",
+        //////////////////////
+        transform: `translate(${x}px, ${y}px) translateX(-50%) rotate(${theta}rad)`,
+        width: `${r}px`,
+      }}
+    />
   );
 }
 

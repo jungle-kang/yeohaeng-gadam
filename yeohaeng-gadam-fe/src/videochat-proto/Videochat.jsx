@@ -42,7 +42,7 @@ export default function Videochat({ roomId, myName, myColorId }) {
   let localStream = null;
   // const [localStream, setLocalStream] = useState(null); // 내 영상
   const [users, setUsers] = useState([]); // 참가중인 다른 이용자 목록
-  
+
   const [tt, sett] = useState(0); ///////////////////////////////////////////////////////
 
   let pcs = {}; // createPeerConnection으로 생성된 pc와 그 상대의 정보를 저장
@@ -360,7 +360,7 @@ export default function Videochat({ roomId, myName, myColorId }) {
     }, [])
 
     return (
-      <div className="my-2">
+      <div className="my-1 flex flex-col justify-center items-center">
         <video
           ref={ref}
           muted={muted}
@@ -373,10 +373,16 @@ export default function Videochat({ roomId, myName, myColorId }) {
             height: "15vh",
             // height: "200px",
             // margin: 5,
-            backgroundColor: COLORS[colorId]
+            backgroundColor: "black",
           }}
         />
-        {name}
+        <div className="text-center text-bold w-1/2 rounded-full"
+          style={{
+            backgroundColor: COLORS[colorId]
+          }}
+        >
+          {name}
+        </div>
       </div>
     );
   };
@@ -391,39 +397,48 @@ export default function Videochat({ roomId, myName, myColorId }) {
       }
 
       if (localStream) {
-        localStream.getTracks().forEach((track) => {track.stop()});
+        localStream.getTracks().forEach((track) => { track.stop() });
       }
     })
   }, [])
 
 
   const ontt = () => {
-    const nt = tt +1;
+    const nt = tt + 1;
     sett(nt);
   }
 
   return (
     <div className="flex flex-col mx-2">
 
-      <div>{tt}</div>
-      <button onClick={ontt}>HIT ME</button>
+      {/* <div>{tt}</div>
+      <button onClick={ontt}>HIT ME</button> */}
 
       {/* <div>{savedSocketId}</div> */}
       {/* <div>My ID: {useSelf((me) => me.connectionId)}</div> */}
-      <video className="my-2"
-        style={{
-          aspectRatio: "4/3",
-          width: "100%",
-          // height: "",
-          height: "15vh",
-          // height: "200px",
-          // margin: 5,
-          backgroundColor: COLORS[myColorId],
-        }}
-        muted
-        ref={localVideoRef}
-        autoPlay
-      />
+      <div className="my-1 flex flex-col justify-center items-center">
+        <video className=""
+          style={{
+            aspectRatio: "4/3",
+            width: "100%",
+            // height: "",
+            height: "15vh",
+            // height: "200px",
+            // margin: 5,
+            backgroundColor: "black",
+          }}
+          muted
+          ref={localVideoRef}
+          autoPlay
+        />
+        <div className="text-center text-bold w-1/2 rounded-full"
+          style={{
+            backgroundColor: COLORS[myColorId]
+          }}
+        >
+          {myName}
+        </div>
+      </div>
       {/* <Video key={socket.id} email="" stream={localStream} muted /> */}
       {users.map((user, index) => (
         // <Video key={user.id} email={user.email} stream={user.stream} />

@@ -92,22 +92,13 @@ export default function SearchBar() {
                 : searchForm
         ).toString();
 
-        navigate(`/search?${searchParams}`);
-
-        // 방 찾기에 성공한 경우 알림창 띄우기
         toast.success('검색 결과입니다!😎');
-        <ToastContainer
-                position="top-center"
-                autoClose={1500}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
+
+        
+        setTimeout(() => {
+            navigate(`/search?${searchParams}`);
+        }, 1000); // Delay for 1.5 seconds
+        
     }
 
     useEffect(() => {
@@ -178,7 +169,18 @@ export default function SearchBar() {
             {isOpen && (
                 <RoomCreateModal onClose={closeModal}/>
             )}
-
+        <ToastContainer
+                position="top-center"
+                autoClose={1500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </div>
     );
 }

@@ -54,45 +54,46 @@ export default function Header() {
     }
 };
 
-  return (
-    <header className="w-full h-20 flex flex-row bg-white mt-2">
-      <ToastContainer
-position="top-center"
-autoClose={1500}
-hideProgressBar={false}
-newestOnTop={false}
-closeOnClick
-rtl={false}
-pauseOnFocusLoss
-draggable
-pauseOnHover
-theme="light"
-// transition: Bounce,
-/>
-      <button
-        onClick={() => navigate('/')}
-        className="basis-1/5 font-bold text-4xl p-4 logo-font">
-        여행가담
-      </button>
-      <div className="basis-3/5"></div>
-      <div className="basis-1/5 h-full flex">
-       {/* 주석처리 */}
-          {isLogin ? (
-            <button className="w-1/2 h-full logo-font hover:text-gray-400" onClick={logout}>
-                로그아웃
+    return (
+        <header className="w-full px-4 sm:px-4 md:px-16 h-20 flex flex-row bg-white mt-2">
+            <ToastContainer
+                position="top-center"
+                autoClose={1500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+            <button
+                onClick={() => navigate('/')}
+                className="basis-1/5 font-bold p-3 logo-font text-logo whitespace-nowrap">
+                여행가담
             </button>
-        ) : (
-            <button className="w-1/2 h-full logo-font hover:text-gray-400" onClick={() => window.location.href = '/api/auth/google'}>
-                로그인
-            </button>
-        )}
-
-          <button
-              onClick={() => navigate('/Mypage')}
-              className="w-1/2 h-full logo-font hover:text-gray-400">
-              마이페이지
-        </button>
-      </div>
-    </header>
-  );
+            <div className="basis-3/5"></div>
+            <div className="basis-1/5 h-full flex">
+                {isLogin ? (
+                    <button
+                        className="w-1/2 h-full nanumbarungothic hover:text-gray-400 text-menu whitespace-nowrap"
+                        onClick={logout}>
+                        로그아웃
+                    </button>
+                ) : (
+                    <button
+                        className="w-1/2 h-full nanumbarungothic hover:text-gray-400 text-menu whitespace-nowrap"
+                        onClick={() => window.location.href = '/api/auth/google'}>
+                        로그인
+                    </button>
+                )}
+                <button
+                    onClick={() => navigate('/Mypage')}
+                    className="w-1/2 h-full nanumbarungothic hover:text-gray-400 text-menu whitespace-nowrap">
+                    마이페이지
+                </button>
+            </div>
+        </header>
+    );
 }

@@ -171,7 +171,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                                 <button key={id}
                                     className={`${
                                         activeTags.includes(name) ? "bg-blue-300" : "bg-blue-100"
-                                    } rounded w-auto px-2 mx-2 mt-1 hover:bg-blue-300 logo-font h-8`}
+                                    } rounded w-auto px-2 mx-2 mt-1 hover:bg-blue-300 nanumbarungothic h-8`}
                                     onClick={() => handleTagClick(name)}
                                 >
                                     {name}
@@ -183,7 +183,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                 <div className="text-center">
                     <button
                         onClick={handleSubmit}
-                        className="ring-2 mt-5 mb-2 logo-font h-10 w-28 rounded-lg text-gray-800 hover:text-black hover:bg-blue-400">생성하기
+                        className="ring-2 mt-5 mb-2 nanumbarungothic h-10 w-28 rounded-lg text-gray-800 hover:text-black hover:bg-blue-400">생성하기
                     </button>
                 </div>
             </div>

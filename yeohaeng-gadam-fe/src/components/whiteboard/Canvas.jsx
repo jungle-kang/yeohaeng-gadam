@@ -3,279 +3,300 @@ import {
   useStorage,
   useMutation,
   useBroadcastEvent,
-  useEventListener,
   useMyPresence,
   useSelf,
   useOthers,
   useHistory,
 } from "/liveblocks.config";
-import { LiveMap, LiveObject } from "@liveblocks/client";
+import { LiveObject } from "@liveblocks/client";
 import { shallow } from "@liveblocks/react";
+import { nanoid } from "nanoid";
 
-import Canvas from "./whiteboard/Canvas";
+import Cursor from "./Cursor";
+import Plan from "./Plan";
 
-export default function Whiteboard({ myUserId, myColorId }) {
-  const [{ selectedPageId }, updateMyPresence] = useMyPresence();
-  // 핑 이벤트 리스트
-  const [pingEventList, setPingEventList] = useState([]);
+import { COLORS } from "./userColors"
 
 
-  //////////////////////////// 페이지 storage 관련 ////////////////////////////
+import transportRunIcon from "/src/assets/whiteboard-transport-run.svg";
+import transportBusIcon from "/src/assets/whiteboard-transport-bus.svg";
+import transportCarIcon from "/src/assets/whiteboard-transport-car.svg";
+import routesearchIcon from "/src/assets/whiteboard-routesearch.svg";
 
-  // 페이지 탭에서 사용할 페이지 ID 배열
-  // const pageIds = useStorage(
-  //   (root) => Array.from(root.pages.keys()),
-  //   shallow
-  // );
+const TRANS_METHOD_RUN = 0;
+const TRANS_METHOD_BUS = 1;
+const TRANS_METHOD_CAR = 2;
 
-  const pageIds = useStorage(
-    (root) => Array.from(root.pages.keys()).sort(),
+const DEFAULT_ZOOM_LEVEL = 7;
+
+const { kakao } = window; // 카카오 지도 사용
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_MAP_API // calculateTime 전용
+const SK_API_KEY = import.meta.env.VITE_SK_MAP_API // calculateTime 전용
+
+export default function Canvas({ pingEventList, setPingEventList }) {
+  const history = useHistory();
+  const [{ userId, cursor, selectedPageId, selectedCardId, lineStartCardId }, updateMyPresence] = useMyPresence();
+
+  const canvasRef = useRef(null);
+  const [canvasPos, setCanvasPos] = useState({ x: 0, y: 0 }); // 좌상단의 캔버스 좌표
+  const [canvasZoomLevel, setCanvasZoomLevel] = useState(DEFAULT_ZOOM_LEVEL);
+  const [draggingCardId, setDraggingCardId] = useState(null);
+  const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
+  // const [lineStartCardId, setLineStartCardId] = useState(null);
+  const [lineIndicatorEndPos, setLineIndicatorEndPos] = useState({ x: 0, y: 0 });
+
+  // const page = useStorage((root) => root.pages.get(pageId));
+
+  const self = useSelf();
+  //////////////////////////// 커서 공유 관련 ////////////////////////////
+  const others = useOthers();
+
+  // 다른 이용자들의 커서 표시
+  const othersCursorList = others.map(({ connectionId, presence }) => {
+    // 커서가 없다면 표시하지 않기
+    if (presence.cursor === null) {
+      return null;
+    }
+
+    if (presence.selectedPageId !== selectedPageId) {
+      return null;
+    }
+
+    // 커서가 캔버스 밖에 있다면 표시하지 않기
+    if (!isInsideCanvas(presence.cursor.x, presence.cursor.y, 0, 0)) {
+      return null;
+    }
+
+    // 이용자의 캔버스 위치와 줌 배율을 기반으로 계산한 캔버스 상의 위치
+    const x = canvasRef.current.offsetWidth / 2
+      + (presence.cursor.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
+    const y = canvasRef.current.offsetHeight / 2
+      + (presence.cursor.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+
+    return (
+      <Cursor
+        key={`cursor-${connectionId}`}
+        // connectionId is an integer that is incremented at every new connections
+        // Assigning a color with a modulo makes sure that a specific user has the same colors on every clients
+        color={COLORS[presence.colorId]}
+        x={x}
+        y={y}
+        id={connectionId}
+      />
+    );
+  })
+
+  const updateMyCursor = useMutation(({ setMyPresence }, x, y) => {
+    setMyPresence({ cursor: { x, y } });
+  }, []);
+
+  //////////////////////////// 핑 이벤트 관련 ////////////////////////////
+  const broadcast = useBroadcastEvent();
+
+  const broadcastPing = (pingType, x, y) => {
+    broadcast({
+      type: "PING",
+      pingType: pingType,
+      pageId: selectedPageId,
+      x: x,
+      y: y,
+      color: COLORS[self.presence.colorId]
+    });
+  }
+
+  const onClickPingBtn = () => {
+    broadcastPing("!", canvasPos.x, canvasPos.y);
+  };
+
+  const removePingEvent = (userId) => {
+    // userId에 해당하는 핑 이벤트를 pingEventList에서 삭제
+    setPingEventList((prev) => prev.filter(((pingEvent) => (
+      pingEvent.userId !== userId
+    ))))
+  };
+
+  //////////////////////////// 카드 편집 ////////////////////////////
+  const cardIds = useStorage(
+    (root) => Array.from(root.pages.get(selectedPageId).cards.keys()),
     shallow
   );
 
-  // const curCanvas = selectedPage
-  //   ? pageIds.map((pageId) => {
-  //     if (pageId === selectedPage) {
-  //       return <Canvas key={pageId} pageId={pageId} />;
-  //     }
-  //   })
-  //   : <div>No page selected</div>;
+  const cards = useStorage((root) => root.pages.get(selectedPageId).cards);
 
-  // const curCanvas = selectedPageId
-  //   ? <Canvas />
-  //   : <div>No page selected</div>;
+  // 디버깅용 함수
+  const insertPlaceCard = useMutation(({ storage, self }, x, y) => {
+    const pageId = self.presence.selectedPageId;
+    const cardId = nanoid();
+    const card = new LiveObject({
+      x: x,
+      y: y,
+      fill: "rgb(147, 197, 253)",
+      cardType: "place",
+      placeName: "Placeholder Name",
+      // placeCord: "0,0",
+    });
+    // console.log("created card at ", x, ", ", y); /////////////
+    storage.get("pages").get(pageId).get("cards").set(cardId, card);
+    // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
+  }, []);
 
-  // 페이지 추가
-  // const createPage = useMutation(({ storage }) => {
-  //   const pageId = nanoid();
-  //   const newPage = new LiveObject({
-  //     name: "새 보드",
-  //     cards: new LiveMap(),
-  //     lines: new LiveMap(),
-  //   });
-  //   storage.get("pages").set(pageId, newPage);
+  // 디버깅용 함수
+  const insertMemoCard = useMutation(({ storage, self }, x, y) => {
+    const pageId = self.presence.selectedPageId;
+    const cardId = nanoid();
+    const card = new LiveObject({
+      x: x,
+      y: y,
+      fill: "rgb(255, 255, 204)",
+      cardType: "memo",
+      memoText: "",
+      likedUsers: [],
+      // likes: 0,
+    });
+    // console.log("created card at ", x, ", ", y); /////////////
+    storage.get("pages").get(pageId).get("cards").set(cardId, card);
+    // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
+  }, []);
 
-  //   return pageId;
-  // }, []);
+  // 디버깅용 함수
+  const insertMapCard = useMutation(({ storage, self }, x, y) => {
+    const pageId = self.presence.selectedPageId;
+    const cardId = nanoid();
+    const card = new LiveObject({
+      x: x,
+      y: y,
+      fill: "rgb(169, 209, 142)",
+      cardType: "map",
+    });
+    // console.log("created card at ", x, ", ", y); /////////////
+    storage.get("pages").get(pageId).get("cards").set(cardId, card);
+    // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
+  }, []);
 
-  // 페이지 삭제
-  // const deletePage = useMutation(({ storage }, pageId) => {
-  //   storage.get("pages").delete(pageId);
-  // }, []);
+  const moveCard = useMutation(({ storage, self }, cardId, dx, dy) => {
+    const pageId = self.presence.selectedPageId;
+    const card = storage.get("pages").get(pageId).get("cards").get(cardId);
+    card.update({
+      x: card.get("x") + dx,
+      y: card.get("y") + dy,
+    });
+  }, []);
 
-  // 페이지 이름 수정
-  // const updatePage = useMutation(({ storage }, pageId, newName) => {
-  //   storage.get("pages").get(pageId).update({
-  //     name: newName,
-  //   });
-  // }, []);
+  const updateMemoCard = useMutation(({ storage, self }, cardId, text) => {
+    const pageId = self.presence.selectedPageId;
+    const card = storage.get("pages").get(pageId).get("cards").get(cardId);
+    card.update({
+      memoText: text,
+    });
+  }, []);
+
+  const deleteCard = useMutation(({ storage, self, setMyPresence }, e, cardId) => {
+    e.stopPropagation();
+    // const pageId = self.presence.selectedPageId;
+    const page = storage.get("pages").get(self.presence.selectedPageId);
+
+    // cards에서 삭제
+    page.get("cards").delete(cardId);
+    // storage.get("pages").get(pageId).get("cards").delete(cardId);
+
+    // 연결된 line을 삭제
+    const lineIdList = Array.from(page.get("lines").keys());
+
+    lineIdList.map((lineId) => {
+      const curLine = page.get("lines").get(lineId);
+      if (curLine.get("card1Id") === cardId || curLine.get("card2Id") === cardId) {
+        deleteLine(lineId);
+      }
+    });
+
+    // plan에서 삭제
+    const plan = storage.get("pages").get(selectedPageId).get("plan");
+    const placeIds = plan.get("placeIds");
+
+    if (placeIds.includes(cardId)) {
+      const filteredPlan = placeIds.filter((placeId) => (placeId !== cardId));
+      plan.update({
+        placeIds: filteredPlan,
+      })
+    }
+
+    // selected 상태라면 삭제
+    if (self.presence.selectedCardId === cardId) {
+      setMyPresence({ selectedCardId: null });
+    }
+  }, []);
+
+  const likeCard = useMutation(({ storage, self, setMyPresence }, cardId) => {
+    // const pageId = self.presence.selectedPageId;
+    const page = storage.get("pages").get(self.presence.selectedPageId);
+    const card = page.get("cards").get(cardId);
+    const likedUsers = card.get("likedUsers");
+
+    console.log("likedUsers: ", likedUsers);
+
+    let newLikedUsers = [];
+
+    if (likedUsers.includes(self.presence.colorId)) {
+      console.log("contains me");
+      newLikedUsers = likedUsers.filter((colorId) => (colorId !== self.presence.colorId));
+    } else {
+      console.log("does not contain me");
+      newLikedUsers = [...likedUsers, self.presence.colorId];
+    }
 
 
 
-  //////////////////////////// 버튼 동작 관련 ////////////////////////////
+    // console.log("newLikedUsers: ", newLikedUsers);
 
-  // 새 탭 버튼
-  // const onClickNewTab = () => {
-  //   // 새 페이지 생성
-  //   const newPageId = createPage();
-  //   // 새로운 페이지를 현재 탭으로
-  //   // setCurPageId(newPageId);
-  //   updateMyPresence({ selectedPageId: newPageId });
-  // };
+    card.update({
+      likedUsers: newLikedUsers,
+    });
+    // storage.get("pages").get(pageId).get("cards").delete(cardId);
+  }, []);
 
-  // 탭 버튼
-  // const onClickTab = (e, pageId) => {
-  //   if (pageId === selectedPageId) {
-  //     setRenamingPageId(pageId);
-  //   } else {
-  //     // setCurPageId(pageId);
-  //     updateMyPresence({ selectedPageId: pageId });
-  //     // setPingedPageList(pingedPageList.filter((id) => (pageId !== id)));
-  //   }
-  // };
-  const onClickTab = (e, pageId) => {
-    updateMyPresence({ selectedPageId: pageId });
+
+  //////////////////////////// 카드 동작 ////////////////////////////
+
+  const onCardPointerDown = (e, cardId) => {
+    // console.log("onCardPointerDown: cardId = ", cardId); ///////////
+    history.pause();
+    e.stopPropagation();
+    setDraggingCardId(cardId);
+    updateMyPresence({ selectedCardId: cardId });
   };
 
-  // 탭 이름 변경
-  // const onChangeTabRename = (e, pageId) => {
-  //   updatePage(pageId, e.target.value);
-  // };
-
-  // const onBlurTabRename = (e) => {
-  //   console.log("hi");
-  // };
-
-  // 탭 이름 변경 완료
-  // const onKeyDownTabRename = (e) => {
-  //   if (e.key === "Enter") {
-  //     setRenamingPageId(null);
-  //   }
-  // }
-
-  // 탭 삭제 버튼
-  // const onClickTabRemoveBtn = (pageId, i) => {
-  //   if (pageId === selectedPageId) {
-  //     // 현재 탭을 삭제하면 다른 탭으로 이동
-  //     const newId = pageIds.length === 1
-  //       ? null
-  //       : i === pageIds.length - 1
-  //         ? pageIds[pageIds.length - 2]
-  //         : pageIds[i + 1];
-
-  //     // setCurPageId(newId);
-  //     updateMyPresence({ selectedPageId: newId });
-  //   }
-  //   deletePage(pageId);
-  // };
-
-  //////////////////////////// 핑 이벤트 관련 ////////////////////////////
-
-  useEventListener(({ event, user }) => {
-    console.log("new ping event: ", event, ", from user ", user); ///
-
-    if (event.type === "PING") {
-      setPingEventList((prev) => {
-        const modifiedPingEventList = prev.filter((pingEvent) => (
-          pingEvent.userId !== user.presence.userId
-        )); // 핑을 찍은 사용자의 이전 핑은 삭제
-        const newPingEvent = {
-          userId: user.presence.userId,
-          pageId: event.pageId,
-          x: event.x,
-          y: event.y,
-          pingType: event.pingType,
-          color: event.color,
-        };
-        return ([...modifiedPingEventList, newPingEvent]);
-      });
-      // console.log(event, user, connectionId); //////////////
-
-      console.log("updated pingEventList: ", pingEventList); ///////
-
-      // if (event.pageId !== selectedPageId && !pingedPageList.includes(event.pageId)) {
-      //   setPingedPageList([...pingedPageList, event.pageId]);
-      //   console.log("pinged list: ", pingedPageList); /////////////
-      // }
-      // if (event.pageId !== selectedPageId) {
-
-      // }
+  const onCardPointerUp = (e, cardId, isPlace) => {
+    // 간선 생성 과정에서 마우스를 때면 땐 카드로 간선 연결
+    if (!isPlace) {
+      return null;
     }
-  });
 
-  const pingedPageList = pingEventList.map((pingEvent) => (pingEvent.pageId));
-
-
-
-
-  // liveblocks가 로딩되었는지 확인용
-  const pages = useStorage((root) => root.pages);
-  // console.log(pages); ////////
-
-
-  useEffect(() => {
-    // 로딩 완료 시 첫 탭을 현재 탭으로
-    if (pages != null) {
-      // setCurPageId(pageIds[0]);
-      updateMyPresence({
-        selectedPageId: pageIds[0],
-        userId: myUserId,
-        colorId: myColorId,
-      });
+    if (!lineStartCardId) {
+      return null;
     }
-  }, [pages == null])
 
-
-
-  // 로딩중 표시
-  if (pages == null) {
-    return <div className="flex justify-center items-center w-full h-full">로딩 중...</div>;
+    if (lineStartCardId !== cardId) {
+      createLine(lineStartCardId, cardId);
+    }
   }
 
-  return (
-    <>
-      <div className="w-full h-8 flex">
-        {pageIds.map((pageId, i) => {
-          const tabColor = pageId === selectedPageId
-            ? "green"
-            : pingedPageList.includes(pageId)
-              ? "yellow"
-              : "grey";
+  const onCardChange = (e, cardId) => {
+    updateMemoCard(cardId, e.target.value);
+  };
 
-          return (
-            <div className="flex w-1/6 border-black border-2"
-              key={pageId}
-            >
-              <button className="w-full h-full"
-                style={{ backgroundColor: tabColor }}
-                onClick={(e) => onClickTab(e, pageId)}
-              >
-                {pages.get(pageId).name}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-      {
-        selectedPageId
-          ? <Canvas pingEventList={pingEventList} setPingEventList={setPingEventList} />
-          : <div>No page selected</div>
-      }
-    </>
-  );
+  const onLikeBtnClick = (id) => {
+    likeCard(id);
+  }
 
-  // return (
-  //   <>
-  //     <div className="w-full h-8 flex">
-  //       {pageIds.map((pageId, i) => {
-  //         const tabColor = pageId === selectedPageId
-  //           ? "green"
-  //           : pingedPageList.includes(pageId)
-  //             ? "yellow"
-  //             : "grey";
+  // useMutation(
+  //   ({ setMyPresence }, e, shapeId) => {
+  //     history.pause();
+  //     e.stopPropagation();
 
-  //         return (
-  //           <div className="flex w-1/6 border-black border-2"
-  //             key={pageId}
-  //           >
-  //             <button className="w-full h-full"
-  //               style={{ backgroundColor: tabColor }}
-  //               onClick={(e) => onClickTab(e, pageId)}
-  //             >
-  //               {
-  //                 pageId === renamingPageId
-  //                   ? <textarea
-  //                     className="resize-none w-full h-full"
-  //                     // value={pages.get(pageId).name}
-  //                     autoFocus
-  //                     onChange={(e) => onChangeTabRename(e, pageId)}
-  //                     // onBlur={(e) => onBlurTabRename(e)}
-  //                     onKeyDown={(e) => onKeyDownTabRename(e)}
-  //                   />
-  //                   : pages.get(pageId).name
-  //               }
-  //             </button>
-  //             <button className="bg-red-300"
-  //               onClick={() => onClickTabRemoveBtn(pageId, i)}
-  //             >
-  //               X
-  //             </button>
-  //           </div>
-  //         );
-  //       })}
-  //       <button className="bg-green-100 border-black border-2"
-  //         onClick={onClickNewTab}
-  //       >
-  //         new
-  //       </button>
-  //     </div>
-  //     {/* {curPageId ? <Canvas pageId={curPageId} /> : <div>No page selected</div>} */}
-  //     {
-  //       selectedPageId
-  //         ? <Canvas pingEventList={pingEventList} setPingEventList={setPingEventList} />
-  //         : <div>No page selected</div>
-  //     }
-  //   </>
+  //     setMyPresence({ selectedShape: shapeId }, { addToHistory: true });
+  //     setIsDragging(true);
+  //   },
+  //   [history]
   // );
 
 
@@ -440,7 +461,6 @@ export default function Whiteboard({ myUserId, myColorId }) {
     }
   }, []);
 
-
   //////////////////////////// 버튼 및 캔버스 동작 관련 ////////////////////////////
   const onCanvasPointerDown = (e) => {
     // console.log(isDraggingCanvas); ////////////
@@ -448,7 +468,7 @@ export default function Whiteboard({ myUserId, myColorId }) {
     // console.log(canvasRef.current); ///////////
     // console.log(e); ////////////
     setIsDraggingCanvas(true);
-    updateMyPresence({ selectedCardId: null });
+    // updateMyPresence({ selectedCardId: null });
   };
 
   // const onCanvasPointerMove = useMutation(({ setMyPresence, self }, e) => {
@@ -503,24 +523,10 @@ export default function Whiteboard({ myUserId, myColorId }) {
     // }, []);
   };
 
-  // const onCanvasPointerMove = (e) => {
-  //   // const dx = 
-
-
-  //   console.log(e); ////////////
-  //   updateMyCursor(
-  //     canvasPos.x + Math.round(e.nativeEvent.offsetX / canvasZoom),
-  //     canvasPos.y + Math.round(e.nativeEvent.offsetY / canvasZoom)
-  //   );
-  // };
-
   const onCanvasPointerUp = () => {
-    // console.log(canvasRef.current.offsetWidth); //////////
-    // console.log(canvasRef.current.offsetHeight); //////////
     setIsDraggingCanvas(false);
     setDraggingCardId(null);
     updateMyPresence({ lineStartCardId: null });
-    // setLineStartCardId(null);
     history.resume();
   };
 
@@ -531,14 +537,32 @@ export default function Whiteboard({ myUserId, myColorId }) {
     });
   };
 
+  // 줌 인/아웃
   const onCanvasWheel = (e) => {
-    e.preventDefault();
-    // console.log(e); /////////////
     if (e.deltaY > 0) {
       zoomOut();
     } else {
       zoomIn();
     }
+  }
+
+  // 우클릭
+  const onCanvasContextMenu = (e) => {
+    e.preventDefault();
+    console.log("right click!, e: ", e);
+    if (canvasRef.current) {
+      const x = Math.round(canvasPos.x
+        + (e.clientX - canvasRef.current.getBoundingClientRect().left
+          - canvasRef.current.offsetWidth / 2)
+        / ZOOMS[canvasZoomLevel]);
+      const y = Math.round(canvasPos.y
+        + (e.clientY - canvasRef.current.getBoundingClientRect().top
+          - canvasRef.current.offsetHeight / 2)
+        / ZOOMS[canvasZoomLevel]);
+
+      broadcastPing("!", x, y);
+    }
+
   }
 
   const zoomOut = () => {
@@ -597,6 +621,8 @@ export default function Whiteboard({ myUserId, myColorId }) {
 
     return (
       <PingIndicator
+        key={pingEvent.userId}
+        pingType={pingEvent.pingType}
         x={x}
         y={y}
         color={pingEvent.color}
@@ -710,7 +736,7 @@ export default function Whiteboard({ myUserId, myColorId }) {
           style={{
             position: "absolute",
             height: 5 * ZOOMS[canvasZoomLevel],
-            zIndex: "1000",
+            zIndex: "1",
             // zIndex: "-9000",
             //////////////////////
             transform: `translate(${x}px, ${y}px) translateX(-50%) rotate(${theta}rad)`,
@@ -722,7 +748,7 @@ export default function Whiteboard({ myUserId, myColorId }) {
           style={{
             position: "absolute",
             transform: `translate(${x2}px, ${y2}px) translate(-50%, -50%)`,
-            zIndex: "1000",
+            zIndex: "1",
             // zIndex: "-9000",
           }}
         >
@@ -744,6 +770,7 @@ export default function Whiteboard({ myUserId, myColorId }) {
       onPointerUp={onCanvasPointerUp}
       onPointerLeave={onCanvasPointerLeave}
       onWheel={onCanvasWheel}
+      onContextMenu={onCanvasContextMenu}
     >
       {othersCursorList}
       {pingIndicatorList}
@@ -803,19 +830,33 @@ export default function Whiteboard({ myUserId, myColorId }) {
       <div>Zoom Level: {ZOOMS[canvasZoomLevel]}</div>
       <div>My ID: {useSelf().connectionId}</div>
       <div>Others ID: {others.map(({ connectionId }) => connectionId)}</div>
+
+      <div className="absolute bg-red-300"
+        style={{
+          top: "100%",
+          left: 0,
+          width: "100%",
+          height: "200px",
+          transition: "top 0.2s",
+          zIndex: 11,
+        }}
+        onClick={(e) => { e.stopPropagation(); e.nativeEvent.stopImmediatePropagation() }}
+      >
+        <Plan />
+      </div>
     </div>
   );
 }
 
 
-function PingIndicator({ x, y, color, userId, removePingEvent }) {
+function PingIndicator({ pingType, x, y, color, userId, removePingEvent }) {
   return (
     <div className="absolute flex justify-center items-center bg-red-200 rounded-full"
       style={{
         width: "50px",
         height: "50px",
         transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
-        zIndex: 9000,
+        zIndex: 9,
       }}
       onMouseOver={() => removePingEvent(userId)}
     >
@@ -826,7 +867,7 @@ function PingIndicator({ x, y, color, userId, removePingEvent }) {
           transform: "translateY(-25%)",
         }}
       >
-        !
+        {pingType}
       </div>
     </div>
   );
@@ -993,15 +1034,21 @@ function Card({
   onLikeBtnClick,
   onCardChange,
 }) {
+  const myColorId = useSelf((me) => me.presence.colorId);
   const selectedByMe = useSelf((me) => me.presence.selectedCardId === id);
-  const selectedByOthers = useOthers((others) =>
-    others.some((other) => other.presence.selectedCardId === id)
-  );
+  // const selectedByOthers = useOthers((others) =>
+  //   others.some((other) => other.presence.selectedCardId === id)
+  // );
+  const selectedColorIds = useOthers((others) => others.map((other) => {
+    if (other.presence.selectedCardId === id) {
+      return other.presence.colorId;
+    };
+  }))
 
   const selectionColor = selectedByMe
-    ? "blue"
-    : selectedByOthers
-      ? "green"
+    ? COLORS[myColorId]
+    : selectedColorIds[0] != null
+      ? COLORS[selectedColorIds[0]]
       : "transparent";
 
   const width = card.cardType === "place"
@@ -1018,7 +1065,34 @@ function Card({
 
   const zIndex = card.cardType === "map"
     ? 0
-    : 5000; // place, memo
+    : 5; // place, memo
+
+
+  // 디버깅용ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
+  // const increaseLike = useMutation(({ storage, self }, cardId) => {
+  //   const page = storage.get("pages").get(self.presence.selectedPageId);
+  //   const card = page.get("cards").get(cardId);
+  //   const likedUsers = card.get("likedUsers");
+
+  //   card.update({
+  //     likedUsers: [...Array(likedUsers.length + 1).keys()]
+  //   })
+  // }, []);
+
+  // const decreaseLike = useMutation(({ storage, self }, cardId) => {
+  //   const page = storage.get("pages").get(self.presence.selectedPageId);
+  //   const card = page.get("cards").get(cardId);
+  //   const likedUsers = card.get("likedUsers");
+
+  //   if (likedUsers.length <= 0) {
+  //     return;
+  //   }
+
+  //   card.update({
+  //     likedUsers: [...Array(likedUsers.length - 1).keys()]
+  //   })
+  // }, []);
+  // 디버깅용ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
 
   return (
     <div className="absolute rounded-lg"
@@ -1032,7 +1106,6 @@ function Card({
         transform: `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${zoom}, ${zoom})`,
         borderColor: selectionColor,
         backgroundColor: card.fill,
-        fontFamily: 'Ownglyph_meetme-Rg' // 여기에 폰트 적용
       }}
       onPointerDown={(e) => onCardPointerDown(e, id)}
       onPointerUp={(e) => onCardPointerUp(e, id, card.cardType === "place")}
@@ -1043,7 +1116,7 @@ function Card({
           ? <MemoCardContent id={id} card={card} isSelected={selectedByMe} onCardChange={onCardChange} />
           : <MapCardContent id={id} card={card} />
       }
-      {
+      {/* {
         card.cardType !== "map" &&
         <div className="absolute"
           style={{
@@ -1055,7 +1128,39 @@ function Card({
           </button>
           {card.likedUsers}
         </div>
+      } */}
+
+      {
+        // 디버깅용ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
+        card.cardType !== "map" &&
+        <div className="absolute flex flex-row"
+          style={{
+            top: "100%",
+          }}
+        >
+
+          <button
+            style={{ color: COLORS[myColorId] }}
+            onClick={() => onLikeBtnClick(id)}
+          >
+            {card.likedUsers.includes(myColorId) ? "♥" : "♡"}
+          </button>
+
+          {/* <button onClick={() => decreaseLike(id)}>{"<"}</button>
+          <button onClick={() => increaseLike(id)}>{">"}</button> */}
+
+          {
+            card.likedUsers.map((colorId) => {
+              if (colorId !== myColorId) {
+                return (
+                  <div key={colorId} style={{ color: COLORS[colorId] }}>♥</div>
+                );
+              }
+            })
+          }
+        </div>
       }
+
       <button
         className="bg-black text-white flex justify-center items-center rounded-full font-bold w-6 h-6 ml-3"
         style={{ position: "absolute", top: "0", left: "100%", transform: "translate(-50%, -50%)" }}
@@ -1158,7 +1263,7 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
         style={{
           position: "absolute",
           height: 5 * zoom,
-          zIndex: "1000",
+          zIndex: "1",
           // zIndex: "-5000",
           //////////////////////
           transform: `translate(${x}px, ${y}px) translateX(-50%) rotate(${theta}rad)`,
@@ -1178,7 +1283,7 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
           // transition: "width 0.5s, height 0.5s",
 
           position: "absolute",
-          zIndex: "2000",
+          zIndex: "2",
           // zIndex: "-8000",
 
           //////////////////////////////
@@ -1238,8 +1343,8 @@ function formatDur(dur) {
 
 
 // 커서 색상 목록
-const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
+// const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
+// const COLORS = ["#AB0C20", "#33C44F", "#EA8221", "#017DA3", "#666666", "#666666", "#666666", "#666666"];
 
 // 줌 배율 목록
 const ZOOMS = [0.2, 0.25, 0.33, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.55];
-

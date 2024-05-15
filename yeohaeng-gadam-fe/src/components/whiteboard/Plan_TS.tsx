@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
-import SelectBox from "./SelectBox.tsx";
+import SelectBox from "../SelectBox.tsx";
+
+import {
+    useStorage,
+    useMutation,
+    useBroadcastEvent,
+    useMyPresence,
+    useSelf,
+    useOthers,
+    useHistory,
+} from "/liveblocks.config";
+
+import Recommend from '../../map/recommendProto.jsx';
 
 interface TabProps {
     label: string;
@@ -11,9 +23,8 @@ interface TabProps {
 const Tab: React.FC<TabProps> = ({ label, onClick, isActive }) => {
     return (
         <button
-            className={`text-lg px-4 py-2 mr-2 rounded-t-lg focus:outline-none ${
-                isActive ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-800'
-            }`}
+            className={`text-lg px-4 py-2 mr-2 rounded-t-lg focus:outline-none ${isActive ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-800'
+                }`}
             onClick={onClick}
         >
             {label}
@@ -67,18 +78,18 @@ const Plan: React.FC = () => {
     }])
     const [inputs, setInputs] = useState([]);
     const [inputData, setInputData] = useState({
-        day:'',
-        type:'card',
-        info:''
+        day: '',
+        type: 'card',
+        info: ''
     })
-    const [add,setAdd] = useState(false);
-    const handleSelectChange = (item:string) => {
+    const [add, setAdd] = useState(false);
+    const handleSelectChange = (item: string) => {
         setInputData(prevForm => ({
-                ...prevForm,
-                type: item
+            ...prevForm,
+            type: item
         }))
     }
-    const handleButton =  () =>{
+    const handleButton = () => {
         setAdd(false);
         //todo 현재 inputData의 day와 같은 inputs에 plans에 type과 info가 있는 json을 plans에 append 해야함 .
         //만약 inputs에 inputData의 day가 없다면, 추가
@@ -103,23 +114,25 @@ const Plan: React.FC = () => {
                 { type, info }
             ];
             const patchPlan = async () => {
-                const patchbody = JSON.stringify({plans: JSON.stringify([
-                    ...existingPlans,
-                    {type,info}
-                ])});
-                console.log('patchbody?',patchbody);
-                try{
-                    const response = await fetch(`api/plan/${roomId}/${day}`,{
-                        method:'PATCH',
+                const patchbody = JSON.stringify({
+                    plans: JSON.stringify([
+                        ...existingPlans,
+                        { type, info }
+                    ])
+                });
+                console.log('patchbody?', patchbody);
+                try {
+                    const response = await fetch(`api/plan/${roomId}/${day}`, {
+                        method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        credentials:'include',
+                        credentials: 'include',
                         body: patchbody,
-                    }).then(res=>res.json())
+                    }).then(res => res.json())
                     console.log(response);
-                }catch(e){
-                    console.log('patch plan error: ',e);
+                } catch (e) {
+                    console.log('patch plan error: ', e);
                 }
             }
             patchPlan();
@@ -129,23 +142,25 @@ const Plan: React.FC = () => {
             setInputs(prevInputs => [
                 ...prevInputs,
                 {
-                    room_id:roomId,
+                    room_id: roomId,
                     day,
                     plans: [{ type, info }]
                 }
             ]);
-            const postPlan = async() => {
-                const postBody = JSON.stringify({plans: JSON.stringify([
-                        {type,info}
-                    ])});
-                console.log('postBody:',postBody);
+            const postPlan = async () => {
+                const postBody = JSON.stringify({
+                    plans: JSON.stringify([
+                        { type, info }
+                    ])
+                });
+                console.log('postBody:', postBody);
                 const response = await fetch(`api/plan/${roomId}/${day}`,
                     {
-                        method:'POST',
+                        method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        credentials:'include',
+                        credentials: 'include',
                         body: postBody,
                     });
                 console.log(response);
@@ -169,12 +184,12 @@ const Plan: React.FC = () => {
                     method: 'GET',
                     credentials: 'include'
                 }).then(res => res.json())
-                    .then(res=>res.map(item=>({
+                    .then(res => res.map(item => ({
                         room_id: item.id.toString(),
-                        day:item.day.toString(),
+                        day: item.day.toString(),
                         plans: JSON.parse(item.plans)
                     })))
-                console.log('response:',response);
+                console.log('response:', response);
                 setInputs(response);
             } catch (e) {
                 console.log('plan data fetch error : ', e);
@@ -183,13 +198,14 @@ const Plan: React.FC = () => {
         dataFetch();
     }, [])
     useEffect(() => {
-        console.log('inputs:',inputs);
+        console.log('inputs:', inputs);
     }, [add]);
 
     return (
         <>
+            <Recommend />
             <div className="flex">
-                {Array.isArray(inputs) && inputs.map(({day}, idx) => (
+                {Array.isArray(inputs) && inputs.map(({ day }, idx) => (
                     <Tab
                         key={idx}
                         label={day + "일차"}
@@ -206,9 +222,9 @@ const Plan: React.FC = () => {
                                 day: e.target.value,
                             })
                         }}
-                        className="border rounded-lg h-9 w-12 mr-2" placeholder="일차" type="text"/>
+                        className="border rounded-lg h-9 w-12 mr-2" placeholder="일차" type="text" />
                     <SelectBox selectList={['card', 'transportation']} defaultValue={'card'}
-                               onSelectChange={handleSelectChange}/>
+                        onSelectChange={handleSelectChange} />
                     <input
                         value={inputData.info}
                         onChange={e => {
@@ -217,15 +233,15 @@ const Plan: React.FC = () => {
                                 info: e.target.value,
                             })
                         }}
-                        className="border rounded-lg w-42 h-9 ml-4" placeholder="내용" type="text"/>
+                        className="border rounded-lg w-42 h-9 ml-4" placeholder="내용" type="text" />
                     <button
                         onClick={handleButton}
                         type="button" className="ml-4 bg-orange-300 w-12 rounded-lg font-bold text-sm hover:bg-orange-400">추가</button>
                 </div>
             </div>
-            {Array.isArray(inputs) && inputs.map(({day, plans}, idx) => (
+            {Array.isArray(inputs) && inputs.map(({ day, plans }, idx) => (
                 <Content key={idx} isActive={activeTab === Number(day)}>
-                    <DataCard data={plans}/>
+                    <DataCard data={plans} />
                 </Content>
             ))}
 

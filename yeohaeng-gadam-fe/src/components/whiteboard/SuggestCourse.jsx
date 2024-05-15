@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { permutations } from 'itertools';
-import SelectBox from '../components/SelectBox';
+import SelectBox from '../SelectBox';
 
 import {
   useStorage,
@@ -15,155 +15,14 @@ import {
 import { LiveMap, LiveObject } from "@liveblocks/client";
 import { shallow } from "@liveblocks/react";
 
-// console.log("PERM TEST: ", permutations([1, 2, 3, 4], 3));
-
-// const testperm = permutations([1, 2, 3, 4], 3);
-// testperm.forEach((perm) => {
-//     console.log(perm);
-// })
-
-const placesDummy = [
-  {
-    placeName: "Haeundae Beach",
-    placeX: 35.1585,
-    placeY: 129.1600,
-    likes: 4,
-  },
-  {
-    placeName: "Gwangalli Beach",
-    placeX: 35.1568,
-    placeY: 129.1191,
-    likes: 3,
-  },
-  {
-    placeName: "Gamcheon Culture Village",
-    placeX: 35.0988,
-    placeY: 129.0107,
-    likes: 1,
-  },
-  {
-    placeName: "Busan Tower",
-    placeX: 35.0975,
-    placeY: 129.0359,
-    likes: 3,
-  },
-  {
-    placeName: "Jagalchi Fish Market",
-    placeX: 35.0965,
-    placeY: 129.0349,
-    likes: 4,
-  },
-  {
-    placeName: "Beomeosa Temple",
-    placeX: 35.2164,
-    placeY: 129.0596,
-    likes: 1,
-  },
-  {
-    placeName: "Taejongdae Park",
-    placeX: 35.0919,
-    placeY: 129.0230,
-    likes: 4,
-  },
-  {
-    placeName: "Dalmaji Hill",
-    placeX: 35.1634,
-    placeY: 129.0630,
-    likes: 0,
-  },
-  {
-    placeName: "Yongdusan Park",
-    placeX: 35.1028,
-    placeY: 129.0368,
-    likes: 2,
-  },
-  {
-    placeName: "Shinsegae Centum City",
-    placeX: 35.1672,
-    placeY: 129.1320,
-    likes: 2,
-  },
-  {
-    placeName: "UN Memorial Cemetery",
-    placeX: 35.1532,
-    placeY: 129.1183,
-    likes: 2,
-  },
-  {
-    placeName: "Seomyeon",
-    placeX: 35.1577,
-    placeY: 129.0565,
-    likes: 5,
-  },
-  {
-    placeName: "Nampo-dong",
-    placeX: 35.0979,
-    placeY: 129.0346,
-    likes: 4,
-  },
-  {
-    placeName: "Igidae Park",
-    placeX: 35.1283,
-    placeY: 129.1003,
-    likes: 3,
-  },
-  {
-    placeName: "Gukje Market",
-    placeX: 35.0981,
-    placeY: 129.0304,
-    likes: 3,
-  },
-  {
-    placeName: "BIFF Square",
-    placeX: 35.0983,
-    placeY: 129.0333,
-    likes: 4,
-  },
-  {
-    placeName: "Songdo Beach",
-    placeX: 35.0746,
-    placeY: 129.0200,
-    likes: 3,
-  },
-  {
-    placeName: "Hwangnyeongsan Mountain",
-    placeX: 35.1536,
-    placeY: 129.0593,
-    likes: 1,
-  },
-  {
-    placeName: "Oryukdo Skywalk",
-    placeX: 35.0913,
-    placeY: 129.0850,
-    likes: 3,
-  },
-  {
-    placeName: "Haedong Yonggungsa Temple",
-    placeX: 35.1901,
-    placeY: 129.2150,
-    likes: 4,
-  }
-];
-
 const distanceMatrix = null;
 
-// 거리 행렬을 계산합니다.
-// const distanceMatrix = places.map((place1) =>
-//   places.map((place2) =>
-//     getDistFromCord(place1.placeY, place1.placeX, place2.placeY, place2.placeX)
-//   )
-// );
-
-// const PLACE_NUM = 4;
-
-// console.log("distMat: ", distanceMatrix);
-
-
-
-export default function Recommend() {
+export default function SuggestCourse() {
   const [distRec, setDistRec] = useState([]);
   const [likeRec, setLikeRec] = useState([]);
   const [placeNum, setPlaceNum] = useState(6);
+  const [suggestIds, setSuggestIds] = useState([]);
+  // let suggestIds = [];
 
   const [{ userId, cursor, selectedPageId, selectedCardId, lineStartCardId }, updateMyPresence] = useMyPresence();
   const pages = useStorage((root) => root.pages);
@@ -310,6 +169,10 @@ export default function Recommend() {
       return acc + curDist;
     }, 0);
 
+    console.log("setting suggest ids: ", likePath); //////////
+
+    setSuggestIds(likePath.slice());
+
     setLikeRec(
       likePath.reduce((acc, cur, i) => {
         if (i === 0) return places[cur].placeName;
@@ -324,6 +187,29 @@ export default function Recommend() {
     setPlaceNum(item);
   }
 
+  const onApplyBtnClick = useMutation(({ storage, self }, suggestPath) => {
+    const cards = pages.get(selectedPageId).cards;
+    const cardIds = Array.from(pages.get(selectedPageId).cards.keys());
+    const filteredCardIds = cardIds.filter((cardId) => (
+      cards.get(cardId).cardType === "place"
+    ));
+    // const places = filteredCardIds.map((cardId) => cards.get(cardId));
+
+    const plan = storage.get("pages").get(selectedPageId).get("plan");
+
+    console.log("suggest plan: ", suggestPath);
+
+    const newPlan = suggestPath.reduce((acc, cur, i) => {
+      return [...acc, filteredCardIds[cur]];
+    }, []);
+
+    console.log("reduced plan: ", newPlan);
+
+    plan.update({
+      placeIds: newPlan,
+    })
+  }, []);
+
   return (
     <>
       <div>코스 추천</div>
@@ -334,6 +220,12 @@ export default function Recommend() {
         onClick={() => handleFindPath(placeNum)}
       >
         추천하기
+      </button>
+      <button className=""
+        // onClick={generateRecommend}
+        onClick={() => onApplyBtnClick(suggestIds)}
+      >
+        적용하기
       </button>
       <div>거리 기반 추천: {distRec}</div>
       <div>선호 기반 추천: {likeRec}</div>

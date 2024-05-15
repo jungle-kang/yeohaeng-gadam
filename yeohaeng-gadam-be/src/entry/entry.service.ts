@@ -51,12 +51,15 @@ export class EntryService {
   }
 
   async findUserByRoom(room_id: string): Promise<any[]> {
-    const userIdList = await this.entryRepository.find({
-      select: ['user_id'],
-      where: {
-        room_id: room_id,
-      },
-    });
+    const userIdList = await this.entryRepository.query(`
+      SELECT
+        JSON_ARRAYAGG(user_id) AS users,
+        JSON_ARRAYAGG(color) AS colors
+      FROM
+        entry
+      WHERE
+        room_id = ${room_id};
+    `);
 
     return userIdList;
   }

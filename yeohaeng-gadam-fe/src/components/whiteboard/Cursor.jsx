@@ -6,7 +6,7 @@ export default function Cursor({ color, x, y }) {
       style={{
         position: "absolute",
         transform: `translateX(${x}px) translateY(${y}px)`,
-        zIndex: 9999,
+        zIndex: 10,
         transition: "all 0.2s",
       }}
       width="24"

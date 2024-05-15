@@ -39,11 +39,15 @@ const AUDIO_SETTINGS = {
 
 export default function Videochat({ roomId, myName, myColorId }) {
   const localVideoRef = useRef(null); // 내 영상 표시할 video element
-  let localStream = null;
+  // let localStream = null;
+
+  const localStreamRef = useRef(null);
   // const [localStream, setLocalStream] = useState(null); // 내 영상
   const [users, setUsers] = useState([]); // 참가중인 다른 이용자 목록
 
   const [tt, sett] = useState(0); ///////////////////////////////////////////////////////
+
+  const [cameraOff, setCameraOff] = useState(false);
 
   let pcs = {}; // createPeerConnection으로 생성된 pc와 그 상대의 정보를 저장
 
@@ -54,21 +58,34 @@ export default function Videochat({ roomId, myName, myColorId }) {
   // const socket = useSocket();
 
   const setLocalStream = async () => {
-    if (localStream) {
+    // if (localStream) {
+    if (localStreamRef.current) {
       console.log("setLocalStream(): localStream already set");
       return;
     }
 
-    localStream = await navigator.mediaDevices.getUserMedia({
+    const localStream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: AUDIO_SETTINGS,
     });
+
+    localStreamRef.current = localStream; // localStream을 ref에 저장
 
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = localStream;
       console.log("setLocalStream(): success");
     } else {
       console.log("setLocalStream(): failed");
+    }
+  };
+
+  const handleCameraClick = () => {
+    console.log("handleCameraClick(): ", localVideoRef.current);
+    if (localStreamRef.current) {
+      localStreamRef.current.getVideoTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setCameraOff((prev) => !prev);
     }
   };
 
@@ -116,13 +133,16 @@ export default function Videochat({ roomId, myName, myColorId }) {
         );
       };
 
-      if (!localStream) {
+      // if (!localStream) {
+      if (!localStreamRef.current) {
         console.log("createPeerConnection(): no local stream detected");
         return;
       }
 
-      localStream.getTracks().forEach((track) => {
-        pc.addTrack(track, localStream);
+      // localStream.getTracks().forEach((track) => {
+      localStreamRef.current.getTracks().forEach((track) => {
+        // pc.addTrack(track, localStream);
+        pc.addTrack(track, localStreamRef.current);
         console.log('createPeerConnection(): localStream added', `(socket id: ${socket.id})`);
       });
 
@@ -355,9 +375,16 @@ export default function Videochat({ roomId, myName, myColorId }) {
     //   // setIsMuted(muted);
     //   // }, [stream, muted]);
     // }, [stream === null]);
+
+    // useEffect(() => {
+    //   ref.current.srcObject = stream;
+    // }, [])
+
     useEffect(() => {
-      ref.current.srcObject = stream;
-    }, [])
+      if (stream && ref.current) {
+        ref.current.srcObject = stream;
+      }
+    }, [stream]);
 
     return (
       <div className="my-1 flex flex-col justify-center items-center">
@@ -396,8 +423,11 @@ export default function Videochat({ roomId, myName, myColorId }) {
         socket.removeAllListeners();
       }
 
-      if (localStream) {
-        localStream.getTracks().forEach((track) => { track.stop() });
+      // if (localStream) {
+      //   localStream.getTracks().forEach((track) => { track.stop() });
+      // }
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach((track) => track.stop());
       }
     })
   }, [])
@@ -438,6 +468,9 @@ export default function Videochat({ roomId, myName, myColorId }) {
         >
           {myName}
         </div>
+        <button onClick={() => handleCameraClick(localStreamRef)} className="mt-2">
+          {cameraOff ? 'Turn Camera On' : 'Turn Camera Off'}
+        </button>
       </div>
       {/* <Video key={socket.id} email="" stream={localStream} muted /> */}
       {users.map((user, index) => (
@@ -447,7 +480,11 @@ export default function Videochat({ roomId, myName, myColorId }) {
           {/* <h1 >
             {`User ${index + 1}`}
           </h1> */}
+          <button onClick={() => handleCameraClick()} className="mt-2">
+            {cameraOff ? 'Turn Camera On' : 'Turn Camera Off'}
+          </button>
         </div>
+
       ))}
     </div>
   );

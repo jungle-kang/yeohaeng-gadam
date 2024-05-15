@@ -21,6 +21,7 @@ const RoomContent = ({ roomId, userId, userName, colorId }) => {
 
   // liveblocks에 새로운 shape를 추가
   const insertCard = useMutation(({ storage, self, setMyPresence }, data) => {
+    console.log("data ", data);
     const selectedPageId = self.presence.selectedPageId;
     const selectedCardId = self.presence.selectedCardId;
     
@@ -57,34 +58,30 @@ const RoomContent = ({ roomId, userId, userName, colorId }) => {
   }, []);
 
   return (
-      <div>
-        <div className="flex"
+        <div className="flex border-t-2"
              style={{
                height: "calc(100vh - 88px)",
              }}
         >
-          <div className="bg-blue-300 w-3/12 h-full p-2 overflow-scroll overflow-x-hidden"
+          <div className="bg-white w-3/12 h-full p-2 overflow-scroll overflow-x-hidden "
           >
             <SearchPanel insertCard={insertCard}/>
           </div>
-          <div className="flex-col w-7/12 h-full">
+          <div className="flex-col grow h-full">
             <Whiteboard myUserId={userId} myColorId={colorId} />
           </div>
 
-          <div className="w-2/12 h-full bg-blue-600">
-            <div
-                className="flex justify-center h-6 bg-blue-50 text-center font-bold text-4l logo-font rounded-lg mt-5 mr-5 ml-5">
-              <button
-                  onClick={() => setModalOpen(true)}>방 설정
-              </button>
-            </div>
-            <div className="h-5/6 mt-5">
+          <div className="pt-3 flex flex-col items-end h-full border-l-2">
+            <button
+                className="text-xl bg-white font-bold w-8 rounded-2xl h-8 hover:bg-gray-300 font-bold mr-2"
+                onClick={() => setModalOpen(true)}>⚙️
+            </button>
+            <div className="h-5/6 mt-2 w-full">
               <Videochat roomId={roomId} myName={userName} myColorId={colorId}/>
             </div>
           </div>
           <SettingModal isOpen={modalOpen} closeModal={() => setModalOpen(false)}/>
         </div>
-      </div>
 
   )
 }

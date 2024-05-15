@@ -360,30 +360,35 @@ export default function Videochat({ roomId, myName, myColorId }) {
     }, [])
 
     return (
-      <div className="my-1 flex flex-col justify-center items-center">
-        <video
-          ref={ref}
-          muted={muted}
-          autoPlay
-          style={{
-            aspectRatio: "4/3",
-            width: "100%",
-            // width: 240,
-            // height: 240,
-            height: "15vh",
-            // height: "200px",
-            // margin: 5,
-            backgroundColor: "black",
-          }}
-        />
-        <div className="text-center text-bold w-1/2 rounded-full"
-          style={{
-            backgroundColor: COLORS[colorId]
-          }}
-        >
-          {name}
+        <div className="my-1 flex flex-col justify-center items-start">
+          <video
+              className="rounded-xl shadow-sm shadow-gray-700"
+              ref={ref}
+              muted={muted}
+              autoPlay
+              style={{
+                aspectRatio: "4/3",
+                // width: "100%",
+                // width: 240,
+                // height: 240,
+                height: "15vh",
+                // height: "200px",
+                // margin: 5,
+                backgroundColor: "black",
+              }}
+          />
+          <div className="flex flex-row items-center mt-1 ml-3">
+            <div className="rounded-full w-3 h-3 mr-2"
+                 style={{
+                   backgroundColor: COLORS[colorId]
+                 }}
+            />
+            <div className="nanumbarungothic text-bold rounded-full text-sm"
+            >
+              {myName}
+            </div>
+          </div>
         </div>
-      </div>
     );
   };
 
@@ -397,7 +402,9 @@ export default function Videochat({ roomId, myName, myColorId }) {
       }
 
       if (localStream) {
-        localStream.getTracks().forEach((track) => { track.stop() });
+        localStream.getTracks().forEach((track) => {
+          track.stop()
+        });
       }
     })
   }, [])
@@ -409,18 +416,18 @@ export default function Videochat({ roomId, myName, myColorId }) {
   }
 
   return (
-    <div className="flex flex-col mx-2">
+      <div className="flex flex-col mx-2">
 
-      {/* <div>{tt}</div>
+        {/* <div>{tt}</div>
       <button onClick={ontt}>HIT ME</button> */}
 
       {/* <div>{savedSocketId}</div> */}
       {/* <div>My ID: {useSelf((me) => me.connectionId)}</div> */}
-      <div className="my-1 flex flex-col justify-center items-center">
-        <video className=""
+      <div className="my-1 flex flex-col justify-center items-start">
+        <video className="rounded-xl shadow-sm shadow-gray-700"
           style={{
             aspectRatio: "4/3",
-            width: "100%",
+            // width: "100%",
             // height: "",
             height: "15vh",
             // height: "200px",
@@ -431,17 +438,22 @@ export default function Videochat({ roomId, myName, myColorId }) {
           ref={localVideoRef}
           autoPlay
         />
-        <div className="text-center text-bold w-1/2 rounded-full"
-          style={{
-            backgroundColor: COLORS[myColorId]
-          }}
-        >
-          {myName}
+        <div className="flex flex-row items-center mt-1 ml-3">
+          <div className="rounded-full w-3 h-3 mr-2"
+               style={{
+                 backgroundColor: COLORS[myColorId]
+               }}
+          />
+          <div className="nanumbarungothic text-bold rounded-full text-sm"
+          >
+            나
+          </div>
         </div>
+
       </div>
-      {/* <Video key={socket.id} email="" stream={localStream} muted /> */}
-      {users.map((user, index) => (
-        // <Video key={user.id} email={user.email} stream={user.stream} />
+        {/* <Video key={socket.id} email="" stream={localStream} muted /> */}
+        {users.map((user, index) => (
+            // <Video key={user.id} email={user.email} stream={user.stream} />
         <div key={index}>
           <Video key={user.id} name={user.name} colorId={user.colorId} stream={user.stream} />
           {/* <h1 >

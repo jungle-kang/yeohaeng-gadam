@@ -47,7 +47,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('join_room')
   // async handleJoinRoom(client: Socket, data: any) {
   handleJoinRoom(
-    @MessageBody() data: { room: string; email: string },
+    // @MessageBody() data: { room: string; email: string },
+    @MessageBody() data: { room: string; name: string; colorId: number },
     @ConnectedSocket() client: Socket,
   ) {
     console.log(`<${client.id}> wants to join room`);
@@ -62,11 +63,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return;
       }
       // 인원이 최대 인원보다 적으면 접속 가능
-      this.users[data.room].push({ id: client.id, email: data.email });
+      // this.users[data.room].push({ id: client.id, email: data.email });
+      this.users[data.room].push({ id: client.id, name: data.name, colorId: data.colorId });
       console.log(`pushed user into room (${data.room})`);
     } else {
       // room이 존재하지 않는다면 새로 생성
-      this.users[data.room] = [{ id: client.id, email: data.email }];
+      // this.users[data.room] = [{ id: client.id, email: data.email }];
+      this.users[data.room] = [{ id: client.id, name: data.name, colorId: data.colorId }];
       console.log(`created new room (${data.room})`);
     }
     // 해당 소켓이 어느 room에 속해있는 지 알기 위해 저장
@@ -99,12 +102,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // }
   handleOffer(
     @MessageBody()
+    // data: {
+    //   offerReceiveID: string;
+    //   // sdp: string;
+    //   sdp: any;
+    //   offerSendID: string;
+    //   offerSendEmail: string;
+    // },
     data: {
       offerReceiveID: string;
       // sdp: string;
       sdp: any;
       offerSendID: string;
-      offerSendEmail: string;
+      offerSendName: string,
+      offerSendColorID: number,
     },
     @ConnectedSocket() client: Socket,
   ) {
@@ -118,7 +129,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.to(data.offerReceiveID).emit('get_offer', {
       sdp: data.sdp,
       offerSendID: data.offerSendID,
-      offerSendEmail: data.offerSendEmail,
+      offerSendName: data.offerSendName,
+      offerSendColorID: data.offerSendColorID,
+      // offerSendEmail: data.offerSendEmail,
     });
     console.log("emitted get_offer to ", data.offerReceiveID);
   }

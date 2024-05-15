@@ -13,7 +13,7 @@ import SettingModal from "../components/SettingModal.tsx"
 import Videochat from "../videochat-proto/Videochat.jsx";
 // import VideoChat from "../webRTC/VideoChat.tsx";
 
-const RoomContent = ({ roomId, userId, colorId }) => {
+const RoomContent = ({ roomId, userId, userName, colorId }) => {
   // const {roomId} = useParams<{roomId:string}>();
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
@@ -47,7 +47,7 @@ const RoomContent = ({ roomId, userId, colorId }) => {
       <div>
         <div className="flex"
              style={{
-               height: "calc(100vh - 80px)",
+               height: "calc(100vh - 88px)",
              }}
         >
           <div className="bg-blue-300 w-3/12 h-full p-2 overflow-scroll overflow-x-hidden"
@@ -66,7 +66,7 @@ const RoomContent = ({ roomId, userId, colorId }) => {
               </button>
             </div>
             <div className="h-5/6 mt-5">
-              <Videochat roomId={roomId}/>
+              <Videochat roomId={roomId} myName={userName} myColorId={colorId}/>
             </div>
           </div>
           <SettingModal isOpen={modalOpen} closeModal={() => setModalOpen(false)}/>

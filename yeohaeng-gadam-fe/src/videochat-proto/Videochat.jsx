@@ -5,6 +5,8 @@ import io from 'socket.io-client';
 
 import { socket } from './socket';
 
+import { COLORS } from "/src/components/whiteboard/userColors"
+
 // connection settings
 const SIGNALING_SERVER_URL = import.meta.env.VITE_SIGNALING_SERVER_URL;
 
@@ -35,7 +37,7 @@ const AUDIO_SETTINGS = {
   autoGainControl: true,
 };
 
-export default function Videochat({ roomId }) {
+export default function Videochat({ roomId, myName, myColorId }) {
   const localVideoRef = useRef(null); // 내 영상 표시할 video element
   let localStream = null;
   // const [localStream, setLocalStream] = useState(null); // 내 영상
@@ -44,8 +46,6 @@ export default function Videochat({ roomId }) {
   const [tt, sett] = useState(0); ///////////////////////////////////////////////////////
 
   let pcs = {}; // createPeerConnection으로 생성된 pc와 그 상대의 정보를 저장
-  let localSdps = {};
-  let remoteSdps = {};
 
   // const socket = io(SIGNALING_SERVER_URL); // signaling server와 통신하는 소켓
 
@@ -72,7 +72,7 @@ export default function Videochat({ roomId }) {
     }
   };
 
-  const createPeerConnection = (peerID, email) => {
+  const createPeerConnection = (peerID, name, colorId) => {
     console.log("createPeerConnection(): start");
     try {
       const pc = new RTCPeerConnection(pc_config);
@@ -109,7 +109,8 @@ export default function Videochat({ roomId }) {
             .filter((user) => user.id !== peerID)
             .concat({
               id: peerID,
-              email,
+              name,
+              colorId,
               stream: e.streams[0],
             }),
         );
@@ -170,7 +171,9 @@ export default function Videochat({ roomId }) {
 
       socket.emit('join_room', {
         room: `yhgd-${roomId}`,
-        email: 'sample@naver.com',
+        name: myName,
+        colorId: myColorId,
+        // email: 'sample@naver.com',
       });
       console.log("onConnectHandler(): join_room emitted", `(socket id: ${socket.id})`); ////////
     } else {
@@ -183,7 +186,7 @@ export default function Videochat({ roomId }) {
     console.log("received otherUsers: ", otherUsers);
 
     otherUsers.forEach(async (user) => {
-      const pc = createPeerConnection(user.id, user.email);
+      const pc = createPeerConnection(user.id, user.name, user.colorId);
       if (!pc) {
         console.log("onAllUsersHandler(): createPC failed");
         return;
@@ -204,7 +207,9 @@ export default function Videochat({ roomId }) {
         socket.emit('offer', {
           sdp: localSdp,
           offerSendID: socket.id,
-          offerSendEmail: 'offerSendSample@sample.com',
+          // offerSendEmail: 'offerSendSample@sample.com',
+          offerSendName: myName,
+          offerSendColorID: myColorId,
           offerReceiveID: user.id,
         });
         console.log("onAllUsersHandler(): emitted offer toward ", user.id);
@@ -223,7 +228,7 @@ export default function Videochat({ roomId }) {
     console.log("onGetOfferHandler(): start", `(socket id: ${socket.id})`);
     console.log("received data: ", data);
 
-    const pc = createPeerConnection(data.offerSendID, data.offerSendEmail);
+    const pc = createPeerConnection(data.offerSendID, data.offerSendName, data.offerSendColorID);
 
     if (!pc) {
       console.log("onGetOfferHandler(): createPC failed");
@@ -335,7 +340,7 @@ export default function Videochat({ roomId }) {
 
 
 
-  const Video = ({ email, stream, muted = false }) => {
+  const Video = ({ name, colorId, stream, muted = false }) => {
     const ref = useRef(null);
     // const [isMuted, setIsMuted] = useState(muted);
 
@@ -365,12 +370,13 @@ export default function Videochat({ roomId }) {
             width: "100%",
             // width: 240,
             // height: 240,
-            // height: "20vh",
-            height: "200px",
+            height: "15vh",
+            // height: "200px",
             // margin: 5,
-            backgroundColor: 'black'
+            backgroundColor: COLORS[colorId]
           }}
         />
+        {name}
       </div>
     );
   };
@@ -409,10 +415,10 @@ export default function Videochat({ roomId }) {
           aspectRatio: "4/3",
           width: "100%",
           // height: "",
-          // height: "20vh",
-          height: "200px",
+          height: "15vh",
+          // height: "200px",
           // margin: 5,
-          backgroundColor: 'black',
+          backgroundColor: COLORS[myColorId],
         }}
         muted
         ref={localVideoRef}
@@ -422,7 +428,7 @@ export default function Videochat({ roomId }) {
       {users.map((user, index) => (
         // <Video key={user.id} email={user.email} stream={user.stream} />
         <div key={index}>
-          <Video key={user.id} email={user.email} stream={user.stream} />
+          <Video key={user.id} name={user.name} colorId={user.colorId} stream={user.stream} />
           {/* <h1 >
             {`User ${index + 1}`}
           </h1> */}

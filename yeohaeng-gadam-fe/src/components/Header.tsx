@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import '../index.css';
@@ -53,6 +53,35 @@ export default function Header() {
         toast.error('로그아웃 실패😭');
     }
 };
+const login = async () => {
+
+    try{
+
+        localStorage.setItem('loginAttemp', 'true');
+        toast.success('로그인 시도 중');
+        setTimeout(() => {
+            window.location.href = '/api/auth/google';
+        }, 1000);
+    } catch (error) {
+        toast.error('로그인에 실패했습니다.')
+    }
+};
+
+useEffect(() => {
+    // 페이지 로드 시 로컬 스토리지에서 로그인 상태 확인
+    const loginAttempt = localStorage.getItem('loginAttempt');
+    const accessToken = getCookie('access_token') ? getCookie('access_token') : '';
+
+    if (loginAttempt && accessToken) {
+      toast.success('로그인에 성공했습니다!');
+      localStorage.removeItem('loginAttempt');
+    } else if (loginAttempt) {
+      toast.error('로그인에 실패했습니다.');
+      localStorage.removeItem('loginAttempt');
+    }
+  }, []);
+
+
 
     return (
         <header className="w-full px-4 sm:px-4 md:px-16 h-20 flex flex-row bg-white mt-2">
@@ -84,7 +113,7 @@ export default function Header() {
                 ) : (
                     <button
                         className="w-1/2 h-full nanumbarungothic hover:text-gray-400 text-menu whitespace-nowrap"
-                        onClick={() => window.location.href = '/api/auth/google'}>
+                        onClick={login}>
                         로그인
                     </button>
                 )}

@@ -53,7 +53,8 @@ const Room = () => {
                 }).then(res =>res.json())
                 console.log('enter response:',response);
                 if (!response.data){
-                    alert('로그인이 필요합니다.111');
+                    // alert('로그인이 필요합니다.111');
+                    toast.error("방에 인원수가 가득찼어요😓")
                     navigate('/');
                 }
             }catch(e){

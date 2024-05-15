@@ -1262,6 +1262,7 @@ function Card({
         transform: `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${zoom}, ${zoom})`,
         borderColor: selectionColor,
         backgroundColor: card.fill,
+        fontFamily: 'Ownglyph_meetme-Rg' // 여기에 폰트 적용
       }}
       onPointerDown={(e) => onCardPointerDown(e, id)}
       onPointerUp={(e) => onCardPointerUp(e, id, card.cardType === "place")}

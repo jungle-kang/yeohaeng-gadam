@@ -89,6 +89,19 @@ export default function Videochat({ roomId, myName, myColorId }) {
     }
   };
 
+  const handlePeerCameraClick = (userId) => {
+    setUsers((prevUsers) => {
+      return prevUsers.map((user) => {
+        if (user.id === userId) {
+          user.stream.getVideoTracks().forEach((track) => {
+            track.enabled = !track.enabled;
+          });
+        }
+        return user;
+      });
+    });
+  };
+
   const createPeerConnection = (peerID, name, colorId) => {
     console.log("createPeerConnection(): start");
     try {
@@ -480,8 +493,8 @@ export default function Videochat({ roomId, myName, myColorId }) {
           {/* <h1 >
             {`User ${index + 1}`}
           </h1> */}
-          <button onClick={() => handleCameraClick()} className="mt-2">
-            {cameraOff ? 'Turn Camera On' : 'Turn Camera Off'}
+          <button onClick={() => handlePeerCameraClick(user.id)} className="mt-2">
+            Toggle {user.name}'s Camera
           </button>
         </div>
 

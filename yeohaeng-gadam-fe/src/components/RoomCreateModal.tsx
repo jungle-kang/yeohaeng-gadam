@@ -22,7 +22,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
     const modalRef = useRef<HTMLDivElement>(null);
     const [activeTags, setActiveTags] = useState<string[]>([]);
     const selectList = [
-        '2','3','4','5','6','7','8',
+        '2','3','4',
     ]
     const [selectedItem, setSelectedItem] = useState<string>('2');
     const [form,setForm]=useState({
@@ -112,7 +112,8 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
             <div className="fixed inset-0 bg-black opacity-50"></div>
             <div ref={modalRef} className="z-50 bg-white rounded-md shadow-lg p-4 w-[400px] h-auto">
                 <div className="flex">
-                    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">방 이름</div>
+                    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">
+                        방 이름</div>
                     <input
                         value={form.title}
                         onChange={e => {
@@ -121,7 +122,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                                 title: e.target.value,
                             })
                         }}
-                        className="pl-2 ml-2 w-72 ring-1 ring-inset ring-gray-300 rounded h-8"
+                        className="block w-full rounded-md border-0 py-1.5 pl-2 pr-4 text-gray-900 bg-gray-200 placeholder:text-gray-400 focus:ring-1 focus:bg-white focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         placeholder="생성할 방 이름을 입력해 주세요"/>
                 </div>
                 <div className="flex pt-2">
@@ -134,47 +135,50 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                                 location: e.target.value,
                             })
                         }}
-                        className="pl-2 ml-2 w-72 ring-1 ring-inset ring-gray-300 rounded h-8"
+                        className="block w-full rounded-md border-0 py-1.5 pl-2 pr-4 text-gray-900 bg-gray-200 placeholder:text-gray-400 focus:ring-1 focus:bg-white focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         placeholder="여행지를 입력해 주세요"/>
                 </div>
                 <div className="flex pt-2">
-                    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">날짜</div>
-                    <div className="ml-2 w-72 ring-insert ring-1 ring-gray-300 rounded h-8">
-                        <input
-                            value={form.start_date}
-                            onChange={e => {
-                                setForm({
-                                    ...form,
-                                    start_date: e.target.value,
-                                })
-                            }}
-                            type="date" className=""/>
-                        <input
-                            value={form.end_date}
-                            onChange={e => {
-                                setForm({
-                                    ...form,
-                                    end_date: e.target.value,
-                                })
-                            }}
-                            type="date" className="ml-2"/>
-                    </div>
-                </div>
-                <div className="flex pt-2">
+    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">날짜</div>
+    <div className="flex">
+        <input
+            value={form.start_date}
+            onChange={e => {
+                setForm({
+                    ...form,
+                    start_date: e.target.value,
+                })
+            }}
+            type="date"
+            className="block w-5/6 rounded-md border-0 text-center h-full px-2 text-gray-900 bg-gray-200 placeholder:text-gray-400 focus:ring-1 focus:bg-white focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+        <input
+            value={form.end_date}
+            onChange={e => {
+                setForm({
+                    ...form,
+                    end_date: e.target.value,
+                })
+            }}
+            type="date"
+            className="block w-5/6 rounded-md border-0 text-center h-full px-2 text-gray-900 bg-gray-200 placeholder:text-gray-400 focus:ring-1 focus:bg-white focus:ring-indigo-600 sm:text-sm sm:leading-6 ml-2"/>
+    </div>
+</div>
+
+                <div className="flex pt-2 mt-2">
                     <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">인원</div>
+
                     <SelectBox selectList={selectList} defaultValue={'2'} onSelectChange={handleSelectChange}/>
                 </div>
                 <div className="flex pt-3 h-auto">
                     <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">태그</div>
                     <div className="ml-2 w-72 h-auto">
-                        {tags.map(({id,name})=>(
-                                <button key={id}
-                                    className={`${
-                                        activeTags.includes(name) ? "bg-blue-300" : "bg-blue-100"
-                                    } rounded w-auto px-2 mx-2 mt-1 hover:bg-blue-300 nanumbarungothic h-8`}
+                        {tags.map(({id, name}) => (
+                            <button key={id}
+                                    className={`${activeTags.includes(name) ? "bg-blue-600 text-white" : "bg-white ring-1 ring-gray-400"
+                                    } text-sm rounded-2xl w-auto px-2 mx-2 mt-2 hover:bg-blue-100 nanumbarungothic h-8`}
                                     onClick={() => handleTagClick(name)}
-                                >
-                                    {name}
+                            >
+                                {name}
                                 </button>
                             )
                         )}

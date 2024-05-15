@@ -112,7 +112,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
             <div className="fixed inset-0 bg-black opacity-50"></div>
             <div ref={modalRef} className="z-50 bg-white rounded-md shadow-lg p-4 w-[400px] h-auto">
                 <div className="flex">
-                    <div className="logo-font h-8 pt-1 font-bold w-20 text-start">방 이름</div>
+                    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">방 이름</div>
                     <input
                         value={form.title}
                         onChange={e => {
@@ -125,7 +125,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                         placeholder="생성할 방 이름을 입력해 주세요"/>
                 </div>
                 <div className="flex pt-2">
-                    <div className="logo-font h-8 pt-1 font-bold w-20 text-start">여행지</div>
+                    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">여행지</div>
                     <input
                         value={form.location}
                         onChange={e => {
@@ -138,7 +138,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                         placeholder="여행지를 입력해 주세요"/>
                 </div>
                 <div className="flex pt-2">
-                    <div className="logo-font h-8 pt-1 font-bold w-20 text-start">날짜</div>
+                    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">날짜</div>
                     <div className="ml-2 w-72 ring-insert ring-1 ring-gray-300 rounded h-8">
                         <input
                             value={form.start_date}
@@ -161,11 +161,11 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                     </div>
                 </div>
                 <div className="flex pt-2">
-                    <div className="logo-font h-8 pt-1 font-bold w-20 text-start">인원</div>
+                    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">인원</div>
                     <SelectBox selectList={selectList} defaultValue={'2'} onSelectChange={handleSelectChange}/>
                 </div>
                 <div className="flex pt-3 h-auto">
-                    <div className="logo-font h-8 pt-1 font-bold w-20 text-start">태그</div>
+                    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">태그</div>
                     <div className="ml-2 w-72 h-auto">
                         {tags.map(({id,name})=>(
                                 <button key={id}

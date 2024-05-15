@@ -155,13 +155,13 @@ export default function SearchBar() {
                 <div className="basis-1/5">
                     <button
                         onClick={handleSearch}
-                        className="logo-font ml-1 font-bold h-full text-center block w-full rounded-md border-0 py-1.5 px-auto text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-200 hover:text-gray-500 bg-gray-300">
+                        className="nanumbarungothic ml-1 font-bold h-full text-center block w-full rounded-md border-0 py-1.5 px-auto text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-200 hover:text-gray-500 bg-gray-300">
                         방 찾기
                     </button>
                 </div>
                 <div className="basis-1/5 ml-2">
                     <button onClick={createRoomModal}
-                        className="logo-font font-bold h-full text-center block w-full rounded-md border-0 py-1.5 px-auto text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-200 hover:text-gray-500 bg-gray-300">
+                        className="nanumbarungothic font-bold h-full text-center block w-full rounded-md border-0 py-1.5 px-auto text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-200 hover:text-gray-500 bg-gray-300">
                         방 만들기
                     </button>
                 </div>
@@ -170,7 +170,7 @@ export default function SearchBar() {
                 {tags.map(({ id, name }) => (
                     <button key={id}
                         className={`${activeTags.includes(name) ? "bg-blue-300" : "bg-blue-100"
-                            } rounded w-auto px-2 mx-2 mt-1 hover:bg-blue-300 logo-font h-8`}
+                            } rounded w-auto px-2 mx-2 mt-1 hover:bg-blue-300 nanumbarungothic h-8`}
                         onClick={() => handleTagClick(name)}
                     >
                         {name}

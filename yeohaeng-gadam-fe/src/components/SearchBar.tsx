@@ -92,7 +92,7 @@ export default function SearchBar() {
                 : searchForm
         ).toString();
 
-        toast.success('검색 결과입니다!😎');
+        toast.success('검색중😎');
 
         
         setTimeout(() => {
@@ -144,6 +144,7 @@ export default function SearchBar() {
                     <button
                         onClick={handleSearch}
                         className="ml-1 nanumbarungothic font-bold h-full text-center block w-full rounded-md border-0 py-1.5 px-auto text-white hover:bg-blue-800  bg-blue-600">
+                        
                         방 찾기
                     </button>
                 </div>

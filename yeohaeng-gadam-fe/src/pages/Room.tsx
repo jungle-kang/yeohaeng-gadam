@@ -21,11 +21,15 @@ const client = createClient({
 
 const Room = () => {
     const [content, setContent] = useState(<div>입장 중...</div>);
+    // const [colorId, setColorId] = useState(5); ///////////////////////////
     const accessToken: string = getCookie('access_token') ? getCookie('access_token') : '';
     let id = null;
+    let userName = "John Doe";
     // @ts-ignore
     if (accessToken !== '') {
-        id = jwtDecode(accessToken).id;
+        const decodedJwt = jwtDecode(accessToken);
+        id = decodedJwt.id;
+        userName = decodedJwt.firstName + decodedJwt.lastName;
     }
     const navigate = useNavigate();
     const { roomId } = useParams<{ roomId: string }>();
@@ -41,8 +45,6 @@ const Room = () => {
     };
 
     const initPages = new LiveMap();
-
-    // let content = <div>입장 중...</div>;
 
     useEffect(() => {
         const enter = async () => {
@@ -73,14 +75,31 @@ const Room = () => {
                 console.error('enter error:', e);
             }
         }
-        const meCheck = async () => {
+        // const meCheck = async () => {
+        //     try {
+        //         const response = await fetch(`/api/auth/me/${id}`, {
+        //             method: 'GET',
+        //             credentials: 'include',
+        //         }).then(res => res.json());
+        //         if (response.data) {
+        //             await enter();
+        //         } else {
+        //             alert('로그인이 필요합니다.222');
+        //             navigate('/');
+        //         }
+        //     } catch (e) {
+        //         console.log(e);
+        //     }
+        // }
+        const initializeLB = async () => {
+            // 사용자 인증
             try {
                 const response = await fetch(`/api/auth/me/${id}`, {
                     method: 'GET',
                     credentials: 'include',
                 }).then(res => res.json());
                 if (response.data) {
-                    enter();
+                    await enter();
                 } else {
                     alert('로그인이 필요합니다.222');
                     navigate('/');
@@ -88,8 +107,7 @@ const Room = () => {
             } catch (e) {
                 console.log(e);
             }
-        }
-        const initializeLB = async () => {
+            // 초기 pages 데이터 세팅
             try {
                 const response = await fetch(`/api/room?id=${roomId}`, {
                     method: 'GET',
@@ -106,7 +124,11 @@ const Room = () => {
                     for (let i = 0; i <= days; i++) {
                         const newPage = new LiveObject({
                             name: `${i + 1}일차`,
-                            plan: new LiveObject(),
+                            plan: new LiveObject({
+                                startId: null,
+                                endId: null,
+                                placeIds: [],
+                            }),
                             cards: new LiveMap(),
                             lines: new LiveMap(),
                         });
@@ -120,21 +142,80 @@ const Room = () => {
             } catch (e) {
                 console.log(e);
             }
-        }
-        if (accessToken) {
-            meCheck();
-            initializeLB(); // 초기 Liveblocks 데이터 세팅
-            // console.log("initPages: ", initPages);
-            const colorId = 0; ///////////////////////////////////////////////////////////
+
+            // 내 커서 색깔 불러오기
+            let colorId = 5;
+            try {
+                const response = await fetch(`/api/entry/room?room_id=${roomId}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                }).then(res => res.json());
+
+                // console.log("fetch res: ", response.data[0].users);
+                // console.log("fetch res: ", response.data[0].colors);
+
+                const myIdx = response.data[0].users.findIndex((userId) => userId == id);
+
+                // console.log("myindex ", myIdx);
+
+
+                colorId = response.data[0].colors[myIdx];
+                // console.log("colorId: ", colorId);
+            } catch (e) {
+                console.log(e);
+            }
+
             setContent(
                 <RoomProvider
                     id={roomProviderId}
                     initialPresence={initPresence}
                     initialStorage={{ pages: initPages }}
                 >
-                    <RoomContent roomId={roomId} userId={id} colorId={colorId} />
+                    <RoomContent roomId={roomId} userId={id} userName={userName} colorId={colorId} />
                 </RoomProvider>
             );
+        }
+        // const getMyColor = async () => {
+        //     try {
+        //         const response = await fetch(`/api/entry/room?room_id=${roomId}`, {
+        //             method: 'GET',
+        //             credentials: 'include',
+        //         }).then(res => res.json());
+
+        //         console.log("fetch res: ", response);
+
+        //         setColorId(0);
+        //     } catch (e) {
+        //         console.log(e);
+        //     }
+        // }
+        if (accessToken) {
+            // meCheck();
+            initializeLB(); // 초기 Liveblocks 데이터 세팅
+            // console.log("initPages: ", initPages);
+            //     getMyColor().then(() => {
+            //         console.log("mycolor: ", colorId); ///////////
+            //         setContent(
+            //             <RoomProvider
+            //                 id={roomProviderId}
+            //                 initialPresence={initPresence}
+            //                 initialStorage={{ pages: initPages }}
+            //             >
+            //                 <RoomContent roomId={roomId} userId={id} colorId={colorId} />
+            //             </RoomProvider>
+            //         )
+            // });
+
+            // setContent(
+            //     <RoomProvider
+            //         id={roomProviderId}
+            //         initialPresence={initPresence}
+            //         initialStorage={{ pages: initPages }}
+            //     >
+            //         <RoomContent roomId={roomId} userId={id} colorId={colorId} />
+            //     </RoomProvider>
+            // );
+
             // setReady(true); // 화이트보드 로딩 준비 완료
         } else {
             // alert('방에 참가하려면 로그인을 해주세요.');

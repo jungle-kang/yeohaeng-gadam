@@ -15,6 +15,8 @@ import { nanoid } from "nanoid";
 import Cursor from "./Cursor";
 import Plan from "./Plan";
 
+import { COLORS } from "./userColors"
+
 
 import transportRunIcon from "/src/assets/whiteboard-transport-run.svg";
 import transportBusIcon from "/src/assets/whiteboard-transport-bus.svg";
@@ -98,7 +100,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
       pageId: selectedPageId,
       x: x,
       y: y,
-      color: COLORS[self.connectionId % COLORS.length]
+      color: COLORS[self.presence.colorId]
     });
   }
 
@@ -192,9 +194,12 @@ export default function Canvas({ pingEventList, setPingEventList }) {
     e.stopPropagation();
     // const pageId = self.presence.selectedPageId;
     const page = storage.get("pages").get(self.presence.selectedPageId);
+
+    // cards에서 삭제
     page.get("cards").delete(cardId);
     // storage.get("pages").get(pageId).get("cards").delete(cardId);
 
+    // 연결된 line을 삭제
     const lineIdList = Array.from(page.get("lines").keys());
 
     lineIdList.map((lineId) => {
@@ -204,6 +209,18 @@ export default function Canvas({ pingEventList, setPingEventList }) {
       }
     });
 
+    // plan에서 삭제
+    const plan = storage.get("pages").get(selectedPageId).get("plan");
+    const placeIds = plan.get("placeIds");
+
+    if (placeIds.includes(cardId)) {
+      const filteredPlan = placeIds.filter((placeId) => (placeId !== cardId));
+      plan.update({
+        placeIds: filteredPlan,
+      })
+    }
+
+    // selected 상태라면 삭제
     if (self.presence.selectedCardId === cardId) {
       setMyPresence({ selectedCardId: null });
     }
@@ -219,12 +236,12 @@ export default function Canvas({ pingEventList, setPingEventList }) {
 
     let newLikedUsers = [];
 
-    if (likedUsers.includes(self.presence.userId)) {
+    if (likedUsers.includes(self.presence.colorId)) {
       console.log("contains me");
-      newLikedUsers = likedUsers.filter((userId) => (userId !== self.presence.userId));
+      newLikedUsers = likedUsers.filter((colorId) => (colorId !== self.presence.colorId));
     } else {
       console.log("does not contain me");
-      newLikedUsers = [...likedUsers, self.presence.userId];
+      newLikedUsers = [...likedUsers, self.presence.colorId];
     }
 
 
@@ -444,7 +461,6 @@ export default function Canvas({ pingEventList, setPingEventList }) {
     }
   }, []);
 
-
   //////////////////////////// 버튼 및 캔버스 동작 관련 ////////////////////////////
   const onCanvasPointerDown = (e) => {
     // console.log(isDraggingCanvas); ////////////
@@ -452,7 +468,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
     // console.log(canvasRef.current); ///////////
     // console.log(e); ////////////
     setIsDraggingCanvas(true);
-    updateMyPresence({ selectedCardId: null });
+    // updateMyPresence({ selectedCardId: null });
   };
 
   // const onCanvasPointerMove = useMutation(({ setMyPresence, self }, e) => {
@@ -720,7 +736,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
           style={{
             position: "absolute",
             height: 5 * ZOOMS[canvasZoomLevel],
-            zIndex: "1000",
+            zIndex: "1",
             // zIndex: "-9000",
             //////////////////////
             transform: `translate(${x}px, ${y}px) translateX(-50%) rotate(${theta}rad)`,
@@ -732,7 +748,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
           style={{
             position: "absolute",
             transform: `translate(${x2}px, ${y2}px) translate(-50%, -50%)`,
-            zIndex: "1000",
+            zIndex: "1",
             // zIndex: "-9000",
           }}
         >
@@ -817,11 +833,14 @@ export default function Canvas({ pingEventList, setPingEventList }) {
 
       <div className="absolute bg-red-300"
         style={{
-          top: "calc(100% - 400px)",
+          top: "100%",
           left: 0,
           width: "100%",
-          height: "400px",
+          height: "200px",
+          transition: "top 0.2s",
+          zIndex: 11,
         }}
+        onClick={(e) => { e.stopPropagation(); e.nativeEvent.stopImmediatePropagation() }}
       >
         <Plan />
       </div>
@@ -837,7 +856,7 @@ function PingIndicator({ pingType, x, y, color, userId, removePingEvent }) {
         width: "50px",
         height: "50px",
         transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
-        zIndex: 9000,
+        zIndex: 9,
       }}
       onMouseOver={() => removePingEvent(userId)}
     >
@@ -1015,15 +1034,21 @@ function Card({
   onLikeBtnClick,
   onCardChange,
 }) {
+  const myColorId = useSelf((me) => me.presence.colorId);
   const selectedByMe = useSelf((me) => me.presence.selectedCardId === id);
-  const selectedByOthers = useOthers((others) =>
-    others.some((other) => other.presence.selectedCardId === id)
-  );
+  // const selectedByOthers = useOthers((others) =>
+  //   others.some((other) => other.presence.selectedCardId === id)
+  // );
+  const selectedColorIds = useOthers((others) => others.map((other) => {
+    if (other.presence.selectedCardId === id) {
+      return other.presence.colorId;
+    };
+  }))
 
   const selectionColor = selectedByMe
-    ? "blue"
-    : selectedByOthers
-      ? "green"
+    ? COLORS[myColorId]
+    : selectedColorIds[0] != null
+      ? COLORS[selectedColorIds[0]]
       : "transparent";
 
   const width = card.cardType === "place"
@@ -1040,33 +1065,33 @@ function Card({
 
   const zIndex = card.cardType === "map"
     ? 0
-    : 5000; // place, memo
+    : 5; // place, memo
 
 
   // 디버깅용ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
-  const increaseLike = useMutation(({ storage, self }, cardId) => {
-    const page = storage.get("pages").get(self.presence.selectedPageId);
-    const card = page.get("cards").get(cardId);
-    const likedUsers = card.get("likedUsers");
+  // const increaseLike = useMutation(({ storage, self }, cardId) => {
+  //   const page = storage.get("pages").get(self.presence.selectedPageId);
+  //   const card = page.get("cards").get(cardId);
+  //   const likedUsers = card.get("likedUsers");
 
-    card.update({
-      likedUsers: [...Array(likedUsers.length + 1).keys()]
-    })
-  }, []);
+  //   card.update({
+  //     likedUsers: [...Array(likedUsers.length + 1).keys()]
+  //   })
+  // }, []);
 
-  const decreaseLike = useMutation(({ storage, self }, cardId) => {
-    const page = storage.get("pages").get(self.presence.selectedPageId);
-    const card = page.get("cards").get(cardId);
-    const likedUsers = card.get("likedUsers");
+  // const decreaseLike = useMutation(({ storage, self }, cardId) => {
+  //   const page = storage.get("pages").get(self.presence.selectedPageId);
+  //   const card = page.get("cards").get(cardId);
+  //   const likedUsers = card.get("likedUsers");
 
-    if (likedUsers.length <= 0) {
-      return;
-    }
+  //   if (likedUsers.length <= 0) {
+  //     return;
+  //   }
 
-    card.update({
-      likedUsers: [...Array(likedUsers.length - 1).keys()]
-    })
-  }, []);
+  //   card.update({
+  //     likedUsers: [...Array(likedUsers.length - 1).keys()]
+  //   })
+  // }, []);
   // 디버깅용ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
 
   return (
@@ -1108,17 +1133,31 @@ function Card({
       {
         // 디버깅용ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
         card.cardType !== "map" &&
-        <div className="absolute"
+        <div className="absolute flex flex-row"
           style={{
             top: "100%",
           }}
         >
-          <button onClick={() => onLikeBtnClick(id)}>
-            ❤️
+
+          <button
+            style={{ color: COLORS[myColorId] }}
+            onClick={() => onLikeBtnClick(id)}
+          >
+            {card.likedUsers.includes(myColorId) ? "♥" : "♡"}
           </button>
-          <button onClick={() => decreaseLike(id)}>{"<"}</button>
-          <button onClick={() => increaseLike(id)}>{">"}</button>
-          {card.likedUsers}
+
+          {/* <button onClick={() => decreaseLike(id)}>{"<"}</button>
+          <button onClick={() => increaseLike(id)}>{">"}</button> */}
+
+          {
+            card.likedUsers.map((colorId) => {
+              if (colorId !== myColorId) {
+                return (
+                  <div key={colorId} style={{ color: COLORS[colorId] }}>♥</div>
+                );
+              }
+            })
+          }
         </div>
       }
 
@@ -1224,7 +1263,7 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
         style={{
           position: "absolute",
           height: 5 * zoom,
-          zIndex: "1000",
+          zIndex: "1",
           // zIndex: "-5000",
           //////////////////////
           transform: `translate(${x}px, ${y}px) translateX(-50%) rotate(${theta}rad)`,
@@ -1244,7 +1283,7 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
           // transition: "width 0.5s, height 0.5s",
 
           position: "absolute",
-          zIndex: "2000",
+          zIndex: "2",
           // zIndex: "-8000",
 
           //////////////////////////////
@@ -1305,7 +1344,7 @@ function formatDur(dur) {
 
 // 커서 색상 목록
 // const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
-const COLORS = ["#AB0C20", "#33C44F", "#EA8221", "#017DA3", "#666666", "#666666", "#666666", "#666666"];
+// const COLORS = ["#AB0C20", "#33C44F", "#EA8221", "#017DA3", "#666666", "#666666", "#666666", "#666666"];
 
 // 줌 배율 목록
 const ZOOMS = [0.2, 0.25, 0.33, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.55];

@@ -48,6 +48,7 @@ export default function Videochat({ roomId, myName, myColorId }) {
   const [tt, sett] = useState(0); ///////////////////////////////////////////////////////
 
   const [cameraOff, setCameraOff] = useState(false);
+  const [audioOff, setAudioOff] = useState(false);
 
   let pcs = {}; // createPeerConnection으로 생성된 pc와 그 상대의 정보를 저장
 
@@ -89,11 +90,34 @@ export default function Videochat({ roomId, myName, myColorId }) {
     }
   };
 
+
+  const handleAudioClick = () => {
+    if (localStreamRef.current) {
+      localStreamRef.current.getAudioTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setAudioOff((prev) => !prev);
+    }
+  };
+
   const handlePeerCameraClick = (userId) => {
     setUsers((prevUsers) => {
       return prevUsers.map((user) => {
         if (user.id === userId) {
           user.stream.getVideoTracks().forEach((track) => {
+            track.enabled = !track.enabled;
+          });
+        }
+        return user;
+      });
+    });
+  };
+
+  const handlePeerAudioClick = (userId) => {
+    setUsers((prevUsers) => {
+      return prevUsers.map((user) => {
+        if (user.id === userId) {
+          user.stream.getAudioTracks().forEach((track) => {
             track.enabled = !track.enabled;
           });
         }
@@ -484,6 +508,9 @@ export default function Videochat({ roomId, myName, myColorId }) {
         <button onClick={() => handleCameraClick(localStreamRef)} className="mt-2">
           {cameraOff ? 'Turn Camera On' : 'Turn Camera Off'}
         </button>
+        <button onClick={handleAudioClick} className="mt-2">
+          {audioOff ? 'Turn Audio On' : 'Turn Audio Off'}
+        </button>
       </div>
       {/* <Video key={socket.id} email="" stream={localStream} muted /> */}
       {users.map((user, index) => (
@@ -494,7 +521,12 @@ export default function Videochat({ roomId, myName, myColorId }) {
             {`User ${index + 1}`}
           </h1> */}
           <button onClick={() => handlePeerCameraClick(user.id)} className="mt-2">
-            Toggle {user.name}'s Camera
+            {cameraOff ? `${user.name}'s  Camera On` : `${user.name}'s  Camera Off`}
+            {/* Toggle {user.name}'s Camera */}
+          </button>
+          <button onClick={() => handlePeerAudioClick(user.id)} className="mt-2">
+            {audioOff ? `${user.name}'s  Audio On` : `${user.name}'s  Audio Off`}
+            {/* Toggle {user.name}'s Audio */}
           </button>
         </div>
 

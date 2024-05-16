@@ -9,8 +9,10 @@ export default function Cursor({ color, x, y }) {
         zIndex: 10,
         transition: "all 0.2s",
       }}
-      width="24"
-      height="36"
+      // width="24"
+      // height="36"
+      width="36"
+      height="54"
       viewBox="0 0 24 36"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

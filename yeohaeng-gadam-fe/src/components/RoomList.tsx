@@ -6,7 +6,7 @@ import RoomCards from "./RoomCards";
 const RoomList = () => {
   const [searchParams] = useSearchParams();
   const [post, setPost] = React.useState([]);
-
+  const [loading, setLoading] = React.useState(true);
   const searchFormToQueryString = (searchForm) => {
     const params = new URLSearchParams();
     for (const key in searchForm) {
@@ -38,12 +38,13 @@ const RoomList = () => {
       });
       const data = await response.json();
       setPost(data.data);
+      setLoading(false);
     };
     fetchData();
   }, [searchParams]);
 
   return (
-    <RoomCards post={post} />
+    <RoomCards post={post} loading={loading} />
   );
 };
 

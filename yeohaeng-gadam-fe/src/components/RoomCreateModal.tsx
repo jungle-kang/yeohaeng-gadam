@@ -150,7 +150,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                 })
             }}
             type="date"
-            className="block w-5/6 rounded-md border-0 text-center h-full px-2 text-gray-900 bg-gray-200 placeholder:text-gray-400 focus:ring-1 focus:bg-white focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
+            className="block w-full rounded-md border-0 text-center h-full px-4 text-gray-900 bg-gray-200 placeholder:text-gray-400 focus:ring-1 focus:bg-white focus:ring-indigo-600 sm:text-sm sm:leading-6"/>
         <input
             value={form.end_date}
             onChange={e => {
@@ -160,7 +160,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                 })
             }}
             type="date"
-            className="block w-5/6 rounded-md border-0 text-center h-full px-2 text-gray-900 bg-gray-200 placeholder:text-gray-400 focus:ring-1 focus:bg-white focus:ring-indigo-600 sm:text-sm sm:leading-6 ml-2"/>
+            className="block w-full rounded-md border-0 text-center h-full px-5 text-gray-900 bg-gray-200 placeholder:text-gray-400 focus:ring-1 focus:bg-white focus:ring-indigo-600 sm:text-sm sm:leading-6 ml-2"/>
     </div>
 </div>
 

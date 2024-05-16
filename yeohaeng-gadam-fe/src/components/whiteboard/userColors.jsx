@@ -45,8 +45,8 @@ export const COLORS_NAMETAG = [
 
 export const COLORS_LIKE = [
     "#FF1493",
-    "#00FF00",
-    "#FF4500",
+    "#00EE00",
+    "#FFAE1D",
     "#1E90FF",
     "#666666", // 이하 디버깅용
     "#666666",

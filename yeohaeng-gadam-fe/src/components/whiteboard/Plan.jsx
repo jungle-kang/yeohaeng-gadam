@@ -194,17 +194,10 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
         console.log('inputs:', inputs);
     }, [add]);
 
-    const selectedPageId = useSelf((self) => self.presence.selectedPageId);
-    // const page = useStorage((root) => root.pages.get(selectedPageId));
-    // const plan = useStorage((root) => root.pages.get(selectedPageId).plan);
-    // const plan = page ? page.plan : null;
-    // const placeIds = plan ? plan.placeIds : null;
-    const placeIds = useStorage((root) => root.pages.get(selectedPageId).plan.placeIds);
-    const cards = useStorage((root) => root.pages.get(selectedPageId).cards);
-
     // console.log("placeIds", placeIds);
 
     const insertCard = useMutation(({ storage, self }) => {
+        const selectedPageId = self.presence.selectedPageId;
         const selectedCardId = self.presence.selectedCardId;
         if (selectedCardId == null) {
             return;
@@ -315,6 +308,10 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
     }
 
     ////////////////// 렌더링
+    const selectedPageId = useSelf((self) => self.presence.selectedPageId);
+    const placeIds = useStorage((root) => root.pages.get(selectedPageId).plan.placeIds);
+    const cards = useStorage((root) => root.pages.get(selectedPageId).cards);
+
     const planCardList = placeIds.map((cardId) => {
         const card = cards.get(cardId);
         if (!card) {

@@ -139,7 +139,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                         placeholder="여행지를 입력해 주세요"/>
                 </div>
                 <div className="flex pt-2">
-    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">날짜</div>
+    <div className="nanumbarungothic h-8 pt-1 font-bold w-16 text-start">날짜</div>
     <div className="flex">
         <input
             value={form.start_date}
@@ -165,12 +165,12 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
 </div>
 
                 <div className="flex pt-2 mt-2">
-                    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">인원</div>
+                    <div className="nanumbarungothic h-8 pt-1 font-bold w-14 text-start">인원</div>
 
                     <SelectBox selectList={selectList} defaultValue={'2'} onSelectChange={handleSelectChange}/>
                 </div>
                 <div className="flex pt-3 h-auto">
-                    <div className="nanumbarungothic h-8 pt-1 font-bold w-20 text-start">태그</div>
+                    <div className="nanumbarungothic h-8 pt-1 font-bold w-12 text-start">태그</div>
                     <div className="ml-2 w-72 h-auto">
                         {tags.map(({id, name}) => (
                             <button key={id}
@@ -187,7 +187,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ onClose }) => {
                 <div className="text-center">
                     <button
                         onClick={handleSubmit}
-                        className="ring-2 mt-5 mb-2 nanumbarungothic h-10 w-28 rounded-lg text-gray-800 hover:text-black hover:bg-blue-400">생성하기
+                        className="nanumbarungothic font-bold h-full mt-5 text-center block w-full rounded-md border-0 py-1.5 px-auto text-white hover:bg-blue-800  bg-blue-600">생성하기
                     </button>
                 </div>
             </div>

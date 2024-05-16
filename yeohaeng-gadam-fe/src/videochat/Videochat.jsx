@@ -385,7 +385,7 @@ export default function Videochat({ roomId, myName, myColorId }) {
             />
             <div className="nanumbarungothic text-bold rounded-full text-sm"
             >
-              {myName}
+              {name}
             </div>
           </div>
         </div>

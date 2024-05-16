@@ -60,7 +60,40 @@ export default function SuggestCourse() {
   };
 
   // 목적지 수가 너무 많으면 프림 알고리즘으로 먼 목적지를 제외시킴
-  const trimCandidates = (distMatrix, candidateNum, initialCandidates) => {
+  // 프림 알고리즘 기반 제외 알고리즘
+  const trimCandidatesPrim = (distMatrix, candidateNum, initialCandidates) => {
+    let candidates = initialCandidates;
+    // candidateNum만큼의 목적지를 선택
+    for (let i = initialCandidates.length; i < candidateNum; i++) {
+      // 현재 candidates에 인접한 다른 candidate중에서 가장 거리가 작은 목적지를 선택
+      let minScore = Infinity;
+      let minCandidate = null;
+
+      candidates.forEach((candidate) => {
+        const distArr = distMatrix[candidate];
+        distArr.forEach((curScore, idx) => {
+          if (candidates.includes(idx)) {
+            return;
+          }
+
+          if (curScore < minScore) {
+            minScore = curScore;
+            minCandidate = idx;
+          }
+        });
+      });
+
+      candidates = [...candidates, minCandidate];
+    }
+  };
+
+  // 타원 거리 기반 제외 알고리즘
+  const trimCandidatesOval = (distMatrix, candidateNum, initialCandidates) => {
+    
+
+
+
+
     let candidates = initialCandidates;
     // candidateNum만큼의 목적지를 선택
     for (let i = initialCandidates.length; i < candidateNum; i++) {
@@ -88,20 +121,6 @@ export default function SuggestCourse() {
     console.log("trimCandidates: result ", candidates);
 
     return candidates;
-
-    // placePerm.forEach((perm) => {
-    //   const path = [start, ...perm, end];
-    //   const curScore = path.reduce((acc, cur, i) => {
-    //     if (i === path.length - 1) return acc;
-    //     const curDist = distMatrix[cur][path[i + 1]];
-    //     return acc + curDist;
-    //   }, 0);
-
-    //   if (curScore < minScore) {
-    //     minScore = curScore;
-    //     bestPath = path;
-    //   }
-    // });
   };
 
   // 가장 짧은 경로 찾는 함수
@@ -212,11 +231,11 @@ export default function SuggestCourse() {
       console.log("handleFindPath(): too many places, use heuristics");
       // 프림 알고리즘 사용하여 출발/도착지점과 가까운 목적지를 걸러내기
       // candidates = trimCandidates(distMatrix, PLACE_LIMIT, [startIdx, endIdx]);
-    }
 
+    }
     // 완전 탐색에 사용할 목적지 후보
     const candidates = placeCardIds.length > PLACE_LIMIT
-    ? trimCandidates(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 프림 알고리즘으로 걸러내기
+    ? trimCandidatesPrim(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 프림 알고리즘으로 걸러내기
     : [...Array(places.length).keys()] // 많지 않으면 모두 사용
 
     // console.log("Filtered cards: ", placeCardIds);

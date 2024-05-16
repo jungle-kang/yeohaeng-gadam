@@ -268,7 +268,7 @@ export default function SuggestCourse() {
     setPathDisc(
       bestPath.reduce((acc, cur, i) => {
         if (i === 0) return places[cur].placeName;
-        return acc + "->" + places[cur].placeName;
+        return acc + "👉" + places[cur].placeName;
       }, "")
     );
   };
@@ -370,47 +370,72 @@ export default function SuggestCourse() {
   const endPlaceName = cards && endCardId && cards.get(endCardId).placeName;
 
   return (
-    <div>
       <div>
-        {/* <SelectBox selectList={[2, 3, 4, 5, 6, 7, 8]} defaultValue={6}
+        <div className="flex">
+          {/* <SelectBox selectList={[2, 3, 4, 5, 6, 7, 8]} defaultValue={6}
           onSelectChange={handleSelectChange} /> */}
+          <div className="nanumbarungothic mt-1.5 ml-2">
+            목적지 수
+          </div>
 
-        목적지 수
-        <input className="m-1"
-          type="number" min="2" max="8" defaultValue={DEAFULT_PLACE_NUM}
-          onChange={(e) => { setPlaceNum(e.target.value) }}
-        />
+          <input className="m-1 bg-gray-200 rounded-md pl-2 w-10"
+                 type="number" min="2" max="8" defaultValue={DEAFULT_PLACE_NUM}
+                 onChange={(e) => {
+                   setPlaceNum(e.target.value)
+                 }}
+          />
 
-        <button className="bg-white rounded-md m-1"
-          onClick={setCardAsStart}
-        >
-          출발설정
-        </button>
-        <button className="bg-white rounded-md m-1"
-          onClick={setCardAsEnd}
-        >
-          도착설정
-        </button>
-        <button className="bg-white rounded-md m-1"
-          // onClick={generateRecommend}
-          onClick={() => handleFindPath(placeNum)}
-        >
-          추천하기
-        </button>
-        <button className="bg-white rounded-md m-1"
-          onClick={() => onApplyBtnClick(suggestIds)}
-        >
-          적용하기
-        </button>
+          <button
+              className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 px-1 rounded-md ml-1.5 mt-1 px-1"
+              onClick={setCardAsStart}
+          >
+            출발설정
+          </button>
+          <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
+                  onClick={setCardAsEnd}
+          >
+            도착설정
+          </button>
+          <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
+              // onClick={generateRecommend}
+                  onClick={() => handleFindPath(placeNum)}
+          >
+            추천하기
+          </button>
+          <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
+                  onClick={() => onApplyBtnClick(suggestIds)}
+          >
+            적용하기
+          </button>
+        </div>
+
+        <div className="flex ml-2 mt-3">
+          <div className="nanumbarungothic text-blue-700 w-28">
+            출발 지점
+          </div>
+          <div className="nanumbarungothic-light w-full">
+            {startPlaceName}
+          </div>
+        </div>
+        <div className="flex ml-2">
+          <div className="nanumbarungothic text-blue-700 w-28">
+            도착 지점
+          </div>
+          <div className="nanumbarungothic-light w-full">
+            {endPlaceName}
+          </div>
+        </div>
+        {/* <div>거리 기반 추천: {distRec}</div> */}
+        {/* <div>선호 기반 추천: {likeRec}</div> */}
+        <div className="flex ml-2">
+          <div className="nanumbarungothic text-blue-700 w-28">
+            추천 경로
+          </div>
+          <div className="nanumbarungothic-light w-full">
+            {pathDisc}
+          </div>
+        </div>
       </div>
-
-      <div>출발 지점: {startPlaceName}</div>
-      <div>도착 지점: {endPlaceName}</div>
-
-      {/* <div>거리 기반 추천: {distRec}</div> */}
-      {/* <div>선호 기반 추천: {likeRec}</div> */}
-      <div>추천 경로: {pathDisc}</div>
-    </div>
   );
 }
 

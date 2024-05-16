@@ -80,11 +80,6 @@ const router = createBrowserRouter([
         path: "/test",
         element: <BoardList />
     },
-
-    {
-        path: "/zoom",
-        element: <Videochat />
-    },
     {
         path: "/recommend",
         element: <Recommend />

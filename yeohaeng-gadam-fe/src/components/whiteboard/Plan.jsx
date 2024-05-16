@@ -16,7 +16,7 @@ import {
 import SuggestCourse from './SuggestCourse.jsx';
 
 const PLAN_PANEL_HEIGHT = 150;
-const SUGGEST_PANEL_HEIGHT = 120;
+const SUGGEST_PANEL_HEIGHT = 140;
 
 const Tab = ({ label, onClick, isActive }) => {
     return (
@@ -322,13 +322,13 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
         }
 
         return (
-            <div className="relative bg-green-100 w-24 h-16 rounded-md my-4 mx-2"
+            <div className="relative bg-white w-32 h-20 rounded-md my-4 mx-1 shadow-sm shadow-black"
                 key={cardId}
             >
-                <div>
+                <div className="nanumbarungothic p-2">
                     {card.placeName}
                 </div>
-                <button className="bg-white w-6 rounded-full"
+                <button className="bg-gray-200 w-6 rounded-full ring-1 ring-inset ring-gray-500"
                     style={{
                         position: "absolute",
                         top: "100%",
@@ -339,7 +339,7 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
                 >
                     {"<"}
                 </button>
-                <button className="bg-white w-6 rounded-full"
+                <button className="bg-gray-200 w-6 rounded-full ring-1 ring-inset ring-gray-500"
                     style={{
                         position: "absolute",
                         top: "100%",
@@ -350,7 +350,7 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
                 >
                     {">"}
                 </button>
-                <button className="bg-black w-6 rounded-full text-white"
+                <button className="bg-black w-4 h-4 text-xs rounded-full text-white"
                     style={{
                         position: "absolute",
                         left: "100%",
@@ -367,7 +367,7 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
 
     return (
         <>
-            <div className="absolute bg-yellow-300"
+            <div className="absolute bg-white"
                 style={{
                     top: `calc(-${isPlanOpen * (PLAN_PANEL_HEIGHT + isSuggestOpen * SUGGEST_PANEL_HEIGHT)}px)`,
                     left: 0,
@@ -379,7 +379,7 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
             >
                 <SuggestCourse />
             </div>
-            <div className="absolute bg-red-300"
+            <div className="absolute bg-gradient-to-r from-blue-400 to-blue-600 border-t-2 border-white"
                 style={{
                     top: `calc(-${isPlanOpen * PLAN_PANEL_HEIGHT}px)`,
                     left: 0,
@@ -389,26 +389,27 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
                     zIndex: 1,
                 }}
             >
-                <button className="absolute bg-red-500"
+                <button className="nanumbarungothic absolute bg-white rounded-t-xl border-gray-500  border-r-2"
                     style={{
-                        left: "calc(100% - 40px)",
-                        top: "-30px",
-                        width: "40px",
+                        left: "calc(50% - 60px)",
+                        top: `calc(-30px - ${isPlanOpen * isSuggestOpen * SUGGEST_PANEL_HEIGHT}px`,
+                        width: "120px",
                         height: "30px",
+                        transition: "top 0.2s",
                     }}
                     onClick={onPlanToggleClick}
                 >
-                    PLAN
+                    일정보기👆
                 </button>
-                <button className="bg-white rounded-md m-1"
+                <button className="bg-white hover:bg-gray-300 hover:font-bold px-1 rounded-md ml-1 mt-1 nanumbarungothic-light"
                     onClick={insertCard}
                 >
-                    일정추가
+                    ✏️일정추가️
                 </button>
-                <button className="bg-white rounded-md m-1"
+                <button className="bg-white hover:bg-gray-300 hover:font-bold px-1 rounded-md ml-1 mt-1 nanumbarungothic-light"
                     onClick={toggleSuggest}
                 >
-                    코스추천
+                    🪄코스추천
                 </button>
                 <div className="flex flex-row overflow-x-auto">
                     {planCardList}

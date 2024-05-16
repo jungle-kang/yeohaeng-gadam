@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
 import SearchBar from "../components/SearchBar.tsx";
 import RoomList from "../components/RoomList.tsx";
 import PopularLocation from "../components/PopularLocation.tsx";
-import 'react-toastify/dist/ReactToastify.css';
 
 const Home = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -53,18 +51,6 @@ const Home = () => {
                 <PopularLocation />
                 <RoomList />
             </div>
-            <ToastContainer
-                position="top-center"
-                autoClose={1500}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
         </main>
     );
 }

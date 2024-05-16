@@ -10,7 +10,7 @@ import SearchPanel from "./SearchPanel.jsx";
 import Whiteboard from "../components/Whiteboard.jsx";
 import { Navigate, useNavigate } from "react-router-dom";
 import SettingModal from "../components/SettingModal.tsx"
-import Videochat from "../videochat-proto/Videochat.jsx";
+import Videochat from "../videochat/Videochat.jsx";
 // import VideoChat from "../webRTC/VideoChat.tsx";
 
 const RoomContent = ({ roomId, userId, userName, colorId }) => {

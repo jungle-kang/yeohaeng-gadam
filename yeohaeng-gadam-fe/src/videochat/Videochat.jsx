@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 
 import { socket } from './socket';
 
-import { COLORS } from "/src/components/whiteboard/userColors"
+import { COLORS_NAMETAG } from "/src/components/whiteboard/userColors"
 
 // connection settings
 const SIGNALING_SERVER_URL = import.meta.env.VITE_SIGNALING_SERVER_URL;
@@ -380,7 +380,7 @@ export default function Videochat({ roomId, myName, myColorId }) {
           <div className="flex flex-row items-center mt-1 ml-3">
             <div className="rounded-full w-3 h-3 mr-2"
                  style={{
-                   backgroundColor: COLORS[colorId]
+                   backgroundColor: COLORS_NAMETAG[colorId]
                  }}
             />
             <div className="nanumbarungothic text-bold rounded-full text-sm"
@@ -441,7 +441,7 @@ export default function Videochat({ roomId, myName, myColorId }) {
         <div className="flex flex-row items-center mt-1 ml-3">
           <div className="rounded-full w-3 h-3 mr-2"
                style={{
-                 backgroundColor: COLORS[myColorId]
+                 backgroundColor: COLORS_NAMETAG[myColorId]
                }}
           />
           <div className="nanumbarungothic text-bold rounded-full text-sm"

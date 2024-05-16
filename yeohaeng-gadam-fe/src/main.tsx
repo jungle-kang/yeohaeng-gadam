@@ -16,7 +16,6 @@ import Mypage from "./pages/Mypage.tsx"
 import SettingModal from './components/SettingModal.jsx';
 import BoardList from './pages/TestBoard.tsx';
 import { CookiesProvider } from 'react-cookie';
-import Videochat from './videochat-proto/Videochat.jsx';
 import Search from './pages/Search.tsx';
 
 import Recommend from './map/recommendProto.jsx';
@@ -78,11 +77,6 @@ const router = createBrowserRouter([
     {
         path: "/test",
         element: <BoardList />
-    },
-
-    {
-        path: "/zoom",
-        element: <Videochat />
     },
     {
         path: "/recommend",

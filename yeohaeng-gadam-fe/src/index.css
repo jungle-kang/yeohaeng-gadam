@@ -40,6 +40,10 @@
     font-family: 'NanumBarunGothic', sans-serif;
     font-weight: bold;
 }
+.nanumbarungothic-light {
+    font-family: 'NanumBarunGothic', sans-serif;
+    font-weight: lighter;
+}
 
 .black-han-sans-regular {
   font-family: "Black Han Sans", sans-serif;

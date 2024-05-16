@@ -15,7 +15,7 @@ import { nanoid } from "nanoid";
 import Cursor from "./Cursor";
 import Plan from "./Plan";
 
-import { COLORS } from "./userColors"
+import { COLORS_BORDER, COLORS_CURSOR, COLORS_PING, COLORS_LIKE} from "./userColors"
 
 
 import transportRunIcon from "/src/assets/whiteboard-transport-run.svg";
@@ -82,7 +82,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
         key={`cursor-${connectionId}`}
         // connectionId is an integer that is incremented at every new connections
         // Assigning a color with a modulo makes sure that a specific user has the same colors on every clients
-        color={COLORS[presence.colorId]}
+        color={COLORS_CURSOR[presence.colorId]}
         x={x}
         y={y}
         id={connectionId}
@@ -104,7 +104,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
       pageId: selectedPageId,
       x: x,
       y: y,
-      color: COLORS[self.presence.colorId]
+      color: COLORS_PING[self.presence.colorId]
     });
   }
 
@@ -829,9 +829,9 @@ export default function Canvas({ pingEventList, setPingEventList }) {
 
 
   return (
-    <div className="relative overflow-hidden bg-gray-100 w-full"
+    <div className="relative overflow-hidden bg-gray-200 w-full"
       style={{
-        height: "calc(100% - 32px)",
+        height: "calc(100% - 36px)",
       }}
       ref={canvasRef}
       onPointerDown={onCanvasPointerDown}
@@ -849,57 +849,65 @@ export default function Canvas({ pingEventList, setPingEventList }) {
       <LineIndicator />
 
       {/* DEBUG */}
-      <button className="bg-red-500"
-        onClick={onClickPingBtn}
+      {/*<button className="bg-red-500"*/}
+      {/*  onClick={onClickPingBtn}*/}
+      {/*>*/}
+      {/*  PING!!*/}
+      {/*</button>*/}
+      {/*<button className="bg-gray-400"*/}
+      {/*  onClick={() => history.undo()}*/}
+      {/*>*/}
+      {/*  Undo*/}
+      {/*</button>*/}
+      {/*<button className="bg-gray-400"*/}
+      {/*  onClick={() => history.redo()}*/}
+      {/*>*/}
+      {/*  Redo*/}
+      {/*</button>*/}
+      {/*<button className="bg-black text-white"*/}
+      {/*  onClick={zoomOut}*/}
+      {/*>*/}
+      {/*  Zoom Out*/}
+      {/*</button>*/}
+      {/*<button className="bg-black text-white"*/}
+      {/*  onClick={zoomIn}*/}
+      {/*>*/}
+      {/*  Zoom In*/}
+      {/*</button>*/}
+      {/*<button className="bg-blue-600 text-white"*/}
+      {/*  onClick={() => insertPlaceCard(canvasPos.x + 100, canvasPos.y + 100)}*/}
+      {/*>*/}
+      {/*  Place*/}
+      {/*</button>*/}
+
+
+      <div className="relative flex flex-col justify-center items-center bg-white rounded-md w-12 h-28 ml-1 mt-5 px-1 shadow-md shadow-gray-700"
+           style={{zIndex:11}}
       >
-        PING!!
-      </button>
-      <button className="bg-gray-400"
-        onClick={() => history.undo()}
-      >
-        Undo
-      </button>
-      <button className="bg-gray-400"
-        onClick={() => history.redo()}
-      >
-        Redo
-      </button>
-      <button className="bg-black text-white"
-        onClick={zoomOut}
-      >
-        Zoom Out
-      </button>
-      <button className="bg-black text-white"
-        onClick={zoomIn}
-      >
-        Zoom In
-      </button>
-      <button className="bg-blue-600 text-white"
-        onClick={() => insertPlaceCard(canvasPos.x + 100, canvasPos.y + 100)}
-      >
-        Place
-      </button>
-      <button className="bg-blue-600 text-white"
-        onClick={() => insertMemoCard(canvasPos.x + 100, canvasPos.y + 100)}
-      >
-        Memo
-      </button>
-      <button className="bg-blue-600 text-white"
-        onClick={() => insertMapCard(canvasPos.x + 100, canvasPos.y + 100)}
-      >
-        Map
-      </button>
+        <button className="mx-1 flex items-center justify-center text-white hover:bg-blue-100 rounded-lg w-full h-10"
+                onClick={() => insertMemoCard(canvasPos.x + 100, canvasPos.y + 100)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="#5F5F5F" width="38px" height="38px" viewBox="0 0 16 16"><path d="M14.25 1.5H1.75A1.25 1.25 0 0 0 .5 2.75v10.5a1.25 1.25 0 0 0 1.25 1.25h8.69a1.24 1.24 0 0 0 .93-.41l3.81-4.23A1.24 1.24 0 0 0 15.5 9V2.75a1.25 1.25 0 0 0-1.25-1.25zM1.75 13.25V2.75h12.5v5h-3.81A1.25 1.25 0 0 0 9.19 9v4.23zm8.69 0V9h3.81z"/></svg>
+        </button>
+        <button className="mt-2.5 mx-1 flex items-center justify-center text-white hover:bg-blue-100 rounded-lg w-full h-10"
+                onClick={() => insertMapCard(canvasPos.x + 100, canvasPos.y + 100)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewBox="0 0 24 24" fill="none">
+            <path d="M12 6H12.01M9 20L3 17V4L5 5M9 20L15 17M9 20V14M15 17L21 20V7L19 6M15 17V14M15 6.2C15 7.96731 13.5 9.4 12 11C10.5 9.4 9 7.96731 9 6.2C9 4.43269 10.3431 3 12 3C13.6569 3 15 4.43269 15 6.2Z" stroke="#5F5F5F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+      </div>
 
       {/* DEBUG */}
-      <div>Page ID: {selectedPageId}</div>
-      <div>Middle: {canvasPos.x}, {canvasPos.y}</div>
-      <div>isDraggingCanvas: {isDraggingCanvas ? "true" : "false"}</div>
-      <div>draggingCardId: {draggingCardId}</div>
-      <div>selectedCardId: {selectedCardId}</div>
-      <div>lineStartCardId: {lineStartCardId}</div>
-      <div>Zoom Level: {ZOOMS[canvasZoomLevel]}</div>
-      <div>My ID: {useSelf().connectionId}</div>
-      <div>Others ID: {others.map(({ connectionId }) => connectionId)}</div>
+      {/*<div>Page ID: {selectedPageId}</div>*/}
+      {/*<div>Middle: {canvasPos.x}, {canvasPos.y}</div>*/}
+      {/*<div>isDraggingCanvas: {isDraggingCanvas ? "true" : "false"}</div>*/}
+      {/*<div>draggingCardId: {draggingCardId}</div>*/}
+      {/*<div>selectedCardId: {selectedCardId}</div>*/}
+      {/*<div>lineStartCardId: {lineStartCardId}</div>*/}
+      {/*<div>Zoom Level: {ZOOMS[canvasZoomLevel]}</div>*/}
+      {/*<div>My ID: {useSelf().connectionId}</div>*/}
+      {/*<div>Others ID: {others.map(({ connectionId }) => connectionId)}</div>*/}
 
       <div className="absolute bg-red-300"
         style={{
@@ -950,16 +958,21 @@ function PingIndicator({ pingType, x, y, color, userId, removePingEvent }) {
 
 function PlaceCardContent({ id, card, onLineBtnPointerDown }) {
   return (
-    <>
-      {card.placeName}
+    <div className="p-2">
+      <div className="nanumbarungothic">
+        {card.placeName}
+      </div>
+      <div className="nanumbarungothic-light">
+        {card.placeAddr}
+      </div>
       <button
-        className="bg-white flex justify-center items-center rounded-full border-black border-2 w-8 h-8"
+        className="bg-yellow-100 border-2 border-gray-500 flex justify-center items-center rounded-full w-6 h-6"
         style={{ position: "absolute", top: "50%", left: "100%", transform: "translate(-50%, -50%)" }}
         onPointerDown={(e) => onLineBtnPointerDown(e, id)}
       >
         <img className="w-6" src={routesearchIcon} />
       </button>
-    </>
+    </div>
   );
 }
 
@@ -1147,9 +1160,9 @@ function Card({
   }))
 
   const selectionColor = selectedByMe
-    ? COLORS[myColorId]
+    ? COLORS_BORDER[myColorId]
     : selectedColorIds[0] != null
-      ? COLORS[selectedColorIds[0]]
+      ? COLORS_BORDER[selectedColorIds[0]]
       : "transparent";
 
   const width = card.cardType === "place"
@@ -1159,7 +1172,7 @@ function Card({
       : 400; // map
 
   const height = card.cardType === "place"
-    ? 100
+    ? 120
     : card.cardType === "memo"
       ? 120
       : 400; // map
@@ -1196,7 +1209,7 @@ function Card({
   // 디버깅용ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
 
   return (
-    <div className="absolute rounded-lg"
+    <div className="absolute rounded-lg shadow-md shadow-gray-600"
       style={{
         borderWidth: "3px",
         zIndex: zIndex,
@@ -1241,7 +1254,7 @@ function Card({
         >
 
           <button
-            style={{ color: COLORS[myColorId] }}
+            style={{ color: COLORS_LIKE[myColorId] }}
             onClick={() => onLikeBtnClick(id)}
           >
             {card.likedUsers.includes(myColorId) ? "♥" : "♡"}
@@ -1254,7 +1267,7 @@ function Card({
             card.likedUsers.map((colorId) => {
               if (colorId !== myColorId) {
                 return (
-                  <div key={colorId} style={{ color: COLORS[colorId] }}>♥</div>
+                  <div key={colorId} style={{ color: COLORS_LIKE[colorId] }}>♥</div>
                 );
               }
             })
@@ -1460,13 +1473,6 @@ function formatDur(dur) {
   }
   return Math.round(dur / hr) + " hr";
 }
-
-
-
-
-// 커서 색상 목록
-// const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
-// const COLORS = ["#AB0C20", "#33C44F", "#EA8221", "#017DA3", "#666666", "#666666", "#666666", "#666666"];
 
 // 줌 배율 목록
 const ZOOMS = [0.2, 0.25, 0.33, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.55];

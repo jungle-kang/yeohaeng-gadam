@@ -10,7 +10,7 @@ import SearchPanel from "./SearchPanel.jsx";
 import Whiteboard from "../components/Whiteboard.jsx";
 import { Navigate, useNavigate } from "react-router-dom";
 import SettingModal from "../components/SettingModal.tsx"
-import Videochat from "../videochat-proto/Videochat.jsx";
+import Videochat from "../videochat/Videochat.jsx";
 // import VideoChat from "../webRTC/VideoChat.tsx";
 
 const RoomContent = ({ roomId, userId, userName, colorId }) => {
@@ -39,12 +39,13 @@ const RoomContent = ({ roomId, userId, userName, colorId }) => {
       // y: 300,
       x: x,
       y: y,
-      fill: "rgb(147, 197, 253)",
+      fill: "#ffffff",
       cardType: "place",
       placeName: data.place_name,
+      placeAddr: data.road_address_name ? data.road_address_name : data.address_name,
+      placeCategory: data.category_name,
       placeX: data.x,
       placeY: data.y,
-      placeCategory: data.category_name,
       likedUsers: [],
       // likes: 0,
       // text: data.place_name,

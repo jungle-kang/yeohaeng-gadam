@@ -41,6 +41,18 @@ export default function Header() {
   },[setIsLogin])
 
   const logout = async () => {
+    <ToastContainer
+                position="top-center"
+                autoClose={1500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
     try {
         // await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
         googleLogout();
@@ -54,6 +66,18 @@ export default function Header() {
     }
 };
 const login = async () => {
+    <ToastContainer
+                position="top-center"
+                autoClose={1500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
 
     try{
 
@@ -69,6 +93,18 @@ const login = async () => {
 
 useEffect(() => {
     // 페이지 로드 시 로컬 스토리지에서 로그인 상태 확인
+    <ToastContainer
+                position="top-center"
+                autoClose={1500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
     const loginAttempt = localStorage.getItem('loginAttempt');
     const accessToken = getCookie('access_token') ? getCookie('access_token') : '';
 
@@ -85,18 +121,7 @@ useEffect(() => {
 
     return (
         <header className="w-full px-4 sm:px-4 md:px-16 h-20 flex flex-row bg-white mt-2">
-            <ToastContainer
-                position="top-center"
-                autoClose={1500}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
+            
             <button
                 onClick={() => navigate('/')}
                 className="basis-1/5 font-bold p-3 logo-font text-logo whitespace-nowrap">
@@ -104,6 +129,7 @@ useEffect(() => {
             </button>
             <div className="basis-3/5"></div>
             <div className="basis-1/5 h-full flex">
+            
                 {isLogin ? (
                     <button
                         className="w-1/2 h-full nanumbarungothic hover:text-gray-400 text-menu whitespace-nowrap"

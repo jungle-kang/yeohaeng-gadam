@@ -85,40 +85,45 @@ export default function SuggestCourse() {
 
       candidates = [...candidates, minCandidate];
     }
+
+    console.log("trimCandidatesPrim: result ", candidates);
+
+    return candidates;
   };
 
   // 타원 거리 기반 제외 알고리즘
   const trimCandidatesOval = (distMatrix, candidateNum, initialCandidates) => {
-    
-
-
-
-
     let candidates = initialCandidates;
+
+    // 각 목적지에서 출발지와 도착지까지의 거리 합 배열
+    const scoreArr = distMatrix.map((distArr) => {
+      const curScore = initialCandidates.reduce((acc, cur) => {
+        return acc + distArr[cur];
+      }, 0);
+
+      return curScore;
+    });
+
     // candidateNum만큼의 목적지를 선택
     for (let i = initialCandidates.length; i < candidateNum; i++) {
-      // 현재 candidates에 인접한 다른 candidate중에서 가장 거리가 작은 목적지를 선택
+      // 출발지와 도착지까지의 거리 합이 가장 작은 목적지를 선택
       let minScore = Infinity;
       let minCandidate = null;
 
-      candidates.forEach((candidate) => {
-        const distArr = distMatrix[candidate];
-        distArr.forEach((curScore, idx) => {
-          if (candidates.includes(idx)) {
-            return;
-          }
-
-          if (curScore < minScore) {
-            minScore = curScore;
-            minCandidate = idx;
-          }
-        });
+      scoreArr.forEach((curScore, idx) => {
+        if (candidates.includes(idx)) {
+          return;
+        }
+        if (curScore < minScore) {
+          minScore = curScore;
+          minCandidate = idx;
+        }
       });
 
       candidates = [...candidates, minCandidate];
     }
 
-    console.log("trimCandidates: result ", candidates);
+    console.log("trimCandidatesOval: result ", candidates);
 
     return candidates;
   };
@@ -235,8 +240,8 @@ export default function SuggestCourse() {
     }
     // 완전 탐색에 사용할 목적지 후보
     const candidates = placeCardIds.length > PLACE_LIMIT
-    ? trimCandidatesPrim(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 프림 알고리즘으로 걸러내기
-    : [...Array(places.length).keys()] // 많지 않으면 모두 사용
+      ? trimCandidatesPrim(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 프림 알고리즘으로 걸러내기
+      : [...Array(places.length).keys()] // 많지 않으면 모두 사용
 
     // console.log("Filtered cards: ", placeCardIds);
 

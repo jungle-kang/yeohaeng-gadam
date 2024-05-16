@@ -2,8 +2,9 @@ import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "../pages/TestBoard.tsx";
 import { jwtDecode } from "jwt-decode";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import RoomCreateModal from "./RoomCreateModal";
 
 interface SearchFormType {
@@ -71,7 +72,7 @@ export default function SearchBar() {
     const createRoomModal = () => {
         if (!accessToken) {  // 로그인이 되어 있지 않은 경우
             // alert('로그인이 필요합니다.');
-            toast.error('방을 만드시려면 로그인을 해주세요😉')
+            toast.error('방을 만드시려면 로그인을 해주세요😉');
         } else {
             setIsOpen(true);
         }
@@ -109,18 +110,6 @@ export default function SearchBar() {
 
     return (
         <div className="sticky top-0 z-[100] bg-white pt-1 pb-3 shadow rounded-xl">
-            <ToastContainer
-                position="top-center"
-                autoClose={1500}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
             <div className="flex flex-low px-10 mt-2">
                 <div className="w-3/5 flex items-center justify-between bg-gray-200 rounded-md">
                     <div className="w-1/3">

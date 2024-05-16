@@ -2,11 +2,10 @@ import React, { useEffect } from "react";
 import { getCookie } from "./TestBoard.tsx";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 // import Room from "../components/Roomcomponent.tsx";
 import RoomCards from "../components/RoomCards.tsx";
 
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const Mypage = () => {
   const navigate = useNavigate();
@@ -15,18 +14,7 @@ const Mypage = () => {
   useEffect(() => {
     const accessToken = getCookie('access_token') || '';
     let id = '';
-    <ToastContainer
-                position="top-center"
-                autoClose={1500}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
+
     if (accessToken !== '') {
       id = jwtDecode(accessToken).id;
     } else {

@@ -4,8 +4,7 @@ import GoogleLoginButton from '../login/jwtgoogle';
 import Home from "../pages/Home.tsx";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useParams } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { getCookie } from "../pages/TestBoard.tsx";
 import { jwtDecode } from "jwt-decode";
 
@@ -49,19 +48,6 @@ const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
     closeModal();
   };
 
-  // <ToastContainer
-  // position="top-center"
-  // autoClose={1500}
-  // hideProgressBar={false}
-  // newestOnTop={false}
-  // closeOnClick
-  // rtl={false}
-  // pauseOnFocusLoss
-  // draggable
-  // pauseOnHover
-  // theme="light"
-  // // transition="bounce"
-// />
 
 // toast.success('방에서 성공적으로 나왔습니다!', {
 //   position: "top-center",
@@ -128,7 +114,7 @@ const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
           <div className='ml-96 mb-96 top-20'></div>
         </div>
       </div>
-      <ToastContainer position="top-center" autoClose={1500} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
+    
     </div>
   );
 };

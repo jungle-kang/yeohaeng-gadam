@@ -1,3 +1,4 @@
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
@@ -16,6 +17,7 @@ import Mypage from "./pages/Mypage.tsx"
 import SettingModal from './components/SettingModal.jsx';
 import BoardList from './pages/TestBoard.tsx';
 import { CookiesProvider } from 'react-cookie';
+import Videochat from './videochat/Videochat.jsx';
 import Search from './pages/Search.tsx';
 
 import Recommend from './map/recommendProto.jsx';

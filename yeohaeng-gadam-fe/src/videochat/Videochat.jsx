@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 // import { SocketProvider, useSocket } from './SocketContext';
 // import { useSelf } from "/liveblocks.config";
+// import { FaVideo, FaVideoSlash, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
 
 import { socket } from './socket';
 
@@ -39,7 +40,8 @@ const AUDIO_SETTINGS = {
 
 export default function Videochat({ roomId, myName, myColorId }) {
   const localVideoRef = useRef(null); // 내 영상 표시할 video element
-  let localStream = null;
+  // let localStream = null;
+  const localStreamRef = useRef(null);
   // const [localStream, setLocalStream] = useState(null); // 내 영상
   const [users, setUsers] = useState([]); // 참가중인 다른 이용자 목록
 
@@ -47,6 +49,9 @@ export default function Videochat({ roomId, myName, myColorId }) {
 
   let pcs = {}; // createPeerConnection으로 생성된 pc와 그 상대의 정보를 저장
 
+  const [cameraOff, setCameraOff] = useState(false);
+
+  const [audioOff, setAudioOff] = useState(false);
   // const socket = io(SIGNALING_SERVER_URL); // signaling server와 통신하는 소켓
 
   // let savedSocketId = null;
@@ -54,15 +59,18 @@ export default function Videochat({ roomId, myName, myColorId }) {
   // const socket = useSocket();
 
   const setLocalStream = async () => {
-    if (localStream) {
+    // if (localStream) {
+    if (localStreamRef.current) {
       console.log("setLocalStream(): localStream already set");
       return;
     }
 
-    localStream = await navigator.mediaDevices.getUserMedia({
+    const localStream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: AUDIO_SETTINGS,
     });
+
+    localStreamRef.current = localStream; // localStream을 ref에 저장
 
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = localStream;
@@ -70,6 +78,52 @@ export default function Videochat({ roomId, myName, myColorId }) {
     } else {
       console.log("setLocalStream(): failed");
     }
+  };
+
+  const handleCameraClick = () => {
+    console.log("handleCameraClick(): ", localVideoRef.current);
+    if (localStreamRef.current) {
+      localStreamRef.current.getVideoTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setCameraOff((prev) => !prev);
+    }
+  };
+
+
+  const handleAudioClick = () => {
+    if (localStreamRef.current) {
+      localStreamRef.current.getAudioTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setAudioOff((prev) => !prev);
+    }
+  };
+
+  const handlePeerCameraClick = (userId) => {
+    setUsers((prevUsers) => {
+      return prevUsers.map((user) => {
+        if (user.id === userId) {
+          user.stream.getVideoTracks().forEach((track) => {
+            track.enabled = !track.enabled;
+          });
+        }
+        return user;
+      });
+    });
+  };
+
+  const handlePeerAudioClick = (userId) => {
+    setUsers((prevUsers) => {
+      return prevUsers.map((user) => {
+        if (user.id === userId) {
+          user.stream.getAudioTracks().forEach((track) => {
+            track.enabled = !track.enabled;
+          });
+        }
+        return user;
+      });
+    });
   };
 
   const createPeerConnection = (peerID, name, colorId) => {
@@ -116,13 +170,16 @@ export default function Videochat({ roomId, myName, myColorId }) {
         );
       };
 
-      if (!localStream) {
+      // if (!localStream) {
+      if (!localStreamRef.current) {
         console.log("createPeerConnection(): no local stream detected");
         return;
       }
 
-      localStream.getTracks().forEach((track) => {
-        pc.addTrack(track, localStream);
+      // localStream.getTracks().forEach((track) => {
+      localStreamRef.current.getTracks().forEach((track) => {
+        // pc.addTrack(track, localStream);
+        pc.addTrack(track, localStreamRef.current);
         console.log('createPeerConnection(): localStream added', `(socket id: ${socket.id})`);
       });
 
@@ -360,35 +417,35 @@ export default function Videochat({ roomId, myName, myColorId }) {
     }, [])
 
     return (
-        <div className="my-1 flex flex-col justify-center items-start">
-          <video
-              className="rounded-xl shadow-sm shadow-gray-700"
-              ref={ref}
-              muted={muted}
-              autoPlay
-              style={{
-                aspectRatio: "4/3",
-                // width: "100%",
-                // width: 240,
-                // height: 240,
-                height: "15vh",
-                // height: "200px",
-                // margin: 5,
-                backgroundColor: "black",
-              }}
+      <div className="my-1 flex flex-col justify-center items-start">
+        <video
+          className="rounded-xl shadow-sm shadow-gray-700"
+          ref={ref}
+          muted={muted}
+          autoPlay
+          style={{
+            aspectRatio: "4/3",
+            // width: "100%",
+            // width: 240,
+            // height: 240,
+            height: "15vh",
+            // height: "200px",
+            // margin: 5,
+            backgroundColor: "black",
+          }}
+        />
+        <div className="flex flex-row items-center mt-1 ml-3">
+          <div className="rounded-full w-3 h-3 mr-2"
+            style={{
+              backgroundColor: COLORS_NAMETAG[colorId]
+            }}
           />
-          <div className="flex flex-row items-center mt-1 ml-3">
-            <div className="rounded-full w-3 h-3 mr-2"
-                 style={{
-                   backgroundColor: COLORS_NAMETAG[colorId]
-                 }}
-            />
-            <div className="nanumbarungothic text-bold rounded-full text-sm"
-            >
-              {name}
-            </div>
+          <div className="nanumbarungothic text-bold rounded-full text-sm"
+          >
+            {name}
           </div>
         </div>
+      </div>
     );
   };
 
@@ -401,10 +458,13 @@ export default function Videochat({ roomId, myName, myColorId }) {
         socket.removeAllListeners();
       }
 
-      if (localStream) {
-        localStream.getTracks().forEach((track) => {
-          track.stop()
-        });
+      // if (localStream) {
+      //   localStream.getTracks().forEach((track) => {
+      //     track.stop()
+      //   });
+      // }
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach((track) => track.stop());
       }
     })
   }, [])
@@ -416,9 +476,9 @@ export default function Videochat({ roomId, myName, myColorId }) {
   }
 
   return (
-      <div className="flex flex-col mx-2">
+    <div className="flex flex-col mx-2">
 
-        {/* <div>{tt}</div>
+      {/* <div>{tt}</div>
       <button onClick={ontt}>HIT ME</button> */}
 
       {/* <div>{savedSocketId}</div> */}
@@ -440,25 +500,39 @@ export default function Videochat({ roomId, myName, myColorId }) {
         />
         <div className="flex flex-row items-center mt-1 ml-3">
           <div className="rounded-full w-3 h-3 mr-2"
-               style={{
-                 backgroundColor: COLORS_NAMETAG[myColorId]
-               }}
+            style={{
+              backgroundColor: COLORS_NAMETAG[myColorId]
+            }}
           />
           <div className="nanumbarungothic text-bold rounded-full text-sm"
           >
             나
           </div>
+          <button onClick={() => handleCameraClick(localStreamRef)} className="mt-2">
+            {cameraOff ? 'Camera On' : 'Camera Off'}
+          </button>
+          <button onClick={() => handleAudioClick(localStreamRef)} className="mt-2">
+            {audioOff ? 'Audio On' : 'Audio Off'}
+          </button>
         </div>
 
       </div>
-        {/* <Video key={socket.id} email="" stream={localStream} muted /> */}
-        {users.map((user, index) => (
-            // <Video key={user.id} email={user.email} stream={user.stream} />
+      {/* <Video key={socket.id} email="" stream={localStream} muted /> */}
+      {users.map((user, index) => (
+        // <Video key={user.id} email={user.email} stream={user.stream} />
         <div key={index}>
           <Video key={user.id} name={user.name} colorId={user.colorId} stream={user.stream} />
           {/* <h1 >
             {`User ${index + 1}`}
           </h1> */}
+          <button onClick={() => handlePeerCameraClick(user.id)} className="mt-2">
+            {cameraOff ? `${user.name}'s  Camera On` : `${user.name}'s  Camera Off`}
+            {/* Toggle {user.name}'s Camera */}
+          </button>
+          <button onClick={() => handlePeerAudioClick(user.id)} className="mt-2">
+            {audioOff ? `${user.name}'s  Audio On` : `${user.name}'s  Audio Off`}
+            {/* Toggle {user.name}'s Audio */}
+          </button>
         </div>
       ))}
     </div>

@@ -280,6 +280,7 @@ export default function SuggestCourse() {
   /////////////////////////////////// 패널 조작
 
   const setCardAsStart = useMutation(({ storage, self }) => {
+    const selectedPageId = self.presence.selectedPageId;
     const selectedCardId = self.presence.selectedCardId;
     if (selectedCardId == null) {
       return;
@@ -304,6 +305,7 @@ export default function SuggestCourse() {
   }, []);
 
   const setCardAsEnd = useMutation(({ storage, self }) => {
+    const selectedPageId = self.presence.selectedPageId;
     const selectedCardId = self.presence.selectedCardId;
     if (selectedCardId == null) {
       return;
@@ -328,6 +330,7 @@ export default function SuggestCourse() {
   }, []);
 
   const onApplyBtnClick = useMutation(({ storage, self }, suggestPath) => {
+    const selectedPageId = self.presence.selectedPageId;
     // const cards = pages.get(selectedPageId).cards;
     const cards = storage.get("pages").get(selectedPageId).get("cards");
     // console.log("cards ", cards);
@@ -366,8 +369,8 @@ export default function SuggestCourse() {
     root.pages.get(selectedPageId).plan.endId
   );
 
-  const startPlaceName = cards && startCardId && cards.get(startCardId).placeName;
-  const endPlaceName = cards && endCardId && cards.get(endCardId).placeName;
+  const startPlaceName = cards && startCardId && cards.get(startCardId) && cards.get(startCardId).placeName;
+  const endPlaceName = cards && endCardId && cards.get(endCardId) && cards.get(endCardId).placeName;
 
   return (
       <div>

@@ -104,6 +104,8 @@ export default function SuggestCourse() {
       return curScore;
     });
 
+    console.log("trimOval scoreArr: ", scoreArr);
+
     // candidateNum만큼의 목적지를 선택
     for (let i = initialCandidates.length; i < candidateNum; i++) {
       // 출발지와 도착지까지의 거리 합이 가장 작은 목적지를 선택
@@ -240,7 +242,8 @@ export default function SuggestCourse() {
     }
     // 완전 탐색에 사용할 목적지 후보
     const candidates = placeCardIds.length > PLACE_LIMIT
-      ? trimCandidatesPrim(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 프림 알고리즘으로 걸러내기
+      // ? trimCandidatesPrim(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 프림 알고리즘으로 걸러내기
+      ? trimCandidatesOval(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 알고리즘으로 걸러내기
       : [...Array(places.length).keys()] // 많지 않으면 모두 사용
 
     // console.log("Filtered cards: ", placeCardIds);

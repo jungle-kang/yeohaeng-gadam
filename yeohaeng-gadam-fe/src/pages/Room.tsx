@@ -54,7 +54,8 @@ const Room = () => {
                 }).then(res => res.json());
                 console.log('enter response:', response);
                 if (!response.data) {
-                    alert('로그인이 필요합니다.111');
+                    // alert('로그인이 필요합니다.111');
+                    toast.error('방에 인원이 가득찼습니다🌞');
                     navigate('/');
                 }
             } catch (e) {
@@ -72,7 +73,8 @@ const Room = () => {
                 if (response.data) {
                     await enter();
                 } else {
-                    alert('로그인이 필요합니다.222');
+                    // alert('로그인이 필요합니다.222');
+                    toast.error('로그인이 필요합니다');
                     navigate('/');
                 }
             } catch (e) {

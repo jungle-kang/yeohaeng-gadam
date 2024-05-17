@@ -6,7 +6,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getCookie } from "../pages/TestBoard.tsx";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode"; // jwtDecode import 수정
 
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
 
@@ -48,43 +48,13 @@ const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
     closeModal();
   };
 
-
-// toast.success('방에서 성공적으로 나왔습니다!', {
-//   position: "top-center",
-//   autoClose: 1500,
-//   hideProgressBar: false,
-//   closeOnClick: true,
-//   pauseOnHover: true,
-//   draggable: true,
-//   theme: "light",
-//   transition: "bounce"
-// });
-
-
   const copyToClipboard = () => {
     navigator.clipboard.writeText(url)
       .then(() => {
-        toast.success('URL이 클립보드에 복사되었습니다!🔗', {
-          position: "top-center",
-          autoClose: 1500,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "light",
-        }); // 성공 메시지를 toast로 표시
+        toast.success('URL이 클립보드에 복사되었습니다!🔗');
       })
       .catch(err => {
-        console.error('클립보드 복사에 실패했습니다:', err);
-        toast.error('클립보드 복사에 실패했습니다!', {
-          position: "top-center",
-          autoClose: 1500,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-        }); // 실패 메시지를 toast로 표시
+        toast.error('클립보드 복사에 실패했습니다!');
       });
   };
 
@@ -103,18 +73,17 @@ const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
             <button onClick={copyToClipboard}>링크 복사🔗</button>
           </div>
           <div className="text-center ">
-            <button onClick={() => closeModal()} className="bg-slate-300 text-center p-2 mt-10 rounded-lg">메인화면</button>
+            <button onClick={() => closeModal()} className="mt-10 ml-48 nanumbarungothic font-bold h-full text-center block w-1/5 rounded-md border-0 py-1.5 px-auto text-white hover:bg-blue-800  bg-blue-600">메인화면</button>
             <br />
-            <button className="bg-slate-300 text-center p-2 mt-10 rounded-lg">확정하기</button>
+            <button className=" ml-48 nanumbarungothic font-bold h-full text-center block w-1/5 rounded-md border-0 py-1.5 px-auto text-white hover:bg-blue-800  bg-blue-600">확정하기</button>
             <br />
-            <button onClick={() => handleRoomExit()} className="bg-slate-300 text-center p-2 mt-10 rounded-lg">방나가기</button>
+            <button onClick={() => handleRoomExit()} className=" ml-48 nanumbarungothic font-bold h-full text-center block w-1/5 rounded-md border-0 py-1.5 px-auto text-white hover:bg-blue-800  bg-blue-600">방나가기</button>
           </div>
         </div>
         <div>
           <div className='ml-96 mb-96 top-20'></div>
         </div>
       </div>
-    
     </div>
   );
 };

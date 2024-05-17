@@ -6,7 +6,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getCookie } from "../pages/TestBoard.tsx";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode"; // jwtDecode import 수정
 
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
 
@@ -48,19 +48,6 @@ const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
     closeModal();
   };
 
-
-// toast.success('방에서 성공적으로 나왔습니다!', {
-//   position: "top-center",
-//   autoClose: 1500,
-//   hideProgressBar: false,
-//   closeOnClick: true,
-//   pauseOnHover: true,
-//   draggable: true,
-//   theme: "light",
-//   transition: "bounce"
-// });
-
-
   const copyToClipboard = () => {
     navigator.clipboard.writeText(url)
       .then(() => {
@@ -97,7 +84,6 @@ const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
           <div className='ml-96 mb-96 top-20'></div>
         </div>
       </div>
-    
     </div>
   );
 };

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { permutations } from 'itertools';
 import SelectBox from '../SelectBox';
+import { toast } from "react-toastify";
+
+
 
 import {
   useStorage,
@@ -209,7 +212,8 @@ export default function SuggestCourse() {
     const startId = plan.startId;
     const endId = plan.endId;
     if (!startId || !endId) {
-      alert("출발지와 도착지를 설정해주세요!");
+      // alert("출발지와 도착지를 설정해주세요!");
+      toast.info("출발지와 도착지를 설정해주세요!")
       return;
     }
 
@@ -221,7 +225,9 @@ export default function SuggestCourse() {
     ));
 
     if (placeCardIds.length < placeNum) {
-      alert("목적지 수가 카드 수보다 많아요!");
+      // alert("목적지 수가 카드 수보다 많아요!");
+      toast.info("목적지 수가 카드 수보다 많아요!")
+
       return;
     }
 

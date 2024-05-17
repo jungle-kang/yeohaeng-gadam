@@ -78,9 +78,10 @@ export default function Header() {
     <header className="w-full px-4 sm:px-4 md:px-16 h-20 flex flex-row bg-white mt-2">
       <button
         onClick={() => navigate('/')}
-        className="basis-1/5 font-bold p-3 logo-font text-logo whitespace-nowrap">
+        className="h-full basis-1/5 font-bold pb-1 logo-font text-logo whitespace-nowrap">
         여행가담
       </button>
+
       <div className="basis-3/5"></div>
       <div className="basis-1/5 h-full flex">
         {isLogin ? (

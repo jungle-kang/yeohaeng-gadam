@@ -944,28 +944,28 @@ export default function Canvas({ pingEventList, setPingEventList }) {
 function PingIndicator({ pingType, x, y, color, userId, removePingEvent }) {
     return (
         <div className="absolute flex"
-            style={{
-                transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
-                zIndex: 9,
-            }}
+             style={{
+                 transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
+                 zIndex: 9,
+             }}
         >
-            <div className="absolute flex justify-center items-center rounded-full"
-                style={{
-                    width: "80px",
-                    height: "80px",
-                    backgroundColor: color,
-                    opacity: 0.3,
-                    transform: `translate(-50%, -50%) scaleY(50%)`,
-                }}
-                onMouseOver={() => removePingEvent(userId)}
+            <div className="absolute flex justify-center items-center rounded-full animate-ping-animation"
+                 style={{
+                     width: "80px",
+                     height: "80px",
+                     backgroundColor: color,
+                     opacity: 0.3,
+                     transform: `translate(-50%, -50%) scaleY(50%)`,
+                 }}
+                 onMouseOver={() => removePingEvent(userId)}
             >
             </div>
             <div className="absolute"
-                style={{
-                    fontSize: "100px",
-                    color: color,
-                    transform: "translate(-50%, -75%)",
-                }}
+                 style={{
+                     fontSize: "100px",
+                     color: color,
+                     transform: "translate(-50%, -75%)",
+                 }}
             >
                 {pingType}
             </div>
@@ -973,7 +973,7 @@ function PingIndicator({ pingType, x, y, color, userId, removePingEvent }) {
     );
 }
 
-function PlaceCardContent({ id, card, onLineBtnPointerDown }) {
+function PlaceCardContent({id, card, onLineBtnPointerDown}) {
     return (
         <div className="p-2">
             <div className="nanumbarungothic">
@@ -984,20 +984,20 @@ function PlaceCardContent({ id, card, onLineBtnPointerDown }) {
             </div>
             <button
                 className="bg-yellow-100 border-2 border-gray-500 flex justify-center items-center rounded-full w-6 h-6"
-                style={{ position: "absolute", top: "50%", left: "100%", transform: "translate(-50%, -50%)" }}
+                style={{position: "absolute", top: "50%", left: "100%", transform: "translate(-50%, -50%)"}}
                 onPointerDown={(e) => onLineBtnPointerDown(e, id)}
             >
-                <img className="w-6" src={routesearchIcon} />
+                <img className="w-6" src={routesearchIcon}/>
             </button>
         </div>
     );
 }
 
-function MemoCardContent({ id, card, isSelected, onCardChange }) {
+function MemoCardContent({id, card, isSelected, onCardChange}) {
     const textLines = card.memoText.split('\n').map((line, i) => (
         <div key={i}>{line}</div>
     ));
-    
+
     // const textareaRef = useRef();
     // useEffect(() => {
     //     if (isSelected && textareaRef.current) {

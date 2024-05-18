@@ -40,7 +40,7 @@ const Home = () => {
                 ))}
                 <div className="absolute top-0 left-0 w-full h-[450px] flex items-center justify-start pl-20">
                     <div>
-                        <h3 className="tracking-tight tracking-wide text-white text-xl md:text-2xl shadow-5xl">동시계획 화이트보드</h3>
+                        <h3 className="tracking-tight text-white text-xl md:text-2xl shadow-5xl">동시계획 화이트보드</h3>
                         <h3 className="nanumbarungothic tracking-wide text-white text-2xl md:text-4xl shadow-5xl">여행계획은 여행가담</h3>
                     </div>
 

@@ -12,7 +12,11 @@ export default {
       },
       keyframes: {
         'ping-animation': {
-          '0%': { transform: 'translate(-50%, -50%) scale(0.5)', opacity: '1' },
+          '0%': { transform: 'translate(-50%, -50%) scale(0.5)', opacity: '0.5' },
+          '100%': { transform: 'translate(-50%, -50%) scale(1.5)', opacity: '0' },
+        },
+        'ping-animation-once': {
+          '0%': { transform: 'translate(-50%, -50%) scale(0.5)', opacity: '0.5' },
           '100%': { transform: 'translate(-50%, -50%) scale(1.5)', opacity: '0' },
         },
         'fade-out': {
@@ -21,8 +25,9 @@ export default {
         },
       },
       animation: {
-        'ping-animation': 'ping-animation 1s ease-out forwards',
-        'fade-out': 'fade-out 2s ease-out forwards',
+        'ping-animation': 'ping-animation 0.7s forwards infinite',
+        'ping-animation-once': 'ping-animation 0.7s forwards',
+        'fade-out': 'fade-out 0.7s forwards',
       },
     },
   },

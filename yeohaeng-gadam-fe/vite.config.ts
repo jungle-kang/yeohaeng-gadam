@@ -16,7 +16,13 @@ export default defineConfig({
         target: 'https://maps.googleapis.com',
         changeOrigin: true,
         // rewrite: path => path.replace(/^/googleApi /, ''),
-      }
+      },
+
+      '/lambda': {
+        target: 'https://3h7nxm3dci.execute-api.ap-northeast-2.amazonaws.com/prod/',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/lambda/, ''),
+      },
     }
   }
 })

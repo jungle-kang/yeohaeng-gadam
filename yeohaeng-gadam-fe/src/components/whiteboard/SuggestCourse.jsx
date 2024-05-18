@@ -3,8 +3,6 @@ import { permutations } from 'itertools';
 import SelectBox from '../SelectBox';
 import { toast } from "react-toastify";
 
-
-
 import {
   useStorage,
   useMutation,
@@ -170,6 +168,45 @@ export default function SuggestCourse() {
     return { bestPath, minScore };
   };
 
+  // const lambdaTest = async () => {
+  //   try {
+  //     const response = await fetch('/lambda', {
+  //       method: 'POST',
+  //       credentials: 'include',
+  //       body: JSON.stringify({
+  //         "name": "example"
+  //       }),
+  //     });
+  //     const result = await response.json();
+  //     console.log("lambda response: ", result);
+  //   } catch (e) {
+  //     console.error('lambda fail: ', e);
+  //   }
+  // };
+
+  // const lambdaCall = async ({ places, placeCardIds, startIdx, endIdx, placeNum, PLACE_LIMIT, MAX_DISCOUNT, MAX_LIKES }) => {
+  //   try {
+  //     const response = await fetch('/lambda', {
+  //       method: 'POST',
+  //       credentials: 'include',
+  //       body: JSON.stringify({
+  //         "places": places,
+  //         "placeCardIds": placeCardIds,
+  //         "startIdx" : startIdx,
+  //         "endIdx" : endIdx,
+  //         "placeNum" : placeNum,
+  //         "PLACE_LIMIT" : PLACE_LIMIT,
+  //         "MAX_DISCOUNT": MAX_DISCOUNT,
+  //         "MAX_LIKES": MAX_LIKES
+  //       }),
+  //     });
+  //     const result = await response.json();
+  //     console.log("lambda response: ", result);
+  //   } catch (e) {
+  //     console.error('lambda fail: ', e);
+  //   }
+  // };
+
   // const findShortestPath = (waypoints, distMatrix, places, start, end, placeNum, scoreFunc) => {
   //   console.log("waypoints: ", waypoints);
 
@@ -279,6 +316,89 @@ export default function SuggestCourse() {
     );
   };
 
+  // const handleFindPathLambda = async (placeNum) => {
+  //   const plan = pages.get(selectedPageId).plan;
+  //   const startId = plan.startId;
+  //   const endId = plan.endId;
+  //   if (!startId || !endId) {
+  //     // alert("출발지와 도착지를 설정해주세요!");
+  //     toast.info("출발지와 도착지를 설정해주세요!")
+  //     return;
+  //   }
+
+  //   // Liveblocks로부터 카드 데이터 받기
+  //   const cards = pages.get(selectedPageId).cards;
+  //   const cardIds = Array.from(pages.get(selectedPageId).cards.keys());
+  //   const placeCardIds = cardIds.filter((cardId) => (
+  //     cards.get(cardId).cardType === "place"
+  //   ));
+
+  //   if (placeCardIds.length < placeNum) {
+  //     // alert("목적지 수가 카드 수보다 많아요!");
+  //     toast.info("목적지 수가 카드 수보다 많아요!")
+
+  //     return;
+  //   }
+
+  //   const places = placeCardIds.map((cardId) => cards.get(cardId));
+  //   const startIdx = placeCardIds.findIndex((cardId) => cardId === startId);
+  //   const endIdx = placeCardIds.findIndex((cardId) => cardId === endId);
+
+  //   const result = await lambdaCall({
+  //     places, placeCardIds, startIdx, endIdx, placeNum, PLACE_LIMIT, MAX_DISCOUNT, MAX_LIKES
+  //   });
+
+  //   //////////////////////////////////////////////////////////////////////////
+  //   // input: places, placeCardIds, PLACE_LIMIT, startIdx, endIdx, placeNum
+
+  //   // const distMatrix = getDistMatrix(places); // 거리 행렬 생성
+
+  //   // // let candidates = [...Array(places.length).keys()]; // 완전 탐색에 사용할 목적지 후보
+
+  //   // // 목적지 수가 너무 많으면 휴리스틱 사용
+  //   // if (placeCardIds.length > PLACE_LIMIT) {
+  //   //   console.log("handleFindPath(): too many places, use heuristics");
+  //   //   // 프림 알고리즘 사용하여 출발/도착지점과 가까운 목적지를 걸러내기
+  //   //   // candidates = trimCandidates(distMatrix, PLACE_LIMIT, [startIdx, endIdx]);
+
+  //   // }
+  //   // // 완전 탐색에 사용할 목적지 후보
+  //   // const candidates = placeCardIds.length > PLACE_LIMIT
+  //   //   // ? trimCandidatesPrim(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 프림 알고리즘으로 걸러내기
+  //   //   ? trimCandidatesOval(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 알고리즘으로 걸러내기
+  //   //   : [...Array(places.length).keys()] // 많지 않으면 모두 사용
+
+  //   // // console.log("Filtered cards: ", placeCardIds);
+
+  //   // console.log("places: ", places);
+
+  //   // const result = findShortestPath(
+  //   //   candidates, // 입력할 방문 장소 인덱스의 배열
+  //   //   // places,     // 방문 장소 리스트 (좋아요 확인용)
+  //   //   distMatrix, // 거리 행렬
+  //   //   startIdx,   // 출발 장소 인덱스
+  //   //   endIdx,     // 도착 장소 인덱스
+  //   //   placeNum,   // 방문할 장소의 총 개수 (출발 도착 포함)
+  //   // );
+
+  //   //////////////////////////////////////////////////////////////////////////
+
+  //   console.log(result);
+
+  //   // const bestPath = result["bestPath"];
+
+  //   // console.log("bestPath ", bestPath);
+
+  //   // setSuggestIds(bestPath.slice());
+
+  //   // setPathDisc(
+  //   //   bestPath.reduce((acc, cur, i) => {
+  //   //     if (i === 0) return places[cur].placeName;
+  //   //     return acc + "👉" + places[cur].placeName;
+  //   //   }, "")
+  //   // );
+  // };
+
   const handleSelectChange = (item) => {
     setPlaceNum(item);
   }
@@ -379,72 +499,77 @@ export default function SuggestCourse() {
   const endPlaceName = cards && endCardId && cards.get(endCardId) && cards.get(endCardId).placeName;
 
   return (
-      <div>
-        <div className="flex">
-          {/* <SelectBox selectList={[2, 3, 4, 5, 6, 7, 8]} defaultValue={6}
+    <div>
+      <div className="flex">
+        {/* <SelectBox selectList={[2, 3, 4, 5, 6, 7, 8]} defaultValue={6}
           onSelectChange={handleSelectChange} /> */}
-          <div className="nanumbarungothic mt-1.5 ml-2">
-            목적지 수
-          </div>
-
-          <input className="m-1 bg-gray-200 rounded-md pl-2 w-10"
-                 type="number" min="2" max="8" defaultValue={DEAFULT_PLACE_NUM}
-                 onChange={(e) => {
-                   setPlaceNum(e.target.value)
-                 }}
-          />
-
-          <button
-              className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 px-1 rounded-md ml-1.5 mt-1 px-1"
-              onClick={setCardAsStart}
-          >
-            출발설정
-          </button>
-          <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
-                  onClick={setCardAsEnd}
-          >
-            도착설정
-          </button>
-          <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
-              // onClick={generateRecommend}
-                  onClick={() => handleFindPath(placeNum)}
-          >
-            추천하기
-          </button>
-          <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
-                  onClick={() => onApplyBtnClick(suggestIds)}
-          >
-            적용하기
-          </button>
+        <div className="nanumbarungothic mt-1.5 ml-2">
+          목적지 수
         </div>
 
-        <div className="flex ml-2 mt-3">
-          <div className="nanumbarungothic text-blue-700 w-28">
-            출발 지점
-          </div>
-          <div className="nanumbarungothic-light w-full">
-            {startPlaceName}
-          </div>
+        <input className="m-1 bg-gray-200 rounded-md pl-2 w-10"
+          type="number" min="2" max="8" defaultValue={DEAFULT_PLACE_NUM}
+          onChange={(e) => {
+            setPlaceNum(e.target.value)
+          }}
+        />
+
+        <button
+          className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 px-1 rounded-md ml-1.5 mt-1 px-1"
+          onClick={setCardAsStart}
+        >
+          출발설정
+        </button>
+        <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
+          onClick={setCardAsEnd}
+        >
+          도착설정
+        </button>
+        <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
+          // onClick={generateRecommend}
+          onClick={() => handleFindPath(placeNum)}
+        >
+          추천하기
+        </button>
+        <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
+          onClick={() => onApplyBtnClick(suggestIds)}
+        >
+          적용하기
+        </button>
+        {/* <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
+          onClick={() => handleFindPathLambda(placeNum)}
+        >
+          람다
+        </button> */}
+      </div>
+
+      <div className="flex ml-2 mt-3">
+        <div className="nanumbarungothic text-blue-700 w-28">
+          출발 지점
         </div>
-        <div className="flex ml-2">
-          <div className="nanumbarungothic text-blue-700 w-28">
-            도착 지점
-          </div>
-          <div className="nanumbarungothic-light w-full">
-            {endPlaceName}
-          </div>
-        </div>
-        {/* <div>거리 기반 추천: {distRec}</div> */}
-        {/* <div>선호 기반 추천: {likeRec}</div> */}
-        <div className="flex ml-2">
-          <div className="nanumbarungothic text-blue-700 w-28">
-            추천 경로
-          </div>
-          <div className="nanumbarungothic-light w-full">
-            {pathDisc}
-          </div>
+        <div className="nanumbarungothic-light w-full">
+          {startPlaceName}
         </div>
       </div>
+      <div className="flex ml-2">
+        <div className="nanumbarungothic text-blue-700 w-28">
+          도착 지점
+        </div>
+        <div className="nanumbarungothic-light w-full">
+          {endPlaceName}
+        </div>
+      </div>
+      {/* <div>거리 기반 추천: {distRec}</div> */}
+      {/* <div>선호 기반 추천: {likeRec}</div> */}
+      <div className="flex ml-2">
+        <div className="nanumbarungothic text-blue-700 w-28">
+          추천 경로
+        </div>
+        <div className="nanumbarungothic-light w-full">
+          {pathDisc}
+        </div>
+      </div>
+    </div>
   );
 }
 

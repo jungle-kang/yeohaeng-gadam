@@ -21,11 +21,22 @@ export const COLORS_CURSOR = [
     "#666666",
 ];
 
-export const COLORS_PING = [
+export const COLORS_EFFECT = [
     "#FF00FF",
     "#39FF14",
     "#FFAC33",
     "#00FFFF",
+    "#666666", // 이하 디버깅용
+    "#666666",
+    "#666666",
+    "#666666",
+];
+
+export const COLORS_PING = [
+    "#AB0C20",
+    "#33C44F",
+    "#EA8221",
+    "#017DA3",
     "#666666", // 이하 디버깅용
     "#666666",
     "#666666",

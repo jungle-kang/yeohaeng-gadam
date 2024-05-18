@@ -15,19 +15,47 @@ import { nanoid } from "nanoid";
 import Cursor from "./Cursor";
 import Plan from "./Plan";
 
-import { COLORS_BORDER, COLORS_CURSOR, COLORS_PING, COLORS_LIKE } from "./userColors"
+import { COLORS_BORDER, COLORS_CURSOR, COLORS_PING, COLORS_EFFECT, COLORS_LIKE } from "./userColors"
 
 
-import transportRunIcon from "/src/assets/whiteboard-transport-run.svg";
-import transportBusIcon from "/src/assets/whiteboard-transport-bus.svg";
-import transportCarIcon from "/src/assets/whiteboard-transport-car.svg";
-import routesearchIcon from "/src/assets/whiteboard-routesearch.svg";
+// import transportRunIcon from "/src/assets/whiteboard-transport-run.svg";
+// import transportBusIcon from "/src/assets/whiteboard-transport-bus.svg";
+// import transportCarIcon from "/src/assets/whiteboard-transport-car.svg";
+// import routesearchIcon from "/src/assets/whiteboard-routesearch.svg";
+const ICON_SIZE = 25;
+const transportRunIcon = (
+    <svg width={`${ICON_SIZE}px`} height={`${ICON_SIZE}px`} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 22V16.9612C14 16.3537 13.7238 15.7791 13.2494 15.3995L11.5 14M11.5 14L13 7.5M11.5 14L10 13M13 7.5L11 7M13 7.5L15.0426 10.7681C15.3345 11.2352 15.8062 11.5612 16.3463 11.6693L18 12M10 13L11 7M10 13L9.40011 16.2994C9.18673 17.473 8.00015 18.2 6.85767 17.8573L4 17M11 7L8.10557 8.44721C7.428 8.786 7 9.47852 7 10.2361V12M14.5 3.5C14.5 4.05228 14.0523 4.5 13.5 4.5C12.9477 4.5 12.5 4.05228 12.5 3.5C12.5 2.94772 12.9477 2.5 13.5 2.5C14.0523 2.5 14.5 2.94772 14.5 3.5Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);
+const transportBusIcon = (
+    <svg width={`${ICON_SIZE}px`} height={`${ICON_SIZE}px`} viewBox="-1 -1 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M3 21.25c0 .414.336.75.75.75h1.615a.75.75 0 0 0 .74-.627L6.5 19h11l.395 2.373a.75.75 0 0 0 .74.627h1.615a.75.75 0 0 0 .75-.75V10l.78-.78a.75.75 0 0 0 .22-.53V6.75a.75.75 0 0 0-.75-.75H21v-.995c0-1.171-.814-2.183-1.97-2.373C17.299 2.347 14.65 2 12 2c-2.65 0-5.299.347-7.03.632C3.814 2.822 3 3.834 3 5.005V6h-.25a.75.75 0 0 0-.75.75v1.94c0 .198.079.389.22.53L3 10v11.25zm5-6.75a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm9.5 1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5 5.145V11h14V5.145c0-.37-.27-.685-.638-.732-1.166-.15-3.764-.442-6.362-.442-2.598 0-5.196.291-6.362.442A.734.734 0 0 0 5 5.145z" fill="#000000" />
+    </svg>
+);
+const transportCarIcon = (
+    <svg fill="#000000" width={`${ICON_SIZE}px`} height={`${ICON_SIZE}px`} viewBox="-4 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <title>car</title>
+        <path d="M19.938 7.188l3.563 7.156c0.063 0.094 0.094 0.219 0.125 0.313 0.219 0.563 0.375 1.344 0.375 1.844v3.406c0 1.063-0.719 1.938-1.719 2.188v2c0 0.969-0.781 1.719-1.719 1.719-0.969 0-1.719-0.75-1.719-1.719v-1.938h-13.688v1.938c0 0.969-0.75 1.719-1.719 1.719-0.938 0-1.719-0.75-1.719-1.719v-2c-1-0.25-1.719-1.125-1.719-2.188v-3.406c0-0.5 0.156-1.281 0.375-1.844 0.031-0.094 0.063-0.219 0.125-0.313l3.563-7.156c0.281-0.531 1.031-1.031 1.656-1.031h12.563c0.625 0 1.375 0.5 1.656 1.031zM5.531 9.344l-1.906 4.344c-0.094 0.156-0.094 0.344-0.094 0.469h16.938c0-0.125 0-0.313-0.094-0.469l-1.906-4.344c-0.25-0.563-1-1.063-1.594-1.063h-9.75c-0.594 0-1.344 0.5-1.594 1.063zM4.688 19.906c1 0 1.781-0.813 1.781-1.844 0-1-0.781-1.781-1.781-1.781s-1.844 0.781-1.844 1.781c0 1.031 0.844 1.844 1.844 1.844zM19.313 19.906c1 0 1.844-0.813 1.844-1.844 0-1-0.844-1.781-1.844-1.781s-1.781 0.781-1.781 1.781c0 1.031 0.781 1.844 1.781 1.844z" />
+    </svg>
+);
+const routesearchIcon = (
+    <svg fill="#000000" width={`${ICON_SIZE}px`} height={`${ICON_SIZE}px`} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <title>direction--bear-right</title>
+        <path d="M12,4V6h6.5859L12.05,12.5356a6.954,6.954,0,0,0-2.05,4.95V28h2V17.4854A4.9683,4.9683,0,0,1,13.4644,13.95L20,7.4141V14h2V4Z" />
+    </svg>
+)
 
 const TRANS_METHOD_RUN = 0;
 const TRANS_METHOD_BUS = 1;
 const TRANS_METHOD_CAR = 2;
 
+// 줌 배율 목록
+const ZOOMS = [0.2, 0.25, 0.33, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.55];
 const DEFAULT_ZOOM_LEVEL = 7;
+
+const MEMO_WIDTH = [150, 225, 300];
+const MEMO_HEIGHT = [120, 210, 300];
 
 const { kakao } = window; // 카카오 지도 사용
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_MAP_API // calculateTime 전용
@@ -48,7 +76,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
 
     // 추천 기능
     const [isPlanOpen, setIsPlanOpen] = useState(false);
-    const [isSuggestOpen, setIsSuggetOpen] = useState(false);
+    const [isSuggestOpen, setIsSuggestOpen] = useState(false);
 
     // const page = useStorage((root) => root.pages.get(pageId));
 
@@ -105,13 +133,12 @@ export default function Canvas({ pingEventList, setPingEventList }) {
             pageId: selectedPageId,
             x: x,
             y: y,
-            color: COLORS_PING[self.presence.colorId]
         });
     }
 
-    const onClickPingBtn = () => {
-        broadcastPing("!", canvasPos.x, canvasPos.y);
-    };
+    // const onClickPingBtn = () => {
+    //     broadcastPing("!", canvasPos.x, canvasPos.y);
+    // };
 
     const removePingEvent = (userId) => {
         // userId에 해당하는 핑 이벤트를 pingEventList에서 삭제
@@ -129,23 +156,30 @@ export default function Canvas({ pingEventList, setPingEventList }) {
     const cards = useStorage((root) => root.pages.get(selectedPageId).cards);
 
     // 디버깅용 함수
-    const insertPlaceCard = useMutation(({ storage, self }, x, y) => {
-        const pageId = self.presence.selectedPageId;
-        const cardId = nanoid();
-        const card = new LiveObject({
-            x: x,
-            y: y,
-            fill: "rgb(147, 197, 253)",
-            cardType: "place",
-            placeName: "Placeholder Name",
-            // placeCord: "0,0",
-        });
-        // console.log("created card at ", x, ", ", y); /////////////
-        storage.get("pages").get(pageId).get("cards").set(cardId, card);
-        // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
-    }, []);
+    // const insertPlaceCard = useMutation(({ storage, self }, x, y) => {
+    //     const pageId = self.presence.selectedPageId;
+    //     const cardId = nanoid();
+    //     const card = new LiveObject({
+    //         x: x,
+    //         y: y,
+    //         fill: "rgb(147, 197, 253)",
+    //         cardType: "place",
+    //         placeName: "Placeholder Name",
+    //         // placeCord: "0,0",
+    //     });
+    //     // console.log("created card at ", x, ", ", y); /////////////
+    //     storage.get("pages").get(pageId).get("cards").set(cardId, card);
+    //     // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
+    // }, []);
 
-    const insertMemoCard = useMutation(({ storage, self }, x, y) => {
+    const insertMemoCard = useMutation(({ storage, self, setMyPresence }) => {
+        const selectedPageId = self.presence.selectedPageId;
+        const selectedCardId = self.presence.selectedCardId;
+        const prevCard = storage.get("pages").get(selectedPageId).get("cards").get(selectedCardId);
+
+        const x = prevCard ? prevCard.get("x") + 30 : canvasPos.x;
+        const y = prevCard ? prevCard.get("y") + 30 : canvasPos.y;
+
         const pageId = self.presence.selectedPageId;
         const cardId = nanoid();
         const card = new LiveObject({
@@ -154,26 +188,34 @@ export default function Canvas({ pingEventList, setPingEventList }) {
             fill: "rgb(255, 255, 204)",
             cardType: "memo",
             memoText: "",
+            memoSize: 0,
             likedUsers: [],
             // likes: 0,
         });
         // console.log("created card at ", x, ", ", y); /////////////
         storage.get("pages").get(pageId).get("cards").set(cardId, card);
-        // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
+        setMyPresence({ selectedCardId: cardId }, { addToHistory: true });
     }, []);
 
-    const insertMapCard = useMutation(({ storage, self }, x, y) => {
+    const insertMapCard = useMutation(({ storage, self, setMyPresence }) => {
+        const selectedPageId = self.presence.selectedPageId;
+        const selectedCardId = self.presence.selectedCardId;
+        const prevCard = storage.get("pages").get(selectedPageId).get("cards").get(selectedCardId);
+
+        const x = prevCard ? prevCard.get("x") + 30 : canvasPos.x;
+        const y = prevCard ? prevCard.get("y") + 30 : canvasPos.y;
+
         const pageId = self.presence.selectedPageId;
         const cardId = nanoid();
         const card = new LiveObject({
             x: x,
             y: y,
-            fill: "rgb(169, 209, 142)",
+            fill: "rgb(200, 200, 200)",
             cardType: "map",
         });
         // console.log("created card at ", x, ", ", y); /////////////
         storage.get("pages").get(pageId).get("cards").set(cardId, card);
-        // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
+        setMyPresence({ selectedCardId: cardId }, { addToHistory: true });
     }, []);
 
     const moveCard = useMutation(({ storage, self }, cardId, dx, dy) => {
@@ -185,7 +227,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
         });
     }, []);
 
-    const updateMemoCard = useMutation(({ storage, self }, cardId, text) => {
+    const updateMemoCardText = useMutation(({ storage, self }, cardId, text) => {
         const pageId = self.presence.selectedPageId;
         const card = storage.get("pages").get(pageId).get("cards").get(cardId);
         card.update({
@@ -193,8 +235,23 @@ export default function Canvas({ pingEventList, setPingEventList }) {
         });
     }, []);
 
-    const deleteCard = useMutation(({ storage, self, setMyPresence }, e, cardId) => {
-        e.stopPropagation();
+    const updateMemoCardSize = useMutation(({ storage, self }, cardId, increment) => {
+        const pageId = self.presence.selectedPageId;
+        const card = storage.get("pages").get(pageId).get("cards").get(cardId);
+        const prevSize = card.get("memoSize");
+
+        if (prevSize + increment < 0 || prevSize + increment >= MEMO_WIDTH.length) {
+            return;
+        }
+
+
+        card.update({
+            memoSize: prevSize + increment,
+        });
+    }, []);
+
+    const deleteCard = useMutation(({ storage, self, setMyPresence }, cardId) => {
+        // e.stopPropagation();
         // const pageId = self.presence.selectedPageId;
         const page = storage.get("pages").get(self.presence.selectedPageId);
 
@@ -295,8 +352,12 @@ export default function Canvas({ pingEventList, setPingEventList }) {
     }
 
     const onCardChange = (e, cardId) => {
-        updateMemoCard(cardId, e.target.value);
+        updateMemoCardText(cardId, e.target.value);
     };
+
+    const onCardSizeClick = (cardId, increment) => {
+        updateMemoCardSize(cardId, increment);
+    }
 
     const onLikeBtnClick = (id) => {
         likeCard(id);
@@ -336,7 +397,8 @@ export default function Canvas({ pingEventList, setPingEventList }) {
         storage.get("pages").get(pageId).get("lines").set(lineId, line);
     }, []);
 
-    const deleteLine = useMutation(({ storage, self }, lineId) => {
+    const deleteLine = useMutation(({ storage, self }, e, lineId) => {
+        e.stopPropagation();
         const pageId = self.presence.selectedPageId;
         storage.get("pages").get(pageId).get("lines").delete(lineId);
     }, []);
@@ -560,6 +622,36 @@ export default function Canvas({ pingEventList, setPingEventList }) {
         }
     }
 
+    // useEffect(() => {
+    //     function onKeyDown(e) {
+    //         switch (e.key) {
+    //             case "Delete": {
+    //                 const cardId = useSelf((me) => me.presence.selectedCardId);
+    //                 if (cardId) {
+    //                     deleteCard(cardId);
+    //                 }
+    //                 break;
+    //             }
+    //             case "z": {
+    //                 if (e.ctrlKey || e.metaKey) {
+    //                     if (e.shiftKey) {
+    //                         history.redo();
+    //                     } else {
+    //                         history.undo();
+    //                     }
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     document.addEventListener("keydown", onKeyDown);
+
+    //     return () => {
+    //         document.removeEventListener("keydown", onKeyDown);
+    //     };
+    // }, [history]);
+
     // 우클릭
     const onCanvasContextMenu = (e) => {
         e.preventDefault();
@@ -588,8 +680,15 @@ export default function Canvas({ pingEventList, setPingEventList }) {
                 // }, 1000);
             }, 1);
         }
-
     }
+
+    // const onCanvasKeyDown = (e) => {
+    //     console.log("key event", e);
+
+    //     if (e.key === "Delete") {
+    //         // deleteCard();
+    //     }
+    // }
 
     const zoomOut = () => {
         if (canvasZoomLevel > 0) {
@@ -636,25 +735,69 @@ export default function Canvas({ pingEventList, setPingEventList }) {
             return null;
         }
 
-        if (!isInsideCanvas(pingEvent.x, pingEvent.y, 0, 0)) {
+        if (!canvasRef.current) {
             return null;
         }
 
-        const x = canvasRef.current.offsetWidth / 2
-            + (pingEvent.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
-        const y = canvasRef.current.offsetHeight / 2
-            + (pingEvent.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+        if (isInsideCanvas(pingEvent.x, pingEvent.y, 0, 0)) {
+            // 핑이 보이는 경우
+            const x = canvasRef.current.offsetWidth / 2
+                + (pingEvent.x - canvasPos.x) * ZOOMS[canvasZoomLevel];
+            const y = canvasRef.current.offsetHeight / 2
+                + (pingEvent.y - canvasPos.y) * ZOOMS[canvasZoomLevel];
 
-        return (
-            <PingIndicator
-                key={pingEvent.userId}
-                pingType={pingEvent.pingType}
-                x={x}
-                y={y}
-                color={pingEvent.color}
-                userId={pingEvent.userId}
-                removePingEvent={removePingEvent} />
-        )
+            return (
+                <PingIndicator
+                    key={pingEvent.userId}
+                    pingType={pingEvent.pingType}
+                    x={x}
+                    y={y}
+                    userId={pingEvent.userId}
+                    colorId={pingEvent.colorId}
+                    removePingEvent={removePingEvent}
+                />
+            );
+        } else {
+            const offset = 35;
+
+            // 캔버스 코너 기울기
+            const cSlope = canvasRef.current.offsetHeight / canvasRef.current.offsetWidth;
+            const pSlope = (pingEvent.y - canvasPos.y) / (pingEvent.x - canvasPos.x);
+
+            // 핑 표시기가 오른쪽 또는 왼쪽 변에 존재하는지 여부
+            const isOnXSide = Math.abs(pSlope) < cSlope;
+
+            const x = isOnXSide
+                ? (pingEvent.x - canvasPos.x) < 0
+                    ? offset // 좌측
+                    : canvasRef.current.offsetWidth - offset // 우측
+                : canvasRef.current.offsetWidth / 2
+                + (canvasRef.current.offsetHeight / 2 - offset)
+                * Math.sign(pingEvent.y - canvasPos.y) / pSlope; // 상하단
+
+            const y = isOnXSide
+                ? canvasRef.current.offsetHeight / 2
+                + (canvasRef.current.offsetWidth / 2 - offset)
+                * Math.sign(pingEvent.x - canvasPos.x) * pSlope // 좌우측
+                : (pingEvent.y - canvasPos.y) < 0
+                    ? offset // 상단
+                    : canvasRef.current.offsetHeight - offset; // 하단
+
+            const theta = Math.atan(pSlope) + Math.PI * ((pingEvent.x - canvasPos.x) < 0);
+            // const dist = Math.sqrt((pingEvent.x - canvasPos.x)^2 + (pingEvent.y - canvasPos.y)^2);
+
+            // 핑이 안보이는 경우
+            return (
+                <PingDirectionIndicator
+                    key={pingEvent.userId}
+                    x={x}
+                    y={y}
+                    theta={theta}
+                    // dist={dist}
+                    colorId={pingEvent.colorId}
+                />
+            );
+        }
     });
 
     const cardList = cardIds.map((cardId) => {
@@ -687,6 +830,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
                 onLineBtnPointerDown={onLineBtnPointerDown} // place card
                 onLikeBtnClick={onLikeBtnClick}
                 onCardChange={onCardChange} // memo card
+                onCardSizeClick={onCardSizeClick} // memo card
             />
         );
     });
@@ -699,6 +843,10 @@ export default function Canvas({ pingEventList, setPingEventList }) {
         const line = lines.get(lineId);
         const card1 = cards.get(line.card1Id);
         const card2 = cards.get(line.card2Id);
+
+        if (!card1 || !card2) {
+            return null;
+        }
 
         // if (!isInsideCanvas(card1.x, card1.y, 0, 0)
         //   && !isInsideCanvas(card2.x, card2.y, 0, 0)) {
@@ -831,7 +979,8 @@ export default function Canvas({ pingEventList, setPingEventList }) {
                         // zIndex: "-9000",
                     }}
                 >
-                    <img className="w-6" src={routesearchIcon} />
+                    {/* <img className="w-6" src={routesearchIcon} /> */}
+                    {routesearchIcon}
                 </div>
             </>
         );
@@ -850,12 +999,13 @@ export default function Canvas({ pingEventList, setPingEventList }) {
             onPointerLeave={onCanvasPointerLeave}
             onWheel={onCanvasWheel}
             onContextMenu={onCanvasContextMenu}
+        // onKeyDown={onCanvasKeyDown}
         >
             {othersCursorList}
             {pingIndicatorList}
             {
                 myPingPos
-            ? <MyPingIndicator x={myPingPos.x} y={myPingPos.y} color={COLORS_PING[colorId]} />
+                    ? <MyPingIndicator x={myPingPos.x} y={myPingPos.y} colorId={colorId} />
                     : null
             }
             {cardList}
@@ -951,7 +1101,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
                     isPlanOpen={isPlanOpen}
                     setIsPlanOpen={setIsPlanOpen}
                     isSuggestOpen={isSuggestOpen}
-                    setIsSuggetOpen={setIsSuggetOpen}
+                    setIsSuggestOpen={setIsSuggestOpen}
                 />
             </div>
         </div>
@@ -959,96 +1109,107 @@ export default function Canvas({ pingEventList, setPingEventList }) {
 }
 
 
-function PingIndicator({ pingType, x, y, color, userId, removePingEvent }) {
+function PingIndicator({ pingType, x, y, userId, colorId, removePingEvent }) {
     return (
         <div className="absolute flex"
-             style={{
-                 transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
-                 zIndex: 9,
-             }}
+            style={{
+                transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
+                zIndex: 9,
+            }}
         >
             <div className="absolute flex justify-center items-center rounded-full animate-ping-animation"
-                 style={{
-                     width: "80px",
-                     height: "80px",
-                     backgroundColor: color,
-                     opacity: 0.3,
-                     transform: `translate(-50%, -50%)`,
-                 }}
+                style={{
+                    width: "80px",
+                    height: "80px",
+                    backgroundColor: COLORS_EFFECT[colorId],
+                    opacity: 0.3,
+                    transform: `translate(-50%, -50%)`,
+                }}
             >
             </div>
             <div className="absolute"
-                 style={{
-                     // fontSize: "100px",
-                     transform: "translate(-12%, -94%)",
-                 }}
+                style={{
+                    transform: "translate(-12%, -94%)",
+                }}
             >
-                {/*<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="100pt" height="100pt"*/}
-                {/*     viewBox="0 0 1280.000000 1280.000000" preserveAspectRatio="xMidYMid meet">*/}
-                {/*    <metadata>*/}
-                {/*        Created by potrace 1.15, written by Peter Selinger 2001-2017*/}
-                {/*    </metadata>*/}
-                {/*    <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)" fill="#000000"*/}
-                {/*       stroke="none">*/}
-                {/*        <path*/}
-                {/*            d="M7220 12429 c-137 -41 -206 -60 -430 -123 -69 -19 -228 -65 -355 -101 -126 -37 -284 -82 -350 -100 -102 -28 -440 -125 -690 -197 -38 -11 -92 -26 -120 -33 -228 -61 -481 -139 -509 -157 -19 -13 -46 -41 -61 -63 -43 -67 -49 -105 -35 -255 6 -74 13 -151 14 -170 2 -19 6 -62 10 -95 4 -33 11 -103 17 -155 30 -278 36 -305 93 -364 18 -20 30 -39 26 -41 -5 -3 -21 -27 -36 -53 -39 -69 -38 -132 11 -533 15 -120 35 -170 91 -218 l36 -32 -25 -27 c-48 -51 -68 -107 -66 -180 1 -36 6 -84 10 -107 4 -22 12 -80 19 -130 28 -222 38 -254 93 -312 l31 -33 -20 -22 c-48 -55 -57 -108 -43 -253 5 -60 14 -153 19 -205 5 -52 14 -144 20 -205 12 -122 28 -303 35 -380 2 -27 9 -98 14 -157 6 -60 16 -156 21 -215 6 -60 15 -151 21 -203 5 -52 16 -171 24 -265 8 -93 19 -216 25 -272 32 -325 48 -493 55 -583 4 -54 17 -187 35 -365 18 -178 31 -311 35 -365 9 -114 32 -353 56 -590 15 -159 31 -334 31 -350 0 -8 4 -51 8 -95 9 -81 20 -185 41 -400 14 -137 28 -173 91 -232 74 -67 122 -76 303 -54 55 6 138 16 185 21 47 5 126 14 175 20 50 5 155 17 235 25 287 29 312 33 375 64 37 18 83 31 120 35 252 22 302 34 357 84 69 62 76 89 103 392 13 147 29 306 56 570 5 52 16 169 24 260 8 91 20 212 25 270 6 58 15 146 20 195 25 247 31 314 35 360 6 68 24 260 35 370 5 50 14 137 20 195 5 58 17 179 25 270 8 91 20 212 25 270 6 58 15 146 20 195 17 172 31 310 36 365 10 118 28 304 54 555 5 50 16 167 24 260 9 94 20 213 25 265 6 52 15 145 21 205 6 61 15 155 21 210 5 55 12 123 14 150 2 28 9 102 15 165 10 107 17 175 40 405 11 110 29 302 35 370 2 28 9 100 15 160 6 61 15 151 20 200 5 50 14 137 20 195 6 58 17 175 25 260 8 85 20 209 27 275 18 170 16 232 -10 281 -26 51 -79 98 -128 114 -36 12 -141 9 -176 -5 -13 -5 -22 4 -39 36 -23 45 -22 38 -3 234 21 218 16 265 -39 337 -45 59 -104 90 -180 94 -50 3 -89 -5 -197 -37z"/>*/}
-                {/*        <path*/}
-                {/*            d="M6365 3494 c-99 -15 -252 -61 -330 -99 -27 -14 -66 -25 -85 -25 -39 0 -162 -22 -256 -44 -202 -49 -420 -176 -591 -344 -186 -182 -301 -367 -371 -594 -45 -143 -52 -182 -64 -335 -10 -133 -3 -325 17 -428 86 -449 386 -851 785 -1050 187 -93 342 -132 564 -142 135 -5 320 7 383 26 168 52 221 71 298 110 161 83 233 137 385 290 80 80 174 166 210 190 306 207 521 559 565 923 8 74 8 281 0 356 -59 503 -424 957 -900 1117 -176 59 -417 79 -610 49z"/>*/}
-                {/*    </g>*/}
-                {/*</svg>*/}
 
-                {/*<svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewBox="0 0 512 512">*/}
-                {/*    <path fill={color}*/}
-                {/*          d="M326.953 22.87L306.68 83.685l20.273 20.273-115.428 115.427c-16.39-8-34.277-14.452-51.84-18.502-14.247-3.285-28.136-4.902-40.802-4.772-16.84.173-31.505 3.44-41.975 9.973l229.006 229.006c11.447-18.345 12.853-49.592 5.2-82.776-4.05-17.564-10.502-35.45-18.5-51.84l115.427-115.43 20.274 20.274 60.817-20.273L326.954 22.87zM159.207 313.84L22.87 489.13l175.29-136.337-38.953-38.953z"/>*/}
-                {/*</svg>*/}
-
-                <svg xmlns="http://www.w3.org/2000/svg" fill={color} width="50px" height="50px" viewBox="0 0 20 20">
+                <svg xmlns="http://www.w3.org/2000/svg" fill={COLORS_PING[colorId]} width="50px" height="50px" viewBox="0 0 20 20">
                     <path
-                        d="M4.774 15.287l-2.105 3.25.224 1.063 1.06-.227 2.104-3.248a8.352 8.352 0 0 1-1.283-.838zm8.912-1.135c.014-.029.023-.061.036-.092.053-.117.1-.234.138-.357.006-.022.009-.044.016-.064a4.48 4.48 0 0 0 .098-.408v-.021c.195-1.169-.145-2.473-.923-3.651l1.11-1.714c1.279.163 2.385-.159 2.917-.982.923-1.423-.2-3.792-2.505-5.293C12.266.068 9.65.005 8.729 1.426c-.534.824-.378 1.967.293 3.073L7.91 6.213c-1.389-.233-2.716-.016-3.703.64-.006.002-.013.004-.017.008a3.735 3.735 0 0 0-.332.254c-.017.014-.037.027-.051.041a3.024 3.024 0 0 0-.271.272c-.02.024-.048.045-.067.07a3.102 3.102 0 0 0-.29.385c-1.384 2.133-.203 5.361 2.633 7.209 2.838 1.848 6.26 1.614 7.641-.519.087-.135.167-.276.233-.421zm-.815-9.958c-.887-.577-1.32-1.487-.965-2.036.354-.547 1.361-.522 2.246.055.889.577 1.318 1.489.965 2.036-.353.547-1.358.522-2.246-.055z"/>
+                        d="M4.774 15.287l-2.105 3.25.224 1.063 1.06-.227 2.104-3.248a8.352 8.352 0 0 1-1.283-.838zm8.912-1.135c.014-.029.023-.061.036-.092.053-.117.1-.234.138-.357.006-.022.009-.044.016-.064a4.48 4.48 0 0 0 .098-.408v-.021c.195-1.169-.145-2.473-.923-3.651l1.11-1.714c1.279.163 2.385-.159 2.917-.982.923-1.423-.2-3.792-2.505-5.293C12.266.068 9.65.005 8.729 1.426c-.534.824-.378 1.967.293 3.073L7.91 6.213c-1.389-.233-2.716-.016-3.703.64-.006.002-.013.004-.017.008a3.735 3.735 0 0 0-.332.254c-.017.014-.037.027-.051.041a3.024 3.024 0 0 0-.271.272c-.02.024-.048.045-.067.07a3.102 3.102 0 0 0-.29.385c-1.384 2.133-.203 5.361 2.633 7.209 2.838 1.848 6.26 1.614 7.641-.519.087-.135.167-.276.233-.421zm-.815-9.958c-.887-.577-1.32-1.487-.965-2.036.354-.547 1.361-.522 2.246.055.889.577 1.318 1.489.965 2.036-.353.547-1.358.522-2.246-.055z" />
                 </svg>
-
-                {/*{pingType}*/}
             </div>
             <div className="absolute flex justify-center items-center rounded-full"
-                 style={{
-                     width: "120px",
-                     height: "120px",
-                     transform: `translate(-50%, -50%)`,
-                 }}
-                 onMouseEnter={() => removePingEvent(userId)}
+                style={{
+                    width: "120px",
+                    height: "120px",
+                    transform: `translate(-50%, -50%)`,
+                }}
+                onMouseEnter={() => removePingEvent(userId)}
             />
         </div>
     );
 }
 
-function MyPingIndicator({x, y, color}) {
+function PingDirectionIndicator({ x, y, theta, colorId }) {
+    return (
+        <div className="absolute"
+            style={{
+                transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
+                zIndex: 9,
+            }}
+        >
+            <div className="absolute flex justify-center items-center w-10 h-10 rounded-full"
+                style={{
+                    borderWidth: 4,
+                    borderColor: COLORS_PING[colorId],
+                    transform: `translate(-50%, -50%)`,
+                }}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" fill={COLORS_PING[colorId]} width="25px" height="25px" viewBox="0 0 18 20">
+                    <path
+                        d="M4.774 15.287l-2.105 3.25.224 1.063 1.06-.227 2.104-3.248a8.352 8.352 0 0 1-1.283-.838zm8.912-1.135c.014-.029.023-.061.036-.092.053-.117.1-.234.138-.357.006-.022.009-.044.016-.064a4.48 4.48 0 0 0 .098-.408v-.021c.195-1.169-.145-2.473-.923-3.651l1.11-1.714c1.279.163 2.385-.159 2.917-.982.923-1.423-.2-3.792-2.505-5.293C12.266.068 9.65.005 8.729 1.426c-.534.824-.378 1.967.293 3.073L7.91 6.213c-1.389-.233-2.716-.016-3.703.64-.006.002-.013.004-.017.008a3.735 3.735 0 0 0-.332.254c-.017.014-.037.027-.051.041a3.024 3.024 0 0 0-.271.272c-.02.024-.048.045-.067.07a3.102 3.102 0 0 0-.29.385c-1.384 2.133-.203 5.361 2.633 7.209 2.838 1.848 6.26 1.614 7.641-.519.087-.135.167-.276.233-.421zm-.815-9.958c-.887-.577-1.32-1.487-.965-2.036.354-.547 1.361-.522 2.246.055.889.577 1.318 1.489.965 2.036-.353.547-1.358.522-2.246-.055z" />
+                </svg>
+            </div>
+            <div className="absolute"
+                style={{
+                    color: COLORS_PING[colorId],
+                    transform: `translate(-50%, -50%) rotate(${theta}rad) translate(23px, -2px)`,
+                }}
+            >
+                ▶
+            </div>
+        </div>
+    )
+}
+
+function MyPingIndicator({ x, y, colorId }) {
     return (
         <div className="absolute flex"
-             style={{
-                 transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
-                 zIndex: 9,
-             }}
+            style={{
+                transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
+                zIndex: 9,
+            }}
         >
             <div className="absolute flex justify-center items-center rounded-full animate-ping-animation-once"
-                 style={{
-                     width: "80px",
-                     height: "80px",
-                     backgroundColor: color,
-                     opacity: 0.3,
-                     transform: `translate(-50%, -50%)`,
-                 }}
+                style={{
+                    width: "80px",
+                    height: "80px",
+                    backgroundColor: COLORS_EFFECT[colorId],
+                    opacity: 0.3,
+                    transform: `translate(-50%, -50%)`,
+                }}
             >
             </div>
             <div className="absolute animate-fade-out"
-                 style={{
-                     // fontSize: "100px",
-                     transform: "translate(-12%, -94%)",
-                 }}
+                style={{
+                    // fontSize: "100px",
+                    transform: "translate(-12%, -94%)",
+                }}
             >
 
-                <svg xmlns="http://www.w3.org/2000/svg" fill={color} width="50px" height="50px" viewBox="0 0 20 20">
+                <svg xmlns="http://www.w3.org/2000/svg" fill={COLORS_PING[colorId]} width="50px" height="50px" viewBox="0 0 20 20">
                     <path
-                        d="M4.774 15.287l-2.105 3.25.224 1.063 1.06-.227 2.104-3.248a8.352 8.352 0 0 1-1.283-.838zm8.912-1.135c.014-.029.023-.061.036-.092.053-.117.1-.234.138-.357.006-.022.009-.044.016-.064a4.48 4.48 0 0 0 .098-.408v-.021c.195-1.169-.145-2.473-.923-3.651l1.11-1.714c1.279.163 2.385-.159 2.917-.982.923-1.423-.2-3.792-2.505-5.293C12.266.068 9.65.005 8.729 1.426c-.534.824-.378 1.967.293 3.073L7.91 6.213c-1.389-.233-2.716-.016-3.703.64-.006.002-.013.004-.017.008a3.735 3.735 0 0 0-.332.254c-.017.014-.037.027-.051.041a3.024 3.024 0 0 0-.271.272c-.02.024-.048.045-.067.07a3.102 3.102 0 0 0-.29.385c-1.384 2.133-.203 5.361 2.633 7.209 2.838 1.848 6.26 1.614 7.641-.519.087-.135.167-.276.233-.421zm-.815-9.958c-.887-.577-1.32-1.487-.965-2.036.354-.547 1.361-.522 2.246.055.889.577 1.318 1.489.965 2.036-.353.547-1.358.522-2.246-.055z"/>
+                        d="M4.774 15.287l-2.105 3.25.224 1.063 1.06-.227 2.104-3.248a8.352 8.352 0 0 1-1.283-.838zm8.912-1.135c.014-.029.023-.061.036-.092.053-.117.1-.234.138-.357.006-.022.009-.044.016-.064a4.48 4.48 0 0 0 .098-.408v-.021c.195-1.169-.145-2.473-.923-3.651l1.11-1.714c1.279.163 2.385-.159 2.917-.982.923-1.423-.2-3.792-2.505-5.293C12.266.068 9.65.005 8.729 1.426c-.534.824-.378 1.967.293 3.073L7.91 6.213c-1.389-.233-2.716-.016-3.703.64-.006.002-.013.004-.017.008a3.735 3.735 0 0 0-.332.254c-.017.014-.037.027-.051.041a3.024 3.024 0 0 0-.271.272c-.02.024-.048.045-.067.07a3.102 3.102 0 0 0-.29.385c-1.384 2.133-.203 5.361 2.633 7.209 2.838 1.848 6.26 1.614 7.641-.519.087-.135.167-.276.233-.421zm-.815-9.958c-.887-.577-1.32-1.487-.965-2.036.354-.547 1.361-.522 2.246.055.889.577 1.318 1.489.965 2.036-.353.547-1.358.522-2.246-.055z" />
                 </svg>
 
                 {/*{pingType}*/}
@@ -1057,7 +1218,7 @@ function MyPingIndicator({x, y, color}) {
     );
 }
 
-function PlaceCardContent({id, card, onLineBtnPointerDown}) {
+function PlaceCardContent({ id, card, onLineBtnPointerDown }) {
     return (
         <div className="p-2">
             <div className="nanumbarungothic">
@@ -1068,16 +1229,17 @@ function PlaceCardContent({id, card, onLineBtnPointerDown}) {
             </div>
             <button
                 className="bg-yellow-100 border-2 border-gray-500 flex justify-center items-center rounded-full w-6 h-6"
-                style={{position: "absolute", top: "50%", left: "100%", transform: "translate(-50%, -50%)"}}
+                style={{ position: "absolute", top: "50%", left: "100%", transform: "translate(-50%, -50%)" }}
                 onPointerDown={(e) => onLineBtnPointerDown(e, id)}
             >
-                <img className="w-6" src={routesearchIcon}/>
+                {/* <img className="w-6" src={routesearchIcon} /> */}
+                {routesearchIcon}
             </button>
         </div>
     );
 }
 
-function MemoCardContent({id, card, isSelected, onCardChange}) {
+function MemoCardContent({ id, card, isSelected, onCardChange, onCardSizeClick }) {
     const textLines = card.memoText.split('\n').map((line, i) => (
         <div key={i}>{line}</div>
     ));
@@ -1094,20 +1256,42 @@ function MemoCardContent({id, card, isSelected, onCardChange}) {
         <>
             {
                 isSelected
-                    ? <textarea className="resize-none w-full h-full"
-                        // ref={textareaRef}
-                                style={{backgroundColor: card.fill}}
-                                value={card.memoText}
-                                onChange={(e) => onCardChange(e, id)}
-                    />
-                    : textLines
+                    ? (<>
+                        <textarea className="flex resize-none p-1 w-full h-full"
+                            // ref={textareaRef}
+                            style={{ backgroundColor: card.fill }}
+                            value={card.memoText}
+                            onChange={(e) => onCardChange(e, id)}
+                        />
+                        <div className="absolute flex"
+                            style={{
+                                top: "100%",
+                                left: 0,
+                                transform: "translateY(-100%)"
+                            }}
+                        >
+                            <button className="w-[18px] h-[18px] flex justify-center items-center pb-1 rounded-md text-xl text-yellow-600 hover:bg-yellow-200"
+                                onClick={() => onCardSizeClick(id, -1)}
+                            >
+                                -
+                            </button>
+                            <button className="w-[18px] h-[18px] flex justify-center items-center pb-1 rounded-md text-xl text-yellow-600 hover:bg-yellow-200"
+                                onClick={() => onCardSizeClick(id, 1)}
+                            >
+                                +
+                            </button>
+                        </div>
+                    </>)
+                    : (<div className="p-1">
+                        {textLines}
+                    </div>)
             }
         </>
     );
 }
 
-function MapCardContent({id, card}) {
-    const [{selectedPageId}] = useMyPresence();
+function MapCardContent({ id, card }) {
+    const [{ selectedPageId }] = useMyPresence();
     const containerRef = useRef(null);
 
     const cardIds = useStorage(
@@ -1163,6 +1347,10 @@ function MapCardContent({id, card}) {
             const line = lines.get(lineId);
             const card1 = cards.get(line.card1Id);
             const card2 = cards.get(line.card2Id);
+
+            if (!card1 || !card2) {
+                return;
+            }
 
             const linePath = [
                 new kakao.maps.LatLng(card1.placeY, card1.placeX),
@@ -1259,6 +1447,7 @@ function Card({
     onLineBtnPointerDown,
     onLikeBtnClick,
     onCardChange,
+    onCardSizeClick,
 }) {
     const myColorId = useSelf((me) => me.presence.colorId);
     const selectedByMe = useSelf((me) => me.presence.selectedCardId === id);
@@ -1279,19 +1468,25 @@ function Card({
 
     const width = card.cardType === "place"
         ? 175
-        : card.cardType === "memo"
-            ? 150
-            : 400; // map
+        : card.cardType === "map"
+            ? 400
+            : MEMO_WIDTH[card.memoSize]; // memo
 
     const height = card.cardType === "place"
         ? 120
-        : card.cardType === "memo"
-            ? 120
-            : 400; // map
+        : card.cardType === "map"
+            ? 400
+            : MEMO_HEIGHT[card.memoSize]; // memo
 
     const zIndex = card.cardType === "map"
         ? 0
         : 5; // place, memo
+
+    const borderRadius = card.cardType === "place"
+        ? "0.5rem"
+        : card.cardType === "map"
+            ? "0.2rem"
+            : "1px"; // memo
 
 
     // 디버깅용ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
@@ -1321,9 +1516,10 @@ function Card({
     // 디버깅용ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
 
     return (
-        <div className="absolute rounded-lg shadow-md shadow-gray-600"
+        <div className="absolute shadow-md shadow-gray-600"
             style={{
                 borderWidth: "3px",
+                borderRadius: borderRadius,
                 zIndex: zIndex,
                 // zIndex: "-5000",
                 ///////////////////////
@@ -1332,6 +1528,7 @@ function Card({
                 transform: `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${zoom}, ${zoom})`,
                 borderColor: selectionColor,
                 backgroundColor: card.fill,
+                transition: "width 0.2s, height 0.2s",
             }}
             onPointerDown={(e) => onCardPointerDown(e, id)}
             onPointerUp={(e) => onCardPointerUp(e, id, card.cardType === "place")}
@@ -1339,22 +1536,9 @@ function Card({
             {card.cardType === "place"
                 ? <PlaceCardContent id={id} card={card} onLineBtnPointerDown={onLineBtnPointerDown} />
                 : card.cardType === "memo"
-                    ? <MemoCardContent id={id} card={card} isSelected={selectedByMe} onCardChange={onCardChange} />
+                    ? <MemoCardContent id={id} card={card} isSelected={selectedByMe} onCardChange={onCardChange} onCardSizeClick={onCardSizeClick} />
                     : <MapCardContent id={id} card={card} />
             }
-            {/* {
-        card.cardType !== "map" &&
-        <div className="absolute"
-          style={{
-            top: "100%",
-          }}
-        >
-          <button onClick={() => onLikeBtnClick(id)}>
-            ❤️
-          </button>
-          {card.likedUsers}
-        </div>
-      } */}
 
             {
                 // 디버깅용ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
@@ -1364,9 +1548,32 @@ function Card({
                         top: "100%",
                     }}
                 >
+                    {/* {card.likedUsers.includes(myColorId)
+                        ? (<button className="text-xl"
+                            style={{
+                                color: COLORS_LIKE[myColorId],
+                                transform: "scaleY(90%)",
+                            }}
+                            onClick={() => onLikeBtnClick(id)}
+                        >
+                            ♥
+                        </button>)
+                        : (<button className="text-xl"
+                            style={{
+                                color: COLORS_LIKE[myColorId],
+                                transform: "scaleY(90%)",
+                            }}
+                            onClick={() => onLikeBtnClick(id)}
+                        >
+                            ♡
+                        </button>)
+                    } */}
 
                     <button className="text-xl"
-                        style={{ color: COLORS_LIKE[myColorId] }}
+                        style={{
+                            color: COLORS_LIKE[myColorId],
+                            transform: "scaleY(90%)",
+                        }}
                         onClick={() => onLikeBtnClick(id)}
                     >
                         {card.likedUsers.includes(myColorId) ? "♥" : "♡"}
@@ -1380,7 +1587,14 @@ function Card({
                             if (colorId !== myColorId) {
                                 return (
                                     <div className="text-xl"
-                                        key={colorId} style={{ color: COLORS_LIKE[colorId] }}>♥</div>
+                                        key={colorId}
+                                        style={{
+                                            color: COLORS_LIKE[colorId],
+                                            transform: "scaleY(90%)",
+                                        }}
+                                    >
+                                        ♥
+                                    </div>
                                 );
                             }
                         })
@@ -1388,14 +1602,16 @@ function Card({
                 </div>
             }
 
-            <button
-                className="bg-[#ff0000] text-white flex justify-center items-center rounded-full font-bold w-4 h-4 ml-3 text-xs"
-                style={{position: "absolute", top: "0", left: "95%", transform: "translate(-50%, -50%)",zIndex:"16"}}
+            {selectedByMe
+                ? (<button
+                    className="bg-[#ff0000] font-bold text-white text-sm rounded-full w-6 h-6"
+                    style={{ position: "absolute", top: "0", left: "100%", transform: "translate(-50%, -50%)", zIndex: "16" }}
 
-                onPointerDown={(e) => deleteCard(e, id)}
-            >
-                X
-            </button>
+                    onPointerDown={() => deleteCard(id)}
+                >
+                    X
+                </button>)
+                : null}
         </div>
     );
 }
@@ -1408,30 +1624,33 @@ function LineInfoChoosing({ id, onTransportBtnDown }) {
                 style={{ position: "absolute", transform: "translate(0, -20px)" }}
                 onClick={() => onTransportBtnDown(id, TRANS_METHOD_RUN)}
             >
-                <img
+                {/* <img
                     className="w-6"
                     src={transportRunIcon}
-                />
+                /> */}
+                {transportRunIcon}
             </button>
             <button
                 className="flex justify-center items-center bg-white rounded-full w-7 h-7"
                 style={{ position: "absolute", transform: "translate(17px, 10px)" }}
                 onClick={() => onTransportBtnDown(id, TRANS_METHOD_BUS)}
             >
-                <img
+                {/* <img
                     className="w-6"
                     src={transportBusIcon}
-                />
+                /> */}
+                {transportBusIcon}
             </button>
             <button
                 className="flex justify-center items-center bg-white rounded-full w-7 h-7"
                 style={{ position: "absolute", transform: "translate(-17px, 10px)" }}
                 onClick={() => onTransportBtnDown(id, TRANS_METHOD_CAR)}
             >
-                <img
+                {/* <img
                     className="w-6"
                     src={transportCarIcon}
-                />
+                /> */}
+                {transportCarIcon}
             </button>
         </>
     );
@@ -1452,29 +1671,24 @@ function LineInfoChosen({ id, deleteLine, transportMethod, distance, duration })
     }
 
     return (
-        <button className="flex flex-col justify-center items-center">
-            <img src={transportIcon} className="w-6 mt-2" />
+        <div className="flex flex-col justify-center items-center">
+            {/* <img src={transportIcon} className="w-6 mt-2" /> */}
+            {transportIcon}
             <div className="text-xs">
                 {distance > 0 ? formatDist(distance) : "- km"}
             </div>
             <div className="text-xs">
                 {duration > 0 ? formatDur(duration) : "- min"}
             </div>
-            <button className="bg-[#ff0000] font-bold text-white text-sm rounded-full w-5 h-5"
-                style={{
-                    position: "absolute",
-                    left: "80%",
-                    top: "8%",
-                }}
-                onClick={() => deleteLine(id)}
-            >
-                X
-            </button>
-        </button>
+        </div>
     );
 }
 
 function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }) {
+    // const [isSelected, setIsSelected] = useState(false);
+    const selectedCardId = useSelf((me) => me.presence.selectedCardId);
+    const selectedByMe = selectedCardId === line.card1Id || selectedCardId === line.card2Id;
+
     const r = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
     const x = (x1 + x2) / 2;
     const y = (y1 + y2) / 2;
@@ -1503,7 +1717,7 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
                     width: `${r}px`,
                 }}
             />
-            <div className="card-line-info justify-center rounded-full gap-0.5 bg-yellow-200"
+            <button className="card-line-info justify-center rounded-full gap-0.5 bg-yellow-200"
                 style={{
                     borderColor: "black",
                     borderStyle: "solid",
@@ -1523,9 +1737,23 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
                     height: "80px",
                     transform: `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${zoom}, ${zoom})`,
                 }}
+                onFocus={() => setIsSelected(true)}
+                onBlur={() => setIsSelected(false)}
             >
                 {infoBody}
-            </div>
+                {selectedByMe
+                    ? (<button className="bg-[#ff0000] font-bold text-white text-sm rounded-full w-6 h-6"
+                        style={{
+                            position: "absolute",
+                            left: "80%",
+                            top: "8%",
+                        }}
+                        onClick={(e) => deleteLine(e, id)}
+                    >
+                        X
+                    </button>)
+                    : null}
+            </button>
         </>
     );
 }
@@ -1591,6 +1819,3 @@ function formatDur(dur) {
     }
     return Math.round(dur / hr) + " hr";
 }
-
-// 줌 배율 목록
-const ZOOMS = [0.2, 0.25, 0.33, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.55];

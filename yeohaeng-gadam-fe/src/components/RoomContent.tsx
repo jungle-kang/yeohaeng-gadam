@@ -74,7 +74,7 @@ const RoomContent = ({ roomId, userId, userName, colorId }) => {
 
           <div className="pt-3 flex flex-col items-end h-full border-l-2">
             <button
-                className="text-xl bg-white font-bold w-8 rounded-2xl h-8 hover:bg-gray-300 font-bold mr-2"
+                className="text-xl pb-1 bg-white font-bold w-8 rounded-2xl h-8 hover:bg-gray-300 font-bold mr-2"
                 onClick={() => setModalOpen(true)}>⚙️
             </button>
             <div className="h-5/6 mt-2 w-full">

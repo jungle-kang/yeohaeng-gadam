@@ -10,7 +10,8 @@ import {jwtDecode} from "jwt-decode"; // jwtDecode import 수정
 
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
 
-const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
+// const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
+  const SettingModal = ({ isOpen, closeModal }) => {
   const modalBackground = useRef();
   const navigate = useNavigate();
 
@@ -44,7 +45,7 @@ const SettingModal = ({ isOpen, closeModal, onExitSucess }) => {
       console.error('Exit failed:', error);
       toast.error('방 나가기 실패');
     }
-    onExitSucess();
+    // onExitSucess();
     closeModal();
   };
 

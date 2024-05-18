@@ -21,7 +21,7 @@ const MAX_LIKES = 4; // 최대 좋아요 수; 이상적으로는 방 정보에�
 const MAX_DISCOUNT = 0.8; // 좋아요 수에 비례한 최대 거리 감쇠 계수
 const PLACE_LIMIT = 16; // 경로 계산 목적지 수 한도; 초과하면 휴리스틱 적용
 
-export default function SuggestCourse() {
+export default function SuggestCourse({ setIsSuggestOpen }) {
   // const [distRec, setDistRec] = useState([]);
   // const [likeRec, setLikeRec] = useState([]);
   const [pathDisc, setPathDisc] = useState("");
@@ -399,9 +399,9 @@ export default function SuggestCourse() {
   //   // );
   // };
 
-  const handleSelectChange = (item) => {
-    setPlaceNum(item);
-  }
+  // const handleSelectChange = (item) => {
+  //   setPlaceNum(item);
+  // }
 
   /////////////////////////////////// 패널 조작
 
@@ -456,6 +456,10 @@ export default function SuggestCourse() {
   }, []);
 
   const onApplyBtnClick = useMutation(({ storage, self }, suggestPath) => {
+    if (suggestPath.length === 0) {
+      return;
+    }
+
     const selectedPageId = self.presence.selectedPageId;
     // const cards = pages.get(selectedPageId).cards;
     const cards = storage.get("pages").get(selectedPageId).get("cards");
@@ -484,6 +488,8 @@ export default function SuggestCourse() {
     plan.update({
       placeIds: newPlan,
     })
+
+    setIsSuggestOpen(false);
   }, []);
 
   const cards = pages && pages.get(selectedPageId).cards;
@@ -575,19 +581,19 @@ export default function SuggestCourse() {
 
 /////////////////////////////// 장소 점수 계산 함수 ///////////////////////////////
 // 거리가 점수
-function scoreFuncDist(place1, place2) {
-  const score = getDistFromCord(place1.placeX, place1.placeY, place2.placeX, place2.placeY);
-  return score;
-}
+// function scoreFuncDist(place1, place2) {
+//   const score = getDistFromCord(place1.placeX, place1.placeY, place2.placeX, place2.placeY);
+//   return score;
+// }
 
 // 좋아요 개수 +1로 거리를 나눔
-function scoreFuncLike(place1, place2) {
-  const score =
-    getDistFromCord(place1.placeX, place1.placeY, place2.placeX, place2.placeY)
-    / (1 + place1.likedUsers.length + place2.likedUsers.length);
+// function scoreFuncLike(place1, place2) {
+//   const score =
+//     getDistFromCord(place1.placeX, place1.placeY, place2.placeX, place2.placeY)
+//     / (1 + place1.likedUsers.length + place2.likedUsers.length);
 
-  return score;
-}
+//   return score;
+// }
 
 // 좋아요 하나당 거리 20% 차감
 function scoreFuncLikeSub(place1, place2) {

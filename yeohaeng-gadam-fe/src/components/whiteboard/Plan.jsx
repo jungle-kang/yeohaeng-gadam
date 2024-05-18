@@ -18,50 +18,50 @@ import SuggestCourse from './SuggestCourse.jsx';
 const PLAN_PANEL_HEIGHT = 150;
 const SUGGEST_PANEL_HEIGHT = 140;
 
-const Tab = ({ label, onClick, isActive }) => {
-    return (
-        <button
-            className={`text-lg px-4 py-2 mr-2 rounded-t-lg focus:outline-none ${isActive ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-800'
-                }`}
-            onClick={onClick}
-        >
-            {label}
-        </button>
-    );
-};
+// const Tab = ({ label, onClick, isActive }) => {
+//     return (
+//         <button
+//             className={`text-lg px-4 py-2 mr-2 rounded-t-lg focus:outline-none ${isActive ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-800'
+//                 }`}
+//             onClick={onClick}
+//         >
+//             {label}
+//         </button>
+//     );
+// };
 
-const Content = ({ children, isActive }) => {
-    return isActive ? <div className="p-4 flex justify-start items-center">{children}</div> : null;
-};
+// const Content = ({ children, isActive }) => {
+//     return isActive ? <div className="p-4 flex justify-start items-center">{children}</div> : null;
+// };
 
-const DataCard = ({ data }) => {
-    const dataObject = data;
-    const getBgColor = (type) => {
-        switch (type) {
-            case "card":
-                return "bg-blue-200";
-            case "transportation":
-                return "bg-green-200";
-            default:
-                return "bg-gray-200";
-        }
-    };
+// const DataCard = ({ data }) => {
+//     const dataObject = data;
+//     const getBgColor = (type) => {
+//         switch (type) {
+//             case "card":
+//                 return "bg-blue-200";
+//             case "transportation":
+//                 return "bg-green-200";
+//             default:
+//                 return "bg-gray-200";
+//         }
+//     };
 
-    return (
-        <div className="flex flex-wrap">
-            {Array.isArray(dataObject) && dataObject.map(({ info, type }, index) => (
-                <div
-                    key={index}
-                    className={`w-auto h-auto p-4 mb-4 mr-4 border border-gray-300 rounded-lg ${getBgColor(type)}`}
-                >
-                    {info}
-                </div>
-            ))}
-        </div>
-    );
-};
+//     return (
+//         <div className="flex flex-wrap">
+//             {Array.isArray(dataObject) && dataObject.map(({ info, type }, index) => (
+//                 <div
+//                     key={index}
+//                     className={`w-auto h-auto p-4 mb-4 mr-4 border border-gray-300 rounded-lg ${getBgColor(type)}`}
+//                 >
+//                     {info}
+//                 </div>
+//             ))}
+//         </div>
+//     );
+// };
 
-const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => {
+const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggestOpen }) => {
     const { roomId } = useParams();
     const [activeTab, setActiveTab] = useState(0);
     const [post, setPost] = useState([{
@@ -300,14 +300,14 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
 
     // const [isPlanOpen, setIsPlanOpen] = useState(false);
     // // 추천 기능
-    // const [isSuggestOpen, setIsSuggetsOpen] = useState(false);
+    // const [isSuggestOpen, setIsSuggestOpen] = useState(false);
 
     const onPlanToggleClick = () => {
         setIsPlanOpen((prev) => !prev);
     }
 
     const toggleSuggest = () => {
-        setIsSuggetOpen((prev) => !prev);
+        setIsSuggestOpen((prev) => !prev);
     }
 
     ////////////////// 렌더링
@@ -377,7 +377,7 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
                     zIndex: 0,
                 }}
             >
-                <SuggestCourse />
+                <SuggestCourse setIsSuggestOpen={setIsSuggestOpen} />
             </div>
             <div className="absolute bg-gradient-to-r from-blue-400 to-blue-600 border-t-2 border-white"
                 style={{
@@ -399,7 +399,8 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
                     }}
                     onClick={onPlanToggleClick}
                 >
-                    일정보기👆
+                    {/* 일정보기 👆 */}
+                    일정보기 ▲
                 </button>
                 <button className="bg-white hover:bg-gray-300 hover:font-bold px-1 rounded-md ml-1 mt-1 nanumbarungothic-light"
                     onClick={insertCard}

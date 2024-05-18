@@ -140,11 +140,11 @@ export default function Whiteboard({myUserId, myColorId}) {
                 )); // 핑을 찍은 사용자의 이전 핑은 삭제
                 const newPingEvent = {
                     userId: user.presence.userId,
+                    colorId: user.presence.colorId,
                     pageId: event.pageId,
                     x: event.x,
                     y: event.y,
                     pingType: event.pingType,
-                    color: event.color,
                 };
                 return ([...modifiedPingEventList, newPingEvent]);
             });
@@ -228,7 +228,7 @@ export default function Whiteboard({myUserId, myColorId}) {
                                 : (
                                     // 그냥 탭
                                     <button
-                                        className="pl-2 items-center h-[80%] text-sm flex w-1/12 min-w-[50px] rounded-t-xl mr-0.5 bg-gray-200"
+                                        className="pl-2 items-center h-[80%] text-sm flex w-1/12 min-w-[50px] rounded-t-xl mr-0.5 bg-gray-200 hover:bg-gray-300"
                                         key={pageId}
                                         onClick={(e) => onClickTab(e, pageId)}
                                     >

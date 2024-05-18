@@ -196,7 +196,7 @@ export default function Whiteboard({myUserId, myColorId}) {
                         ? (
                             // 활성화된 탭
                             <button
-                                className="pl-2 items-center h-full flex w-[12%] rounded-t-xl ml-0.5 bg-gradient-to-r from-blue-400 to-blue-600 text-white font-bold align-middle"
+                                className="pl-2 items-center h-full flex w-[12%] min-w-[96px] rounded-t-xl mr-0.5 bg-gradient-to-r from-blue-400 to-blue-600 text-white font-bold align-middle"
                                 key={pageId}
                                 onClick={(e) => onClickTab(e, pageId)}
                             >
@@ -208,12 +208,18 @@ export default function Whiteboard({myUserId, myColorId}) {
                                 ? (
                                     // 핑 된 탭
                                     <button
-                                        className="pl-2 items-center h-full flex w-1/12 rounded-t-xl ml-0 bg-gradient-to-r from-yellow-200 to-yellow-400"
+                                        className="relative pl-2 items-center h-full flex w-1/12 min-w-[60px] rounded-t-xl mr-0.5 bg-gradient-to-r from-yellow-200 to-yellow-400"
                                         key={pageId}
                                         onClick={(e) => onClickTab(e, pageId)}
                                     >
                                         {pages.get(pageId).name}
-                                        <span className="relative flex h-3 w-3 ml-3.5 mb-3">
+                                        <span className="absolute flex h-3 w-3 ml-3.5 mb-3"
+                                              style={{
+                                                  left: "100%",
+                                                  top: "0%",
+                                                  transform: "translate(-250%,40%)"
+                                              }}
+                                        >
                                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                           <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                                         </span>
@@ -222,7 +228,7 @@ export default function Whiteboard({myUserId, myColorId}) {
                                 : (
                                     // 그냥 탭
                                     <button
-                                        className="pl-2 items-center h-[80%] text-sm flex w-1/12 rounded-t-xl ml-0 bg-gray-200"
+                                        className="pl-2 items-center h-[80%] text-sm flex w-1/12 min-w-[50px] rounded-t-xl mr-0.5 bg-gray-200"
                                         key={pageId}
                                         onClick={(e) => onClickTab(e, pageId)}
                                     >

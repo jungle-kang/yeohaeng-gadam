@@ -35,7 +35,7 @@ const SK_API_KEY = import.meta.env.VITE_SK_MAP_API // calculateTime 전용
 
 export default function Canvas({ pingEventList, setPingEventList }) {
     const history = useHistory();
-    const [{ userId, cursor, selectedPageId, selectedCardId, lineStartCardId }, updateMyPresence] = useMyPresence();
+    const [{ userId, colorId, cursor, selectedPageId, selectedCardId, lineStartCardId }, updateMyPresence] = useMyPresence();
 
     const canvasRef = useRef(null);
     const [canvasPos, setCanvasPos] = useState({ x: 0, y: 0 }); // 좌상단의 캔버스 좌표
@@ -44,6 +44,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
     const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
     // const [lineStartCardId, setLineStartCardId] = useState(null);
     const [lineIndicatorEndPos, setLineIndicatorEndPos] = useState({ x: 0, y: 0 });
+    const [myPingPos, setMyPingPos] = useState(null);
 
     // 추천 기능
     const [isPlanOpen, setIsPlanOpen] = useState(false);
@@ -574,6 +575,18 @@ export default function Canvas({ pingEventList, setPingEventList }) {
                 / ZOOMS[canvasZoomLevel]);
 
             broadcastPing("!", x, y);
+
+            setMyPingPos(null);
+
+            setTimeout(() => {
+                setMyPingPos({
+                    x: e.clientX - canvasRef.current.getBoundingClientRect().left,
+                    y: e.clientY - canvasRef.current.getBoundingClientRect().top,
+                });
+                // setTimeout(() => {
+                //     setMyPingPos(null);
+                // }, 1000);
+            }, 1);
         }
 
     }
@@ -840,6 +853,11 @@ export default function Canvas({ pingEventList, setPingEventList }) {
         >
             {othersCursorList}
             {pingIndicatorList}
+            {
+                myPingPos
+            ? <MyPingIndicator x={myPingPos.x} y={myPingPos.y} color={COLORS_PING[colorId]} />
+                    : null
+            }
             {cardList}
             {lineList}
             {planLineList}
@@ -944,36 +962,102 @@ export default function Canvas({ pingEventList, setPingEventList }) {
 function PingIndicator({ pingType, x, y, color, userId, removePingEvent }) {
     return (
         <div className="absolute flex"
-            style={{
-                transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
-                zIndex: 9,
-            }}
+             style={{
+                 transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
+                 zIndex: 9,
+             }}
         >
-            <div className="absolute flex justify-center items-center rounded-full"
-                style={{
-                    width: "80px",
-                    height: "80px",
-                    backgroundColor: color,
-                    opacity: 0.3,
-                    transform: `translate(-50%, -50%) scaleY(50%)`,
-                }}
-                onMouseOver={() => removePingEvent(userId)}
+            <div className="absolute flex justify-center items-center rounded-full animate-ping-animation"
+                 style={{
+                     width: "80px",
+                     height: "80px",
+                     backgroundColor: color,
+                     opacity: 0.3,
+                     transform: `translate(-50%, -50%)`,
+                 }}
             >
             </div>
             <div className="absolute"
-                style={{
-                    fontSize: "100px",
-                    color: color,
-                    transform: "translate(-50%, -75%)",
-                }}
+                 style={{
+                     // fontSize: "100px",
+                     transform: "translate(-12%, -94%)",
+                 }}
             >
-                {pingType}
+                {/*<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="100pt" height="100pt"*/}
+                {/*     viewBox="0 0 1280.000000 1280.000000" preserveAspectRatio="xMidYMid meet">*/}
+                {/*    <metadata>*/}
+                {/*        Created by potrace 1.15, written by Peter Selinger 2001-2017*/}
+                {/*    </metadata>*/}
+                {/*    <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)" fill="#000000"*/}
+                {/*       stroke="none">*/}
+                {/*        <path*/}
+                {/*            d="M7220 12429 c-137 -41 -206 -60 -430 -123 -69 -19 -228 -65 -355 -101 -126 -37 -284 -82 -350 -100 -102 -28 -440 -125 -690 -197 -38 -11 -92 -26 -120 -33 -228 -61 -481 -139 -509 -157 -19 -13 -46 -41 -61 -63 -43 -67 -49 -105 -35 -255 6 -74 13 -151 14 -170 2 -19 6 -62 10 -95 4 -33 11 -103 17 -155 30 -278 36 -305 93 -364 18 -20 30 -39 26 -41 -5 -3 -21 -27 -36 -53 -39 -69 -38 -132 11 -533 15 -120 35 -170 91 -218 l36 -32 -25 -27 c-48 -51 -68 -107 -66 -180 1 -36 6 -84 10 -107 4 -22 12 -80 19 -130 28 -222 38 -254 93 -312 l31 -33 -20 -22 c-48 -55 -57 -108 -43 -253 5 -60 14 -153 19 -205 5 -52 14 -144 20 -205 12 -122 28 -303 35 -380 2 -27 9 -98 14 -157 6 -60 16 -156 21 -215 6 -60 15 -151 21 -203 5 -52 16 -171 24 -265 8 -93 19 -216 25 -272 32 -325 48 -493 55 -583 4 -54 17 -187 35 -365 18 -178 31 -311 35 -365 9 -114 32 -353 56 -590 15 -159 31 -334 31 -350 0 -8 4 -51 8 -95 9 -81 20 -185 41 -400 14 -137 28 -173 91 -232 74 -67 122 -76 303 -54 55 6 138 16 185 21 47 5 126 14 175 20 50 5 155 17 235 25 287 29 312 33 375 64 37 18 83 31 120 35 252 22 302 34 357 84 69 62 76 89 103 392 13 147 29 306 56 570 5 52 16 169 24 260 8 91 20 212 25 270 6 58 15 146 20 195 25 247 31 314 35 360 6 68 24 260 35 370 5 50 14 137 20 195 5 58 17 179 25 270 8 91 20 212 25 270 6 58 15 146 20 195 17 172 31 310 36 365 10 118 28 304 54 555 5 50 16 167 24 260 9 94 20 213 25 265 6 52 15 145 21 205 6 61 15 155 21 210 5 55 12 123 14 150 2 28 9 102 15 165 10 107 17 175 40 405 11 110 29 302 35 370 2 28 9 100 15 160 6 61 15 151 20 200 5 50 14 137 20 195 6 58 17 175 25 260 8 85 20 209 27 275 18 170 16 232 -10 281 -26 51 -79 98 -128 114 -36 12 -141 9 -176 -5 -13 -5 -22 4 -39 36 -23 45 -22 38 -3 234 21 218 16 265 -39 337 -45 59 -104 90 -180 94 -50 3 -89 -5 -197 -37z"/>*/}
+                {/*        <path*/}
+                {/*            d="M6365 3494 c-99 -15 -252 -61 -330 -99 -27 -14 -66 -25 -85 -25 -39 0 -162 -22 -256 -44 -202 -49 -420 -176 -591 -344 -186 -182 -301 -367 -371 -594 -45 -143 -52 -182 -64 -335 -10 -133 -3 -325 17 -428 86 -449 386 -851 785 -1050 187 -93 342 -132 564 -142 135 -5 320 7 383 26 168 52 221 71 298 110 161 83 233 137 385 290 80 80 174 166 210 190 306 207 521 559 565 923 8 74 8 281 0 356 -59 503 -424 957 -900 1117 -176 59 -417 79 -610 49z"/>*/}
+                {/*    </g>*/}
+                {/*</svg>*/}
+
+                {/*<svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" viewBox="0 0 512 512">*/}
+                {/*    <path fill={color}*/}
+                {/*          d="M326.953 22.87L306.68 83.685l20.273 20.273-115.428 115.427c-16.39-8-34.277-14.452-51.84-18.502-14.247-3.285-28.136-4.902-40.802-4.772-16.84.173-31.505 3.44-41.975 9.973l229.006 229.006c11.447-18.345 12.853-49.592 5.2-82.776-4.05-17.564-10.502-35.45-18.5-51.84l115.427-115.43 20.274 20.274 60.817-20.273L326.954 22.87zM159.207 313.84L22.87 489.13l175.29-136.337-38.953-38.953z"/>*/}
+                {/*</svg>*/}
+
+                <svg xmlns="http://www.w3.org/2000/svg" fill={color} width="50px" height="50px" viewBox="0 0 20 20">
+                    <path
+                        d="M4.774 15.287l-2.105 3.25.224 1.063 1.06-.227 2.104-3.248a8.352 8.352 0 0 1-1.283-.838zm8.912-1.135c.014-.029.023-.061.036-.092.053-.117.1-.234.138-.357.006-.022.009-.044.016-.064a4.48 4.48 0 0 0 .098-.408v-.021c.195-1.169-.145-2.473-.923-3.651l1.11-1.714c1.279.163 2.385-.159 2.917-.982.923-1.423-.2-3.792-2.505-5.293C12.266.068 9.65.005 8.729 1.426c-.534.824-.378 1.967.293 3.073L7.91 6.213c-1.389-.233-2.716-.016-3.703.64-.006.002-.013.004-.017.008a3.735 3.735 0 0 0-.332.254c-.017.014-.037.027-.051.041a3.024 3.024 0 0 0-.271.272c-.02.024-.048.045-.067.07a3.102 3.102 0 0 0-.29.385c-1.384 2.133-.203 5.361 2.633 7.209 2.838 1.848 6.26 1.614 7.641-.519.087-.135.167-.276.233-.421zm-.815-9.958c-.887-.577-1.32-1.487-.965-2.036.354-.547 1.361-.522 2.246.055.889.577 1.318 1.489.965 2.036-.353.547-1.358.522-2.246-.055z"/>
+                </svg>
+
+                {/*{pingType}*/}
+            </div>
+            <div className="absolute flex justify-center items-center rounded-full"
+                 style={{
+                     width: "120px",
+                     height: "120px",
+                     transform: `translate(-50%, -50%)`,
+                 }}
+                 onMouseEnter={() => removePingEvent(userId)}
+            />
+        </div>
+    );
+}
+
+function MyPingIndicator({x, y, color}) {
+    return (
+        <div className="absolute flex"
+             style={{
+                 transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
+                 zIndex: 9,
+             }}
+        >
+            <div className="absolute flex justify-center items-center rounded-full animate-ping-animation-once"
+                 style={{
+                     width: "80px",
+                     height: "80px",
+                     backgroundColor: color,
+                     opacity: 0.3,
+                     transform: `translate(-50%, -50%)`,
+                 }}
+            >
+            </div>
+            <div className="absolute animate-fade-out"
+                 style={{
+                     // fontSize: "100px",
+                     transform: "translate(-12%, -94%)",
+                 }}
+            >
+
+                <svg xmlns="http://www.w3.org/2000/svg" fill={color} width="50px" height="50px" viewBox="0 0 20 20">
+                    <path
+                        d="M4.774 15.287l-2.105 3.25.224 1.063 1.06-.227 2.104-3.248a8.352 8.352 0 0 1-1.283-.838zm8.912-1.135c.014-.029.023-.061.036-.092.053-.117.1-.234.138-.357.006-.022.009-.044.016-.064a4.48 4.48 0 0 0 .098-.408v-.021c.195-1.169-.145-2.473-.923-3.651l1.11-1.714c1.279.163 2.385-.159 2.917-.982.923-1.423-.2-3.792-2.505-5.293C12.266.068 9.65.005 8.729 1.426c-.534.824-.378 1.967.293 3.073L7.91 6.213c-1.389-.233-2.716-.016-3.703.64-.006.002-.013.004-.017.008a3.735 3.735 0 0 0-.332.254c-.017.014-.037.027-.051.041a3.024 3.024 0 0 0-.271.272c-.02.024-.048.045-.067.07a3.102 3.102 0 0 0-.29.385c-1.384 2.133-.203 5.361 2.633 7.209 2.838 1.848 6.26 1.614 7.641-.519.087-.135.167-.276.233-.421zm-.815-9.958c-.887-.577-1.32-1.487-.965-2.036.354-.547 1.361-.522 2.246.055.889.577 1.318 1.489.965 2.036-.353.547-1.358.522-2.246-.055z"/>
+                </svg>
+
+                {/*{pingType}*/}
             </div>
         </div>
     );
 }
 
-function PlaceCardContent({ id, card, onLineBtnPointerDown }) {
+function PlaceCardContent({id, card, onLineBtnPointerDown}) {
     return (
         <div className="p-2">
             <div className="nanumbarungothic">
@@ -984,20 +1068,20 @@ function PlaceCardContent({ id, card, onLineBtnPointerDown }) {
             </div>
             <button
                 className="bg-yellow-100 border-2 border-gray-500 flex justify-center items-center rounded-full w-6 h-6"
-                style={{ position: "absolute", top: "50%", left: "100%", transform: "translate(-50%, -50%)" }}
+                style={{position: "absolute", top: "50%", left: "100%", transform: "translate(-50%, -50%)"}}
                 onPointerDown={(e) => onLineBtnPointerDown(e, id)}
             >
-                <img className="w-6" src={routesearchIcon} />
+                <img className="w-6" src={routesearchIcon}/>
             </button>
         </div>
     );
 }
 
-function MemoCardContent({ id, card, isSelected, onCardChange }) {
+function MemoCardContent({id, card, isSelected, onCardChange}) {
     const textLines = card.memoText.split('\n').map((line, i) => (
         <div key={i}>{line}</div>
     ));
-    
+
     // const textareaRef = useRef();
     // useEffect(() => {
     //     if (isSelected && textareaRef.current) {
@@ -1012,9 +1096,9 @@ function MemoCardContent({ id, card, isSelected, onCardChange }) {
                 isSelected
                     ? <textarea className="resize-none w-full h-full"
                         // ref={textareaRef}
-                        style={{ backgroundColor: card.fill }}
-                        value={card.memoText}
-                        onChange={(e) => onCardChange(e, id)}
+                                style={{backgroundColor: card.fill}}
+                                value={card.memoText}
+                                onChange={(e) => onCardChange(e, id)}
                     />
                     : textLines
             }
@@ -1022,8 +1106,8 @@ function MemoCardContent({ id, card, isSelected, onCardChange }) {
     );
 }
 
-function MapCardContent({ id, card }) {
-    const [{ selectedPageId }] = useMyPresence();
+function MapCardContent({id, card}) {
+    const [{selectedPageId}] = useMyPresence();
     const containerRef = useRef(null);
 
     const cardIds = useStorage(

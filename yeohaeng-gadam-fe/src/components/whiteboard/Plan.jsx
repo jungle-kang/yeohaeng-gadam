@@ -222,6 +222,7 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
     }, []);
 
     const deleteCard = useMutation(({ storage, self }, cardId) => {
+        const selectedPageId = self.presence.selectedPageId;
         const plan = storage.get("pages").get(selectedPageId).get("plan");
         // const placeIds = plan.placeIds;
         const placeIds = plan.get("placeIds");
@@ -233,6 +234,7 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
     }, []);
 
     const moveLeftCard = useMutation(({ storage, self }, cardId) => {
+        const selectedPageId = self.presence.selectedPageId;
         const plan = storage.get("pages").get(selectedPageId).get("plan");
         // const placeIds = plan.placeIds;
         const placeIds = plan.get("placeIds");
@@ -255,6 +257,7 @@ const Plan = ({ isPlanOpen, setIsPlanOpen, isSuggestOpen, setIsSuggetOpen }) => 
     }, []);
 
     const moveRightCard = useMutation(({ storage, self }, cardId) => {
+        const selectedPageId = self.presence.selectedPageId;
         const plan = storage.get("pages").get(selectedPageId).get("plan");
         // const placeIds = plan.placeIds;
         const placeIds = plan.get("placeIds");

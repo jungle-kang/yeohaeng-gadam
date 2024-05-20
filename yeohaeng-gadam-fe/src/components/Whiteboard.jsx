@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     useStorage,
     useMutation,
@@ -9,13 +9,13 @@ import {
     useOthers,
     useHistory,
 } from "/liveblocks.config";
-import {LiveMap, LiveObject} from "@liveblocks/client";
-import {shallow} from "@liveblocks/react";
+import { LiveMap, LiveObject } from "@liveblocks/client";
+import { shallow } from "@liveblocks/react";
 
 import Canvas from "./whiteboard/Canvas";
 
-export default function Whiteboard({myUserId, myColorId}) {
-    const [{selectedPageId}, updateMyPresence] = useMyPresence();
+export default function Whiteboard({ myUserId, myColorId }) {
+    const [{ selectedPageId }, updateMyPresence] = useMyPresence();
     // 핑 이벤트 리스트
     const [pingEventList, setPingEventList] = useState([]);
 
@@ -93,7 +93,7 @@ export default function Whiteboard({myUserId, myColorId}) {
     //   }
     // };
     const onClickTab = (e, pageId) => {
-        updateMyPresence({selectedPageId: pageId});
+        updateMyPresence({ selectedPageId: pageId });
     };
 
     // 탭 이름 변경
@@ -130,7 +130,7 @@ export default function Whiteboard({myUserId, myColorId}) {
 
     //////////////////////////// 핑 이벤트 관련 ////////////////////////////
 
-    useEventListener(({event, user}) => {
+    useEventListener(({ event, user }) => {
         console.log("new ping event: ", event, ", from user ", user); ///
 
         if (event.type === "PING") {
@@ -183,9 +183,19 @@ export default function Whiteboard({myUserId, myColorId}) {
     }, [pages == null])
 
 
-    // 로딩중 표시
+    // 로딩 애니매이션
     if (pages == null) {
-        return <div className="flex justify-center items-center w-full h-full">로딩 중...</div>;
+        return (
+            <div className="flex items-center justify-center h-full">
+                <svg className="animate-spin h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                        strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 4.411 2.686 8.166 6.708 9.708l1.292-2.417z"></path>
+                </svg>
+            </div>
+        );
     }
 
     return (
@@ -214,14 +224,14 @@ export default function Whiteboard({myUserId, myColorId}) {
                                     >
                                         {pages.get(pageId).name}
                                         <span className="absolute flex h-3 w-3 ml-3.5 mb-3"
-                                              style={{
-                                                  left: "100%",
-                                                  top: "0%",
-                                                  transform: "translate(-250%,40%)"
-                                              }}
+                                            style={{
+                                                left: "100%",
+                                                top: "0%",
+                                                transform: "translate(-250%,40%)"
+                                            }}
                                         >
-                                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                          <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                                         </span>
                                     </button>
                                 )
@@ -258,7 +268,7 @@ export default function Whiteboard({myUserId, myColorId}) {
             </div>
             {
                 selectedPageId
-                    ? <Canvas pingEventList={pingEventList} setPingEventList={setPingEventList}/>
+                    ? <Canvas pingEventList={pingEventList} setPingEventList={setPingEventList} />
                     : <div>No page selected</div>
             }
         </>

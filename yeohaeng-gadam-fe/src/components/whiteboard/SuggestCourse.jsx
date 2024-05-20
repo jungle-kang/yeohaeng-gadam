@@ -62,35 +62,35 @@ export default function SuggestCourse({ setIsSuggestOpen }) {
 
   // 목적지 수가 너무 많으면 프림 알고리즘으로 먼 목적지를 제외시킴
   // 프림 알고리즘 기반 제외 알고리즘
-  const trimCandidatesPrim = (distMatrix, candidateNum, initialCandidates) => {
-    let candidates = initialCandidates;
-    // candidateNum만큼의 목적지를 선택
-    for (let i = initialCandidates.length; i < candidateNum; i++) {
-      // 현재 candidates에 인접한 다른 candidate중에서 가장 거리가 작은 목적지를 선택
-      let minScore = Infinity;
-      let minCandidate = null;
+  // const trimCandidatesPrim = (distMatrix, candidateNum, initialCandidates) => {
+  //   let candidates = initialCandidates;
+  //   // candidateNum만큼의 목적지를 선택
+  //   for (let i = initialCandidates.length; i < candidateNum; i++) {
+  //     // 현재 candidates에 인접한 다른 candidate중에서 가장 거리가 작은 목적지를 선택
+  //     let minScore = Infinity;
+  //     let minCandidate = null;
 
-      candidates.forEach((candidate) => {
-        const distArr = distMatrix[candidate];
-        distArr.forEach((curScore, idx) => {
-          if (candidates.includes(idx)) {
-            return;
-          }
+  //     candidates.forEach((candidate) => {
+  //       const distArr = distMatrix[candidate];
+  //       distArr.forEach((curScore, idx) => {
+  //         if (candidates.includes(idx)) {
+  //           return;
+  //         }
 
-          if (curScore < minScore) {
-            minScore = curScore;
-            minCandidate = idx;
-          }
-        });
-      });
+  //         if (curScore < minScore) {
+  //           minScore = curScore;
+  //           minCandidate = idx;
+  //         }
+  //       });
+  //     });
 
-      candidates = [...candidates, minCandidate];
-    }
+  //     candidates = [...candidates, minCandidate];
+  //   }
 
-    console.log("trimCandidatesPrim: result ", candidates);
+  //   console.log("trimCandidatesPrim: result ", candidates);
 
-    return candidates;
-  };
+  //   return candidates;
+  // };
 
   // 타원 거리 기반 제외 알고리즘
   const trimCandidatesOval = (distMatrix, candidateNum, initialCandidates) => {
@@ -184,28 +184,28 @@ export default function SuggestCourse({ setIsSuggestOpen }) {
   //   }
   // };
 
-  // const lambdaCall = async ({ places, placeCardIds, startIdx, endIdx, placeNum, PLACE_LIMIT, MAX_DISCOUNT, MAX_LIKES }) => {
-  //   try {
-  //     const response = await fetch('/lambda', {
-  //       method: 'POST',
-  //       credentials: 'include',
-  //       body: JSON.stringify({
-  //         "places": places,
-  //         "placeCardIds": placeCardIds,
-  //         "startIdx" : startIdx,
-  //         "endIdx" : endIdx,
-  //         "placeNum" : placeNum,
-  //         "PLACE_LIMIT" : PLACE_LIMIT,
-  //         "MAX_DISCOUNT": MAX_DISCOUNT,
-  //         "MAX_LIKES": MAX_LIKES
-  //       }),
-  //     });
-  //     const result = await response.json();
-  //     console.log("lambda response: ", result);
-  //   } catch (e) {
-  //     console.error('lambda fail: ', e);
-  //   }
-  // };
+  const lambdaCall = async ({ places, placeCardIds, startIdx, endIdx, placeNum, PLACE_LIMIT, MAX_DISCOUNT, MAX_LIKES }) => {
+    try {
+      const response = await fetch('/lambda', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify({
+          "places": places,
+          "placeCardIds": placeCardIds,
+          "startIdx" : startIdx,
+          "endIdx" : endIdx,
+          "placeNum" : placeNum,
+          "PLACE_LIMIT" : PLACE_LIMIT,
+          "MAX_DISCOUNT": MAX_DISCOUNT,
+          "MAX_LIKES": MAX_LIKES
+        }),
+      });
+      const result = await response.json();
+      console.log("lambda response: ", result);
+    } catch (e) {
+      console.error('lambda fail: ', e);
+    }
+  };
 
   // const findShortestPath = (waypoints, distMatrix, places, start, end, placeNum, scoreFunc) => {
   //   console.log("waypoints: ", waypoints);
@@ -316,88 +316,88 @@ export default function SuggestCourse({ setIsSuggestOpen }) {
     );
   };
 
-  // const handleFindPathLambda = async (placeNum) => {
-  //   const plan = pages.get(selectedPageId).plan;
-  //   const startId = plan.startId;
-  //   const endId = plan.endId;
-  //   if (!startId || !endId) {
-  //     // alert("출발지와 도착지를 설정해주세요!");
-  //     toast.info("출발지와 도착지를 설정해주세요!")
-  //     return;
-  //   }
+  const handleFindPathLambda = async (placeNum) => {
+    const plan = pages.get(selectedPageId).plan;
+    const startId = plan.startId;
+    const endId = plan.endId;
+    if (!startId || !endId) {
+      // alert("출발지와 도착지를 설정해주세요!");
+      toast.info("출발지와 도착지를 설정해주세요!")
+      return;
+    }
 
-  //   // Liveblocks로부터 카드 데이터 받기
-  //   const cards = pages.get(selectedPageId).cards;
-  //   const cardIds = Array.from(pages.get(selectedPageId).cards.keys());
-  //   const placeCardIds = cardIds.filter((cardId) => (
-  //     cards.get(cardId).cardType === "place"
-  //   ));
+    // Liveblocks로부터 카드 데이터 받기
+    const cards = pages.get(selectedPageId).cards;
+    const cardIds = Array.from(pages.get(selectedPageId).cards.keys());
+    const placeCardIds = cardIds.filter((cardId) => (
+      cards.get(cardId).cardType === "place"
+    ));
 
-  //   if (placeCardIds.length < placeNum) {
-  //     // alert("목적지 수가 카드 수보다 많아요!");
-  //     toast.info("목적지 수가 카드 수보다 많아요!")
+    if (placeCardIds.length < placeNum) {
+      // alert("목적지 수가 카드 수보다 많아요!");
+      toast.info("목적지 수가 카드 수보다 많아요!")
 
-  //     return;
-  //   }
+      return;
+    }
 
-  //   const places = placeCardIds.map((cardId) => cards.get(cardId));
-  //   const startIdx = placeCardIds.findIndex((cardId) => cardId === startId);
-  //   const endIdx = placeCardIds.findIndex((cardId) => cardId === endId);
+    const places = placeCardIds.map((cardId) => cards.get(cardId));
+    const startIdx = placeCardIds.findIndex((cardId) => cardId === startId);
+    const endIdx = placeCardIds.findIndex((cardId) => cardId === endId);
 
-  //   const result = await lambdaCall({
-  //     places, placeCardIds, startIdx, endIdx, placeNum, PLACE_LIMIT, MAX_DISCOUNT, MAX_LIKES
-  //   });
+    const result = await lambdaCall({
+      places, placeCardIds, startIdx, endIdx, placeNum, PLACE_LIMIT, MAX_DISCOUNT, MAX_LIKES
+    });
 
-  //   //////////////////////////////////////////////////////////////////////////
-  //   // input: places, placeCardIds, PLACE_LIMIT, startIdx, endIdx, placeNum
+    //////////////////////////////////////////////////////////////////////////
+    // input: places, placeCardIds, PLACE_LIMIT, startIdx, endIdx, placeNum, MAX_DISCOUNT, MAX_LIKES
 
-  //   // const distMatrix = getDistMatrix(places); // 거리 행렬 생성
+    // const distMatrix = getDistMatrix(places); // 거리 행렬 생성
 
-  //   // // let candidates = [...Array(places.length).keys()]; // 완전 탐색에 사용할 목적지 후보
+    // // let candidates = [...Array(places.length).keys()]; // 완전 탐색에 사용할 목적지 후보
 
-  //   // // 목적지 수가 너무 많으면 휴리스틱 사용
-  //   // if (placeCardIds.length > PLACE_LIMIT) {
-  //   //   console.log("handleFindPath(): too many places, use heuristics");
-  //   //   // 프림 알고리즘 사용하여 출발/도착지점과 가까운 목적지를 걸러내기
-  //   //   // candidates = trimCandidates(distMatrix, PLACE_LIMIT, [startIdx, endIdx]);
+    // // 목적지 수가 너무 많으면 휴리스틱 사용
+    // if (placeCardIds.length > PLACE_LIMIT) {
+    //   console.log("handleFindPath(): too many places, use heuristics");
+    //   // 프림 알고리즘 사용하여 출발/도착지점과 가까운 목적지를 걸러내기
+    //   // candidates = trimCandidates(distMatrix, PLACE_LIMIT, [startIdx, endIdx]);
 
-  //   // }
-  //   // // 완전 탐색에 사용할 목적지 후보
-  //   // const candidates = placeCardIds.length > PLACE_LIMIT
-  //   //   // ? trimCandidatesPrim(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 프림 알고리즘으로 걸러내기
-  //   //   ? trimCandidatesOval(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 알고리즘으로 걸러내기
-  //   //   : [...Array(places.length).keys()] // 많지 않으면 모두 사용
+    // }
+    // // 완전 탐색에 사용할 목적지 후보
+    // const candidates = placeCardIds.length > PLACE_LIMIT
+    //   // ? trimCandidatesPrim(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 프림 알고리즘으로 걸러내기
+    //   ? trimCandidatesOval(distMatrix, PLACE_LIMIT, [startIdx, endIdx]) // 너무 많으면 알고리즘으로 걸러내기
+    //   : [...Array(places.length).keys()] // 많지 않으면 모두 사용
 
-  //   // // console.log("Filtered cards: ", placeCardIds);
+    // // console.log("Filtered cards: ", placeCardIds);
 
-  //   // console.log("places: ", places);
+    // console.log("places: ", places);
 
-  //   // const result = findShortestPath(
-  //   //   candidates, // 입력할 방문 장소 인덱스의 배열
-  //   //   // places,     // 방문 장소 리스트 (좋아요 확인용)
-  //   //   distMatrix, // 거리 행렬
-  //   //   startIdx,   // 출발 장소 인덱스
-  //   //   endIdx,     // 도착 장소 인덱스
-  //   //   placeNum,   // 방문할 장소의 총 개수 (출발 도착 포함)
-  //   // );
+    // const result = findShortestPath(
+    //   candidates, // 입력할 방문 장소 인덱스의 배열
+    //   // places,     // 방문 장소 리스트 (좋아요 확인용)
+    //   distMatrix, // 거리 행렬
+    //   startIdx,   // 출발 장소 인덱스
+    //   endIdx,     // 도착 장소 인덱스
+    //   placeNum,   // 방문할 장소의 총 개수 (출발 도착 포함)
+    // );
 
-  //   //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
-  //   console.log(result);
+    console.log(result);
 
-  //   // const bestPath = result["bestPath"];
+    // const bestPath = result["bestPath"];
 
-  //   // console.log("bestPath ", bestPath);
+    // console.log("bestPath ", bestPath);
 
-  //   // setSuggestIds(bestPath.slice());
+    // setSuggestIds(bestPath.slice());
 
-  //   // setPathDisc(
-  //   //   bestPath.reduce((acc, cur, i) => {
-  //   //     if (i === 0) return places[cur].placeName;
-  //   //     return acc + "👉" + places[cur].placeName;
-  //   //   }, "")
-  //   // );
-  // };
+    // setPathDisc(
+    //   bestPath.reduce((acc, cur, i) => {
+    //     if (i === 0) return places[cur].placeName;
+    //     return acc + "👉" + places[cur].placeName;
+    //   }, "")
+    // );
+  };
 
   // const handleSelectChange = (item) => {
   //   setPlaceNum(item);
@@ -544,6 +544,7 @@ export default function SuggestCourse({ setIsSuggestOpen }) {
         </button>
         {/* <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
           onClick={() => handleFindPathLambda(placeNum)}
+          // onClick={lambdaTest}
         >
           람다
         </button> */}

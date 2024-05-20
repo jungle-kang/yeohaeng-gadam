@@ -1,27 +1,27 @@
 import { useNavigate } from "react-router-dom";
 import "../index.css";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
-const RoomCards = ({ post,loading }) => {
+const RoomCards = ({ post, loading }) => {
     const navigate = useNavigate();
-    const [images,setImages]=useState({
+    const [images, setImages] = useState({
         제주도: "",
-        서울:"",
-        부산:"",
-        강릉:"",
-        인천:"",
-        경주:"",
-        가평:"",
-        전주:"",
-        여수:"",
-        속초:"",
-        default:"",
+        서울: "",
+        부산: "",
+        강릉: "",
+        인천: "",
+        경주: "",
+        가평: "",
+        전주: "",
+        여수: "",
+        속초: "",
+        default: "",
     })
     useEffect(() => {
-        const fetchData = async () =>{
+        const fetchData = async () => {
             await fetch('/images.json')
-                .then(res=>res.json())
-                .then(result=>setImages(result));
+                .then(res => res.json())
+                .then(result => setImages(result));
         }
         fetchData()
     }, []);
@@ -31,11 +31,11 @@ const RoomCards = ({ post,loading }) => {
             {loading ? (
                 <div className="mt-10 flex items-center justify-center">
                     <svg className="animate-spin h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg"
-                         fill="none" viewBox="0 0 24 24">
+                        fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                strokeWidth="4"></circle>
+                            strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 4.411 2.686 8.166 6.708 9.708l1.292-2.417z"></path>
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 4.411 2.686 8.166 6.708 9.708l1.292-2.417z"></path>
                     </svg>
                 </div>
             ) : (
@@ -45,10 +45,12 @@ const RoomCards = ({ post,loading }) => {
                     </div>
                 ) : (
                     <div className="mb-10 ">
-                        <div className="border-t-[1px] border-gray-300 w-11/12 mx-auto"/>
+                        <div className="border-t-[1px] border-gray-300 w-11/12 mx-auto" />
                         {post && post.map(({ room_id, title, location, hc_attend, hc_max, start_date, end_date, tags }) => (
                             <div
-                                className="flex flex-col md:flex-row p-6 h-auto md:h-42 w-11/12 mx-auto border-gray-300 border-b-[1px]">
+                                className="flex flex-col md:flex-row p-6 h-auto md:h-42 w-11/12 mx-auto border-gray-300 border-b-[1px]"
+                                key={room_id}
+                            >
                                 <div className="flex-shrink-0 min-w-[150px] w-full md:w-[400px]">
                                     <img
                                         className="object-cover h-[200px] w-full md:w-[400px] rounded-2xl"
@@ -68,7 +70,7 @@ const RoomCards = ({ post,loading }) => {
                                             preserveAspectRatio="xMidYMid meet"
                                         >
                                             <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)"
-                                               stroke="none">
+                                                stroke="none">
                                                 <path
                                                     fill="#CCCCCC"
                                                     d="M4420 12789 c-943 -64 -1863 -417 -2600 -998 -989 -780 -1620 -1890 -1780 -3131 -59 -455 -49 -840 30 -1209 241 -1122 1084 -2707 2479 -4656 588 -823 1434 -1907 2054 -2633 l137 -162 88 103 c303 353 824 996 1173 1447 1947 2515 3117 4541 3409 5901 79 369 89 754 30 1209 -160 1242 -791 2351 -1780 3131 -908 717 -2075 1076 -3240 998z m501 -299 c447 -20 821 -89 1239 -229 922 -309 1721 -921 2264 -1736 140 -209 218 -345 312 -540 211 -441 351 -920 408 -1400 33 -277 38 -655 11 -845 -76 -529 -286 -1122 -659 -1870 -616 -1232 -1641 -2757 -2995 -4455 -292 -366 -748 -915 -760 -915 -16 0 -529 621 -877 1060 -1085 1372 -1995 2693 -2584 3751 -552 991 -861 1777 -955 2429 -27 190 -22 568 11 845 144 1206 776 2297 1756 3033 697 522 1561 832 2437 871 91 5 171 9 176 9 6 1 103 -3 216 -8z"
@@ -99,7 +101,7 @@ const RoomCards = ({ post,loading }) => {
                                             className="relative bg-gray-300 rounded h-4 overflow-hidden w-1/3 md:w-1/3">
                                             <div
                                                 className="absolute top-0 left-0 h-full bg-blue-600"
-                                                style={{width: `${(hc_attend / hc_max) * 100}%`}}
+                                                style={{ width: `${(hc_attend / hc_max) * 100}%` }}
                                             ></div>
                                         </div>
                                         <div className="flex items-center space-x-2">

@@ -15,7 +15,7 @@ import { nanoid } from "nanoid";
 import Cursor from "./Cursor";
 import Plan from "./Plan";
 
-import { COLORS_BORDER, COLORS_CURSOR, COLORS_PING, COLORS_EFFECT, COLORS_LIKE } from "./userColors"
+import { COLORS_BORDER, COLORS_CURSOR, COLORS_PING, COLORS_EFFECT, COLORS_LIKE_1, COLORS_LIKE_2 } from "./userColors"
 
 
 // import transportRunIcon from "/src/assets/whiteboard-transport-run.svg";
@@ -30,7 +30,7 @@ const transportRunIcon = (
 );
 const transportBusIcon = (
     <svg width={`${ICON_SIZE}px`} height={`${ICON_SIZE}px`} viewBox="-1 -1 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M3 21.25c0 .414.336.75.75.75h1.615a.75.75 0 0 0 .74-.627L6.5 19h11l.395 2.373a.75.75 0 0 0 .74.627h1.615a.75.75 0 0 0 .75-.75V10l.78-.78a.75.75 0 0 0 .22-.53V6.75a.75.75 0 0 0-.75-.75H21v-.995c0-1.171-.814-2.183-1.97-2.373C17.299 2.347 14.65 2 12 2c-2.65 0-5.299.347-7.03.632C3.814 2.822 3 3.834 3 5.005V6h-.25a.75.75 0 0 0-.75.75v1.94c0 .198.079.389.22.53L3 10v11.25zm5-6.75a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm9.5 1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5 5.145V11h14V5.145c0-.37-.27-.685-.638-.732-1.166-.15-3.764-.442-6.362-.442-2.598 0-5.196.291-6.362.442A.734.734 0 0 0 5 5.145z" fill="#000000" />
+        <path fillRule="evenodd" clipRule="evenodd" d="M3 21.25c0 .414.336.75.75.75h1.615a.75.75 0 0 0 .74-.627L6.5 19h11l.395 2.373a.75.75 0 0 0 .74.627h1.615a.75.75 0 0 0 .75-.75V10l.78-.78a.75.75 0 0 0 .22-.53V6.75a.75.75 0 0 0-.75-.75H21v-.995c0-1.171-.814-2.183-1.97-2.373C17.299 2.347 14.65 2 12 2c-2.65 0-5.299.347-7.03.632C3.814 2.822 3 3.834 3 5.005V6h-.25a.75.75 0 0 0-.75.75v1.94c0 .198.079.389.22.53L3 10v11.25zm5-6.75a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm9.5 1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5 5.145V11h14V5.145c0-.37-.27-.685-.638-.732-1.166-.15-3.764-.442-6.362-.442-2.598 0-5.196.291-6.362.442A.734.734 0 0 0 5 5.145z" fill="#000000" />
     </svg>
 );
 const transportCarIcon = (
@@ -172,13 +172,13 @@ export default function Canvas({ pingEventList, setPingEventList }) {
     //     // setMyPresence({ selectedCard: cardId }, { addToHistory: true });
     // }, []);
 
-    const insertMemoCard = useMutation(({ storage, self, setMyPresence }) => {
+    const insertMemoCard = useMutation(({ storage, self, setMyPresence }, canvasPos) => {
         const selectedPageId = self.presence.selectedPageId;
         const selectedCardId = self.presence.selectedCardId;
         const prevCard = storage.get("pages").get(selectedPageId).get("cards").get(selectedCardId);
 
-        const x = prevCard ? prevCard.get("x") + 30 : canvasPos.x;
-        const y = prevCard ? prevCard.get("y") + 30 : canvasPos.y;
+        const x = selectedCardId && prevCard ? prevCard.get("x") + 30 : canvasPos.x;
+        const y = selectedCardId && prevCard ? prevCard.get("y") + 30 : canvasPos.y;
 
         const pageId = self.presence.selectedPageId;
         const cardId = nanoid();
@@ -202,8 +202,8 @@ export default function Canvas({ pingEventList, setPingEventList }) {
         const selectedCardId = self.presence.selectedCardId;
         const prevCard = storage.get("pages").get(selectedPageId).get("cards").get(selectedCardId);
 
-        const x = prevCard ? prevCard.get("x") + 30 : canvasPos.x;
-        const y = prevCard ? prevCard.get("y") + 30 : canvasPos.y;
+        const x = selectedCardId && prevCard ? prevCard.get("x") + 30 : canvasPos.x;
+        const y = selectedCardId && prevCard ? prevCard.get("y") + 30 : canvasPos.y;
 
         const pageId = self.presence.selectedPageId;
         const cardId = nanoid();
@@ -761,7 +761,8 @@ export default function Canvas({ pingEventList, setPingEventList }) {
             const offset = 35;
 
             // 캔버스 코너 기울기
-            const cSlope = canvasRef.current.offsetHeight / canvasRef.current.offsetWidth;
+            const cSlope = (canvasRef.current.offsetHeight - offset * 2)
+                / (canvasRef.current.offsetWidth - offset * 2);
             const pSlope = (pingEvent.y - canvasPos.y) / (pingEvent.x - canvasPos.x);
 
             // 핑 표시기가 오른쪽 또는 왼쪽 변에 존재하는지 여부
@@ -971,7 +972,8 @@ export default function Canvas({ pingEventList, setPingEventList }) {
                     }}
                 />
                 <div
-                    className="bg-yellow-100 border-2 border-gray-500 flex justify-center items-center rounded-full w-8 h-8"
+                    // className="bg-yellow-100 border-2 border-gray-500 flex justify-center items-center rounded-full w-8 h-8"
+                    className="bg-yellow-100 shadow-md shadow-gray-600 flex justify-center items-center rounded-full w-8 h-8"
                     style={{
                         position: "absolute",
                         transform: `translate(${x2}px, ${y2}px) translate(-50%, -50%)`,
@@ -1052,7 +1054,7 @@ export default function Canvas({ pingEventList, setPingEventList }) {
             >
                 <button
                     className="mx-1 flex items-center justify-center text-white hover:bg-blue-100 rounded-lg w-full h-10"
-                    onClick={() => insertMemoCard(canvasPos.x + 100, canvasPos.y + 100)}
+                    onClick={() => insertMemoCard(canvasPos)}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="#5F5F5F" width="38px" height="38px"
                         viewBox="0 0 16 16">
@@ -1187,6 +1189,7 @@ function MyPingIndicator({ x, y, colorId }) {
         <div className="absolute flex"
             style={{
                 transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
+                pointerEvents: "none",
                 zIndex: 9,
             }}
         >
@@ -1228,7 +1231,8 @@ function PlaceCardContent({ id, card, onLineBtnPointerDown }) {
                 {card.placeAddr}
             </div>
             <button
-                className="bg-yellow-100 border-2 border-gray-500 flex justify-center items-center rounded-full w-6 h-6"
+                // className="bg-yellow-100 border-2 border-gray-500 flex justify-center items-center rounded-full w-6 h-6"
+                className="bg-yellow-100 shadow shadow-gray-600 flex justify-center items-center rounded-full w-6 h-6"
                 style={{ position: "absolute", top: "50%", left: "100%", transform: "translate(-50%, -50%)" }}
                 onPointerDown={(e) => onLineBtnPointerDown(e, id)}
             >
@@ -1543,7 +1547,7 @@ function Card({
             {
                 // 디버깅용ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
                 card.cardType !== "map" &&
-                <div className="absolute flex flex-row"
+                <div className="absolute flex flex-row mt-2"
                     style={{
                         top: "100%",
                     }}
@@ -1569,15 +1573,50 @@ function Card({
                         </button>)
                     } */}
 
-                    <button className="text-xl"
+                    {/* <button className="text-xl"
+                    // <button className="text-xl text-transparent bg-clip-text"
                         style={{
-                            color: COLORS_LIKE[myColorId],
+                            // color: COLORS_LIKE[myColorId],
+                            // "--tw-gradient-from": "#0000FF var(--tw-gradient-from-position)",
+                            // "--tw-gradient-to": "#FF0000 var(--tw-gradient-to-position)",
+                            // background: `linear-gradient(#0000FF, #FF0000)`,
+                            "-webkit-background-clip": "text",
+                            "-webkit-text-fill-color": "transparent",
+                            // backgroundColor: "green",
+                            background: "green",
                             transform: "scaleY(90%)",
                         }}
                         onClick={() => onLikeBtnClick(id)}
                     >
                         {card.likedUsers.includes(myColorId) ? "♥" : "♡"}
-                    </button>
+                    </button> */}
+
+                    {card.likedUsers.includes(myColorId)
+                        ? (<button onClick={() => onLikeBtnClick(id)} >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px" viewBox="0 0 24 24" >
+                                <defs>
+                                    <linearGradient id="grad-me-fill" x1="0%" x2="100%">
+                                        <stop offset="0%" style={{ stopColor: COLORS_LIKE_1[myColorId] }} />
+                                        <stop offset="100%" style={{ stopColor: COLORS_LIKE_2[myColorId] }} />
+                                    </linearGradient>
+                                </defs>
+                                <path style={{ fill: "url(#grad-me-fill)" }} d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z" />
+                            </svg>
+                        </button>)
+                        : (<button
+                            onClick={() => onLikeBtnClick(id)}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px" viewBox="0 0 24 24" >
+                                <defs>
+                                    <linearGradient id="grad-me-empty" x1="0%" x2="100%">
+                                        <stop offset="0%" style={{ stopColor: COLORS_LIKE_1[myColorId] }} />
+                                        <stop offset="100%" style={{ stopColor: COLORS_LIKE_2[myColorId] }} />
+                                    </linearGradient>
+                                </defs>
+                                <path style={{ fill: "url(#grad-me-empty)" }} d="M8.96173 18.9109L9.42605 18.3219L8.96173 18.9109ZM12 5.50063L11.4596 6.02073C11.601 6.16763 11.7961 6.25063 12 6.25063C12.2039 6.25063 12.399 6.16763 12.5404 6.02073L12 5.50063ZM15.0383 18.9109L15.5026 19.4999L15.0383 18.9109ZM9.42605 18.3219C7.91039 17.1271 6.25307 15.9603 4.93829 14.4798C3.64922 13.0282 2.75 11.3345 2.75 9.1371H1.25C1.25 11.8026 2.3605 13.8361 3.81672 15.4758C5.24723 17.0866 7.07077 18.3752 8.49742 19.4999L9.42605 18.3219ZM2.75 9.1371C2.75 6.98623 3.96537 5.18252 5.62436 4.42419C7.23607 3.68748 9.40166 3.88258 11.4596 6.02073L12.5404 4.98053C10.0985 2.44352 7.26409 2.02539 5.00076 3.05996C2.78471 4.07292 1.25 6.42503 1.25 9.1371H2.75ZM8.49742 19.4999C9.00965 19.9037 9.55954 20.3343 10.1168 20.6599C10.6739 20.9854 11.3096 21.25 12 21.25V19.75C11.6904 19.75 11.3261 19.6293 10.8736 19.3648C10.4213 19.1005 9.95208 18.7366 9.42605 18.3219L8.49742 19.4999ZM15.5026 19.4999C16.9292 18.3752 18.7528 17.0866 20.1833 15.4758C21.6395 13.8361 22.75 11.8026 22.75 9.1371H21.25C21.25 11.3345 20.3508 13.0282 19.0617 14.4798C17.7469 15.9603 16.0896 17.1271 14.574 18.3219L15.5026 19.4999ZM22.75 9.1371C22.75 6.42503 21.2153 4.07292 18.9992 3.05996C16.7359 2.02539 13.9015 2.44352 11.4596 4.98053L12.5404 6.02073C14.5983 3.88258 16.7639 3.68748 18.3756 4.42419C20.0346 5.18252 21.25 6.98623 21.25 9.1371H22.75ZM14.574 18.3219C14.0479 18.7366 13.5787 19.1005 13.1264 19.3648C12.6739 19.6293 12.3096 19.75 12 19.75V21.25C12.6904 21.25 13.3261 20.9854 13.8832 20.6599C14.4405 20.3343 14.9903 19.9037 15.5026 19.4999L14.574 18.3219Z" />
+                            </svg>
+                        </button>)
+                    }
 
                     {/* <button onClick={() => decreaseLike(id)}>{"<"}</button>
           <button onClick={() => increaseLike(id)}>{">"}</button> */}
@@ -1586,16 +1625,31 @@ function Card({
                         card.likedUsers.map((colorId) => {
                             if (colorId !== myColorId) {
                                 return (
-                                    <div className="text-xl"
+                                    <div
                                         key={colorId}
-                                        style={{
-                                            color: COLORS_LIKE[colorId],
-                                            transform: "scaleY(90%)",
-                                        }}
                                     >
-                                        ♥
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px" viewBox="0 0 24 24" >
+                                            <defs>
+                                                <linearGradient id={`grad-${colorId}`} x1="0%" x2="100%">
+                                                    <stop offset="0%" style={{ stopColor: COLORS_LIKE_1[colorId] }} />
+                                                    <stop offset="100%" style={{ stopColor: COLORS_LIKE_2[colorId] }} />
+                                                </linearGradient>
+                                            </defs>
+                                            <path style={{ fill: `url(#grad-${colorId})` }} d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z" />
+                                        </svg>
                                     </div>
                                 );
+                                // return (
+                                //     <div className="text-xl"
+                                //         key={colorId}
+                                //         style={{
+                                //             color: COLORS_LIKE[colorId],
+                                //             transform: "scaleY(90%)",
+                                //         }}
+                                //     >
+                                //         ♥
+                                //     </div>
+                                // );
                             }
                         })
                     }
@@ -1604,7 +1658,7 @@ function Card({
 
             {selectedByMe
                 ? (<button
-                    className="bg-[#ff0000] font-bold text-white text-sm rounded-full w-6 h-6"
+                    className="bg-[#ff0000] font-bold text-white shadow-sm shadow-gray-600 text-sm rounded-full w-6 h-6"
                     style={{ position: "absolute", top: "0", left: "100%", transform: "translate(-50%, -50%)", zIndex: "16" }}
 
                     onPointerDown={() => deleteCard(id)}
@@ -1717,7 +1771,7 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
                     width: `${r}px`,
                 }}
             />
-            <button className="card-line-info justify-center rounded-full gap-0.5 bg-yellow-200"
+            <div className="card-line-info justify-center rounded-full gap-0.5 shadow-sm shadow-gray-600 bg-yellow-200"
                 style={{
                     borderColor: "black",
                     borderStyle: "solid",
@@ -1737,12 +1791,12 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
                     height: "80px",
                     transform: `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${zoom}, ${zoom})`,
                 }}
-                onFocus={() => setIsSelected(true)}
-                onBlur={() => setIsSelected(false)}
+            // onFocus={() => setIsSelected(true)}
+            // onBlur={() => setIsSelected(false)}
             >
                 {infoBody}
                 {selectedByMe
-                    ? (<button className="bg-[#ff0000] font-bold text-white text-sm rounded-full w-6 h-6"
+                    ? (<button className="bg-[#ff0000] font-bold text-white shadow-sm shadow-gray-600 text-sm rounded-full w-6 h-6"
                         style={{
                             position: "absolute",
                             left: "80%",
@@ -1753,7 +1807,7 @@ function Line({ id, line, x1, y1, x2, y2, zoom, deleteLine, onTransportBtnDown }
                         X
                     </button>)
                     : null}
-            </button>
+            </div>
         </>
     );
 }

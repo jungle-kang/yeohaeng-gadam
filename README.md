@@ -67,4 +67,6 @@
 - 김혜인: 로그인 및 인증, UI 디자인, DB
 - 민경욱: DB, 목적지 검색, 실시간 화상채팅, 코스 추천
 - 김수빈: DB 및 API 설계, 배포
+
+  
 ![image](https://github.com/jungle-kang/yeohaeng-gadam/assets/155986345/b7d04d02-01f0-45a5-8074-2359a30789d1)

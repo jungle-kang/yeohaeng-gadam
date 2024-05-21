@@ -8,4 +8,9 @@
 3주
 
 # 팀원소개
+- 강민수
+- 이재욱
+- 김혜인
+- 민경욱
+- 김수빈
 ![image](https://github.com/jungle-kang/yeohaeng-gadam/assets/155986345/b7d04d02-01f0-45a5-8074-2359a30789d1)

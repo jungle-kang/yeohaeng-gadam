@@ -1,4 +1,6 @@
- # 여행가담
+![image](https://github.com/jungle-kang/yeohaeng-gadam/assets/155986345/8ea031d5-9850-41f8-8424-1703a4df50bb)
+
+ # 여행가담(https://mskang.store/)
 온라인으로 모은 여행 동행자들을 실제 지인들처럼 모여서 동시적으로 계획을 세우게 하는 서비스
 
 # 개발 기간

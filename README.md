@@ -20,7 +20,9 @@
   
 - 백엔드
 
--etc
+- etc
+ <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=MySQL&logoColor=white"/>
+
 
 
 # 개발 기간

@@ -3,3 +3,9 @@
 
 # 개발 기간
 2023.4.12 ~ 2023.5.25
+1주차
+2주차
+3주
+
+# 팀원소개
+![image](https://github.com/jungle-kang/yeohaeng-gadam/assets/155986345/b7d04d02-01f0-45a5-8074-2359a30789d1)

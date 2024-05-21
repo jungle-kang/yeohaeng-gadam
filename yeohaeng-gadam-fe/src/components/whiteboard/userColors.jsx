@@ -68,8 +68,8 @@ export const COLORS_LIKE = [
 export const COLORS_LIKE_1 = [
     "#FF1493",
     "#00EE00",
-    "#FFAE1D",
-    "#1E90FF",
+    "#FFA90D",
+    "#04BBFC",
     "#666666", // 이하 디버깅용
     "#666666",
     "#666666",

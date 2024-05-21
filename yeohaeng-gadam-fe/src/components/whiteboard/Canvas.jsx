@@ -707,8 +707,8 @@ export default function Canvas({ pingEventList, setPingEventList }) {
     // x, y위치에 있는 물체가 캔버스 내부에 있는지 여부 반환
     // bufX, bufY만큼의 여유를 줌
     function isInsideCanvas(x, y, bufX, bufY) {
-        const offX = Math.abs(x - canvasPos.x) * ZOOMS[canvasZoomLevel];
-        const offY = Math.abs(y - canvasPos.y) * ZOOMS[canvasZoomLevel];
+        const offX = (Math.abs(x - canvasPos.x) - bufX) * ZOOMS[canvasZoomLevel];
+        const offY = (Math.abs(y - canvasPos.y) - bufY) * ZOOMS[canvasZoomLevel];
         if (canvasRef.current) {
 
             // console.log("offset: ", offX, offY); ///////////
@@ -716,8 +716,8 @@ export default function Canvas({ pingEventList, setPingEventList }) {
         }
         return (
             canvasRef.current
-            && offX < canvasRef.current.offsetWidth / 2 + bufX
-            && offY < canvasRef.current.offsetHeight / 2 + bufY
+            && offX < canvasRef.current.offsetWidth / 2
+            && offY < canvasRef.current.offsetHeight / 2
         );
         // return (
         //   canvasRef.current
@@ -1458,15 +1458,17 @@ function Card({
     // const selectedByOthers = useOthers((others) =>
     //   others.some((other) => other.presence.selectedCardId === id)
     // );
-    const selectedColorIds = useOthers((others) => others.map((other) => {
+    const selectedColorIds = useOthers((others) => others.reduce((acc, other) => {
         if (other.presence.selectedCardId === id) {
-            return other.presence.colorId;
+            return [...acc, other.presence.colorId];
+        } else {
+            return acc;
         }
-    }))
+    }, []))
 
     const selectionColor = selectedByMe
         ? COLORS_BORDER[myColorId]
-        : selectedColorIds[0] != null
+        : selectedColorIds.length > 0
             ? COLORS_BORDER[selectedColorIds[0]]
             : "transparent";
 

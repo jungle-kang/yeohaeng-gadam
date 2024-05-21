@@ -201,9 +201,11 @@ export default function SuggestCourse({ setIsSuggestOpen }) {
         }),
       });
       const result = await response.json();
-      console.log("lambda response: ", result);
+      // console.log("lambda response: ", result);
+      return result;
     } catch (e) {
       console.error('lambda fail: ', e);
+      return null;
     }
   };
 
@@ -272,7 +274,13 @@ export default function SuggestCourse({ setIsSuggestOpen }) {
     const startIdx = placeCardIds.findIndex((cardId) => cardId === startId);
     const endIdx = placeCardIds.findIndex((cardId) => cardId === endId);
 
+    // console.log("local call args: ",{
+    //   places, placeCardIds, startIdx, endIdx, placeNum, PLACE_LIMIT, MAX_DISCOUNT, MAX_LIKES
+    // });
+
     const distMatrix = getDistMatrix(places); // 거리 행렬 생성
+
+    console.log("distMatrix: ", distMatrix);
 
     // let candidates = [...Array(places.length).keys()]; // 완전 탐색에 사용할 목적지 후보
 
@@ -344,6 +352,10 @@ export default function SuggestCourse({ setIsSuggestOpen }) {
     const startIdx = placeCardIds.findIndex((cardId) => cardId === startId);
     const endIdx = placeCardIds.findIndex((cardId) => cardId === endId);
 
+    // console.log("lambda call args: ",{
+    //   places, placeCardIds, startIdx, endIdx, placeNum, PLACE_LIMIT, MAX_DISCOUNT, MAX_LIKES
+    // });
+
     const result = await lambdaCall({
       places, placeCardIds, startIdx, endIdx, placeNum, PLACE_LIMIT, MAX_DISCOUNT, MAX_LIKES
     });
@@ -385,18 +397,18 @@ export default function SuggestCourse({ setIsSuggestOpen }) {
 
     console.log(result);
 
-    // const bestPath = result["bestPath"];
+    const bestPath = result["bestPath"];
 
-    // console.log("bestPath ", bestPath);
+    console.log("bestPath ", bestPath);
 
-    // setSuggestIds(bestPath.slice());
+    setSuggestIds(bestPath.slice());
 
-    // setPathDisc(
-    //   bestPath.reduce((acc, cur, i) => {
-    //     if (i === 0) return places[cur].placeName;
-    //     return acc + "👉" + places[cur].placeName;
-    //   }, "")
-    // );
+    setPathDisc(
+      bestPath.reduce((acc, cur, i) => {
+        if (i === 0) return places[cur].placeName;
+        return acc + "👉" + places[cur].placeName;
+      }, "")
+    );
   };
 
   // const handleSelectChange = (item) => {

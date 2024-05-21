@@ -2,6 +2,23 @@
 
  # 여행가담(https://mskang.store/)
 온라인으로 모은 여행 동행자들을 실제 지인들처럼 모여서 동시적으로 계획을 세우게 하는 서비스
+ 
+ 
+## 기획배경
+온라인에서 만난 여행 동행자들끼리 마치 실제 만나서 계획을 세우는 듯한 경험을 제공하기 위해 서비스를 기
+ 
+## 서비스 특징
+
+
+# 기술스택
+- 프론트
+  <img src="https://img.shields.io/badge/Rust-000000?style=flat-square&logo=Rust&logoColor=white"/>
+
+  
+- 백엔드
+
+-etc
+
 
 # 개발 기간
 2023.4.13 ~ 2023.5.25

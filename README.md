@@ -75,4 +75,12 @@
 
 # 실행법
 
-``` int main() ```
+
+yeohaeng-gadam-fe에서 
+
+
+``` npm run dev ```
+
+
+입력시 프론트 실행가능
+

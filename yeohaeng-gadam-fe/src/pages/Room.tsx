@@ -62,14 +62,13 @@ const Room = () => {
     useEffect(() => {
         const enter = async () => {
             try {
-                console.log('room id:', roomId, ', user id:', id);
+                // console.log('room id:', roomId, ', user id:', id);
                 const response = await fetch(`/api/room/enter?room_id=${roomId}&user_id=${id}`, {
                     method: 'PATCH',
                     credentials: 'include'
                 }).then(res => res.json());
-                console.log('enter response:', response);
+                // console.log('enter response:', response);
                 if (!response.data) {
-                    // alert('로그인이 필요합니다.111');
                     toast.error('방에 인원이 가득찼습니다🌞');
                     navigate('/');
                 }
@@ -88,7 +87,6 @@ const Room = () => {
                 if (response.data) {
                     await enter();
                 } else {
-                    // alert('로그인이 필요합니다.222');
                     toast.error('로그인이 필요합니다');
                     navigate('/');
                 }
@@ -104,7 +102,7 @@ const Room = () => {
                 if (response.data) {
                     const startDate = new Date(response.data[0].start_date);
                     const endDate = new Date(response.data[0].end_date);
-                    const days = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+                    const days = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24); // 여행 일차 수 계산
                     for (let i = 0; i <= days; i++) {
                         const newPage = new LiveObject({
                             name: `${i + 1}일차`,

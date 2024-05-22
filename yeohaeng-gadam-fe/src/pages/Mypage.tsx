@@ -10,6 +10,7 @@ import RoomCards from "../components/RoomCards.tsx";
 const Mypage = () => {
   const navigate = useNavigate();
   const [post, setPost] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
     const accessToken = getCookie('access_token') || '';
@@ -29,13 +30,14 @@ const Mypage = () => {
       const data = await response.json();
       console.log(data);
       setPost(data.data);
+      setLoading(false);
     };
     fetchData();
 
   }, []);
 
   return (
-    <RoomCards post={post} />
+    <RoomCards post={post} loading={loading} />
   );
 }
 

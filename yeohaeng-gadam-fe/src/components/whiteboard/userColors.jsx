@@ -1,4 +1,5 @@
 // 보드 방에서 사용할 사용자 색상
+// 선택한 카드 테두리
 export const COLORS_BORDER = [
     "#FFB6C1",
     "#98FB98",
@@ -10,6 +11,7 @@ export const COLORS_BORDER = [
     "#666666",
 ];
 
+// 커서
 export const COLORS_CURSOR = [
     "#AB0C20",
     "#33C44F",
@@ -21,6 +23,7 @@ export const COLORS_CURSOR = [
     "#666666",
 ];
 
+// 핑 효과
 export const COLORS_EFFECT = [
     "#FF00FF",
     "#39FF14",
@@ -32,6 +35,7 @@ export const COLORS_EFFECT = [
     "#666666",
 ];
 
+// 핑 오브젝트
 export const COLORS_PING = [
     "#AB0C20",
     "#33C44F",
@@ -43,6 +47,7 @@ export const COLORS_PING = [
     "#666666",
 ];
 
+// 화상채팅 색 표시
 export const COLORS_NAMETAG = [
     "#AB0C20",
     "#33C44F",
@@ -54,6 +59,7 @@ export const COLORS_NAMETAG = [
     "#666666",
 ];
 
+// 미사용
 export const COLORS_LIKE = [
     "#FF1493",
     "#00EE00",
@@ -65,6 +71,7 @@ export const COLORS_LIKE = [
     "#666666",
 ];
 
+// 좋아요 그라데이션
 export const COLORS_LIKE_1 = [
     "#FF1493",
     "#00EE00",
@@ -76,6 +83,7 @@ export const COLORS_LIKE_1 = [
     "#666666",
 ];
 
+// 좋아요 그라데이션
 export const COLORS_LIKE_2 = [
     "#AB0C20",
     "#33C44F",

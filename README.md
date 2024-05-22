@@ -5,7 +5,12 @@
 
 # 1️⃣소개
 온라인으로 모은 여행 동행자들을 실제 지인들처럼 모여서 동시적으로 계획을 세우게 하는 서비스 
- 
+
+
+## 영상
+(업로드 예정)
+
+
 ## 기획배경
 온라인에서 만난 여행 동행자들끼리 마치 실제 만나서 계획을 세우는 듯한 경험을 제공하기 위해 서비스를 기획
 
@@ -23,7 +28,7 @@
   <img src="https://img.shields.io/badge/Tailwind CSS-06B6D4?style=flat-square&logo=Tailwind CSS&logoColor=white"/>
 
 
-- 프론트
+- 백엔드
 
   <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=black"/>
   <img src="https://img.shields.io/badge/Tailwind CSS-06B6D4?style=flat-square&logo=Tailwind CSS&logoColor=white"/>
@@ -31,8 +36,10 @@
   
 - etc
 
- <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=MySQL&logoColor=white"/>
+  <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=black"/>
+  <img src="https://img.shields.io/badge/Tailwind CSS-06B6D4?style=flat-square&logo=Tailwind CSS&logoColor=white"/>
 
+  
 
 
 # 3️⃣개발 기간

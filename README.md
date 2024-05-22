@@ -1,6 +1,6 @@
 ![image](https://github.com/jungle-kang/yeohaeng-gadam/assets/155986345/8ea031d5-9850-41f8-8424-1703a4df50bb)
 
-6️⃣7️⃣
+
  # 여행가담🧳
 
 # 1️⃣소개

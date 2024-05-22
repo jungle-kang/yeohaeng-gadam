@@ -1,17 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import MapContainer from './MapContainer'
-
-
 
 function SearchPanel({ insertCard }) {
     const [InputText, setInputText] = useState('')
     const [Place, setPlace] = useState('')
-    const [isClicked, setIsClicked] = useState(false);
     const onChange = (e) => {
         setInputText(e.target.value)
-    }
-    const onClickHandler = (e) => {
-        setIsClicked(true)
     }
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -25,7 +19,7 @@ function SearchPanel({ insertCard }) {
                 <input className="w-9/12 h-10 rounded-full p-2 focus:outline-none" placeholder="검색어를 입력하세요"
                        onChange={onChange} value={InputText}/>
 
-                <button className="relative w-2/12 pl-3 h-10" onClick={onClickHandler} type="submit">
+                <button className="relative w-2/12 pl-3 h-10" type="submit">
                     <svg
                         className="absolute"
                         style={{left: '100%', transform: 'translate(-105%, -50%)'}}
@@ -45,8 +39,7 @@ function SearchPanel({ insertCard }) {
                     </svg>
                 </button>
             </form>
-            {/* <MapContainer searchPlace={Place} /> */}
-            {<MapContainer searchPlace={Place} insertCard={insertCard}/>}
+            <MapContainer searchPlace={Place} insertCard={insertCard}/>
         </>
     )
 }

@@ -1,27 +1,18 @@
-// import {useParams} from "react-router-dom";
 import React, { useState } from "react";
-import { createClient } from "@liveblocks/client";
-import { LiveMap, LiveObject } from "@liveblocks/client";
-import { RoomProvider, useMutation } from "/liveblocks.config";
+import { LiveObject } from "@liveblocks/client";
+import { useMutation } from "/liveblocks.config";
 import { nanoid } from "nanoid";
 
-// import SearchForm from "../map/SearchForm.jsx";
 import SearchPanel from "./SearchPanel.jsx";
 import Whiteboard from "../components/Whiteboard.jsx";
-import { Navigate, useNavigate } from "react-router-dom";
 import SettingModal from "../components/SettingModal.tsx"
 import Videochat from "../videochat/Videochat.jsx";
-// import VideoChat from "../webRTC/VideoChat.tsx";
 
 const RoomContent = ({ roomId, userId, userName, colorId }) => {
-  // const {roomId} = useParams<{roomId:string}>();
-  const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
-  // const [myColor, setMyColor] = useState(null);
 
   // liveblocks에 새로운 shape를 추가
   const insertCard = useMutation(({ storage, self, setMyPresence }, data) => {
-    console.log("data ", data);
     const selectedPageId = self.presence.selectedPageId;
     const selectedCardId = self.presence.selectedCardId;
     
@@ -29,14 +20,10 @@ const RoomContent = ({ roomId, userId, userName, colorId }) => {
 
     const x = prevCard ? prevCard.get("x") + 30 : 0;
     const y = prevCard ? prevCard.get("y") + 30 : 0;
-
-    console.log("new card pos: ", x, y);
     
-    // 새 카드
+    // 새 카드 추가
     const cardId = nanoid();
     const card = new LiveObject({
-      // x: 300,
-      // y: 300,
       x: x,
       y: y,
       fill: "#ffffff",
@@ -47,12 +34,7 @@ const RoomContent = ({ roomId, userId, userName, colorId }) => {
       placeX: data.x,
       placeY: data.y,
       likedUsers: [],
-      // likes: 0,
-      // text: data.place_name,
-      // placeName: memoInputRef.current.value,
-      // placeCord: "0,0",
     });
-    // console.log("created card at ", x, ", ", y); /////////////
     storage.get("pages").get(selectedPageId).get("cards").set(cardId, card);
 
     setMyPresence({ selectedCardId: cardId }, { addToHistory: true });

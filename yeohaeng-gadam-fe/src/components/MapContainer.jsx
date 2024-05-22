@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-// import SearchDetail from './SearchDetail';
 
 const {kakao} = window;
 
@@ -54,7 +53,6 @@ const MapContainer = ({searchPlace, insertCard}) => {
                 {places.map((res, i) => (
                     <ResultCard key={i} res={res} i={i} insertCard={insertCard}/>
                 ))}
-                {/* {places.length > 0 && <SearchDetail places={places} />} */}
             </div>
         </div>
     );

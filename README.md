@@ -72,3 +72,7 @@
 
   
 ![image](https://github.com/jungle-kang/yeohaeng-gadam/assets/155986345/b7d04d02-01f0-45a5-8074-2359a30789d1)
+
+# 실행법
+
+``` int main() ```

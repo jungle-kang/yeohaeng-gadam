@@ -1,8 +1,10 @@
 ![image](https://github.com/jungle-kang/yeohaeng-gadam/assets/155986345/8ea031d5-9850-41f8-8424-1703a4df50bb)
 
- # 여행가담(https://mskang.store/)
-온라인으로 모은 여행 동행자들을 실제 지인들처럼 모여서 동시적으로 계획을 세우게 하는 서비스
- 
+6️⃣7️⃣
+ # 여행가담🧳
+
+# 1️⃣소개
+온라인으로 모은 여행 동행자들을 실제 지인들처럼 모여서 동시적으로 계획을 세우게 하는 서비스 
  
 ## 기획배경
 온라인에서 만난 여행 동행자들끼리 마치 실제 만나서 계획을 세우는 듯한 경험을 제공하기 위해 서비스를 기획
@@ -14,7 +16,7 @@
 - 코스를 알고리즘에 따라 추천
 - 장소 사이 거리를 계산
 
-# 기술스택
+# 2️⃣기술스택
 - 프론트
 
   <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=black"/>
@@ -31,7 +33,7 @@
 
 
 
-# 개발 기간
+# 3️⃣개발 기간
 2023.4.13 ~ 2023.5.25
 
 
@@ -60,7 +62,7 @@
 발표연습과 폴리싱
 
 
-# 팀원소개
+# 4️⃣팀원소개
 
 
 - 강민수: 팀장, 화이트보드, 코스 추천 알고리즘
@@ -72,7 +74,7 @@
   
 ![image](https://github.com/jungle-kang/yeohaeng-gadam/assets/155986345/b7d04d02-01f0-45a5-8074-2359a30789d1)
 
-# 실행법
+# 5️⃣실행법
 
 
 yeohaeng-gadam-fe에서 

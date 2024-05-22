@@ -1423,11 +1423,15 @@ function LineInfoChosen({ transportMethod, distance, duration }) {
     return (
         <div className="flex flex-col justify-center items-center">
             {transportIcon}
-            <div className="text-xs">
-                {distance > 0 ? formatDist(distance) : "- km"}
+            <div>
+                {distance > 0
+                    ? formatDist(distance)
+                    : <div className="text-xs">- km</div>}
             </div>
-            <div className="text-xs">
-                {duration > 0 ? formatDur(duration) : "- min"}
+            <div>
+                {duration > 0
+                    ? formatDur(duration)
+                    : <div className="text-xs">- min</div>}
             </div>
         </div>
     );
@@ -1537,22 +1541,46 @@ function deg2rad(deg) {
 // km로 받은 거리를 적절하게 변환
 function formatDist(dist) {
     if (dist < 1) {
-        return Math.round(dist * 1000) + " m";
+        // return Math.round(dist * 1000) + " m";
+        return (<>
+            <nobr className="text-md font-bold">{Math.round(dist * 1000)}</nobr>
+            <nobr className="text-xs"> km</nobr>
+        </>);
     }
     if (dist < 10) {
-        return Math.round(dist * 10) / 10 + " km";
+        // return Math.round(dist * 10) / 10 + " km";
+        return (<>
+            <nobr className="text-md font-bold">{Math.round(dist * 10) / 10}</nobr>
+            <nobr className="text-xs"> km</nobr>
+        </>);
     }
-    return Math.round(dist) + " km";
+    // return Math.round(dist) + " km";
+    return (<>
+        <nobr className="text-md font-bold">{Math.round(dist)}</nobr>
+        <nobr className="text-xs"> km</nobr>
+    </>);
 }
 
 // s로 받은 시간을 적절하게 변환
 function formatDur(dur) {
     const hr = 3600;
     if (dur < hr) {
-        return Math.round(dur / 60) + " min";
+        // return Math.round(dur / 60) + " min";
+        return (<>
+            <nobr className="text-md font-bold">{Math.round(dur / 60)}</nobr>
+            <nobr className="text-xs"> min</nobr>
+        </>);
     }
     if (dur < 10 * hr) {
-        return Math.round(dur / hr * 10) / 10 + " hr";
+        // return Math.round(dur / hr * 10) / 10 + " hr";
+        return (<>
+            <nobr className="text-md font-bold">{Math.round(dur / hr * 10) / 10}</nobr>
+            <nobr className="text-xs"> hr</nobr>
+        </>);
     }
-    return Math.round(dur / hr) + " hr";
+    // return Math.round(dur / hr) + " hr";
+    return (<>
+        <nobr className="text-md font-bold">{Math.round(dur / hr)}</nobr>
+        <nobr className="text-xs"> hr</nobr>
+    </>);
 }

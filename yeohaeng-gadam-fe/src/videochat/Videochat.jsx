@@ -12,7 +12,7 @@ const TURN_SERVER_INFO = {
 
 const pc_config = {
   iceServers: [
-    // TURN_SERVER_INFO, // COTURN 서버 사용 시 주석 해제
+    TURN_SERVER_INFO, // COTURN 서버 사용 시 주석 해제
     {
       urls: [
         "stun:stun.l.google.com:19302",

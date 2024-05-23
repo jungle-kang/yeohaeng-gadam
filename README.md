@@ -1,5 +1,6 @@
 <img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/7e5f027b-9530-48ad-9cd9-49eb8183d400" width="800" height="500">
-<img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/671d1e68-f7e5-4ed6-ab20-b9c3807aa496" width="800" height="500">
+<img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/4f9c498f-bcf9-4cab-aeb7-ae1d8e9e11b0" width="800" height="500">
+
 
 
  # 여행가담🧳

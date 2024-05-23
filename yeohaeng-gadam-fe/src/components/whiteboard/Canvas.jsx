@@ -1544,7 +1544,7 @@ function formatDist(dist) {
         // return Math.round(dist * 1000) + " m";
         return (<>
             <nobr className="text-md font-bold">{Math.round(dist * 1000)}</nobr>
-            <nobr className="text-xs"> km</nobr>
+            <nobr className="text-xs"> m</nobr>
         </>);
     }
     if (dist < 10) {

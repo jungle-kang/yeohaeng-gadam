@@ -1,10 +1,10 @@
 # 메인 페이지
 
-<img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/7e5f027b-9530-48ad-9cd9-49eb8183d400" width="800" height="500">
+<img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/7e5f027b-9530-48ad-9cd9-49eb8183d400" width="800">
 
 # 화이트보드
 
-<img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/4f9c498f-bcf9-4cab-aeb7-ae1d8e9e11b0" width="800" height="500">
+<img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/4f9c498f-bcf9-4cab-aeb7-ae1d8e9e11b0" width="800">
 
 # 1️⃣소개
 온라인으로 모은 여행 동행자들과 한 장소에 있는 것처럼 같이 계획을 세울 수 있는 서비스 여행가담입니다!

@@ -87,3 +87,10 @@ yeohaeng-gadam-fe에서
 
 입력시 프론트 실행가능
 
+
+yeohaeng-gadam-be에서
+
+
+```npm run start:dev```
+
+입력시 백엔드 실행가능 (단, DB가 있어야함.)

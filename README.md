@@ -1,4 +1,4 @@
-![image](https://github.com/jungle-kang/yeohaeng-gadam/assets/155986345/8ea031d5-9850-41f8-8424-1703a4df50bb)
+<img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/155986345/8ea031d5-9850-41f8-8424-1703a4df50bbz" width="50" height="50">
 
 
  # 여행가담🧳

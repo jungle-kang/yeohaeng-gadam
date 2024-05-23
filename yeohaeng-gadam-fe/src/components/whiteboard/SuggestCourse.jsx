@@ -403,7 +403,7 @@ export default function SuggestCourse({ setIsSuggestOpen }) {
         >
           추천하기
         </button>
-        <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
+        {/* <button className="bg-white ring-1 text-sm nanumbarungothic hover:bg-gray-200 rounded-md ml-1.5 mt-1 px-1"
           onClick={() => onApplyBtnClick(suggestIds)}
         >
           적용하기
@@ -413,7 +413,7 @@ export default function SuggestCourse({ setIsSuggestOpen }) {
           // onClick={lambdaTest}
         >
           람다
-        </button>
+        </button> */}
       </div>
 
       <div className="flex ml-2 mt-3">

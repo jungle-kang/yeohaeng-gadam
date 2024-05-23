@@ -1,15 +1,14 @@
-<img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/155986345/8ea031d5-9850-41f8-8424-1703a4df50bbz" width="800" height="500">
-
 <img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/7e5f027b-9530-48ad-9cd9-49eb8183d400" width="800" height="500">
-
+<img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/671d1e68-f7e5-4ed6-ab20-b9c3807aa496" width="800" height="500">
 
 
  # 여행가담🧳
 
 # 1️⃣소개
-온라인으로 모은 여행 동행자들과 마치 한 장소에 있는 것처럼 같이 계획을 세울 수 있는 서비스 여행가담입니다!
+온라인으로 모은 여행 동행자들과 한 장소에 있는 것처럼 같이 계획을 세울 수 있는 서비스 여행가담입니다!
 
 ## 포스터
+![image](https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/3425332d-321c-4007-9d68-a1c5ec922dfe)
 [크래프톤_정글_4기_여행가담_포스터_240522.pdf](https://github.com/jungle-kang/yeohaeng-gadam/files/15414477/_._4._._._240522.pdf)
 
 ## 영상
@@ -42,34 +41,23 @@ https://youtu.be/BaeE1DcMbxM
 # 3️⃣개발 기간
 2023.4.13 ~ 2023.5.25
 
-
 - 1주차(4.13~4.25)
-
-팀 완성과 기획 토의
-
+아이디어 및 기획 토의
 
 - 2주차(4.25~5.2)
-
-
-여행이라는 키워드 구체화와 팀원들 간의 합을 맞추기 위한 미니 프로젝트 실시
-
+키워드 구체화 및 개발 착수
 
 - 3주차(5.2~5.9)
-
-본격적인 개발 DB구축과 liveblock 구축, 1차 발표
-
+MVP 개발, 초기 버전 완성
 
 - 4주차(5.9~5.16)
-
-로그인과 화상채팅 구현, 2차 발표
+사용자 인증, 화상채팅 등 부가 기능 개발
 
 - 5주차(5.16~5.25)
-
-발표연습과 폴리싱
+폴리싱 및 추가 기능 구현
 
 
 # 4️⃣팀원소개
-
 
 - 강민수: 팀장, 화이트보드, 코스 추천 알고리즘
 - 이재욱: 메뉴 UI, 실시간 화상채팅
@@ -82,19 +70,12 @@ https://youtu.be/BaeE1DcMbxM
 
 # 5️⃣실행법
 
-
+프론트:
 yeohaeng-gadam-fe에서 
-
-
 ``` npm run dev ```
 
-
-입력시 프론트 실행가능
-
-
+백:
 yeohaeng-gadam-be에서
-
-
 ```npm run start:dev```
 
-입력시 백엔드 실행가능 (DB는 별도로 구축)
+(DB 별도 구축 필요)

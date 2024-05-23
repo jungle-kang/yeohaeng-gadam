@@ -1,4 +1,6 @@
+메인 페이지
 <img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/7e5f027b-9530-48ad-9cd9-49eb8183d400" width="800" height="500">
+화이트보드
 <img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/4f9c498f-bcf9-4cab-aeb7-ae1d8e9e11b0" width="800" height="500">
 
 
@@ -43,18 +45,23 @@ https://youtu.be/BaeE1DcMbxM
 2023.4.13 ~ 2023.5.25
 
 - 1주차(4.13~4.25)
+
 아이디어 및 기획 토의
 
 - 2주차(4.25~5.2)
+
 키워드 구체화 및 개발 착수
 
 - 3주차(5.2~5.9)
+
 MVP 개발, 초기 버전 완성
 
 - 4주차(5.9~5.16)
+
 사용자 인증, 화상채팅 등 부가 기능 개발
 
 - 5주차(5.16~5.25)
+
 폴리싱 및 추가 기능 구현
 
 

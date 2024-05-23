@@ -1,6 +1,9 @@
 메인 페이지
+
 <img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/7e5f027b-9530-48ad-9cd9-49eb8183d400" width="800" height="500">
+
 화이트보드
+
 <img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/4f9c498f-bcf9-4cab-aeb7-ae1d8e9e11b0" width="800" height="500">
 
 
@@ -71,7 +74,7 @@ MVP 개발, 초기 버전 완성
 - 이재욱: 메뉴 UI, 실시간 화상채팅
 - 김혜인: 로그인 및 인증, UI 디자인, DB
 - 민경욱: DB, 목적지 검색, 실시간 화상채팅, 코스 추천, OAuth/JWT
-- 김수빈: DB, 인프라 설계 및 구축, 운영 환경 배포
+- 김수빈: DB 및 API 구축, 인프라 설계 및 구축, 운영 환경 배포
 
 ![image](https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/b10e2c11-1b3a-4a61-b990-ded6885a4be5)
 

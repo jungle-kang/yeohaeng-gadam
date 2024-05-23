@@ -15,7 +15,7 @@
 [크래프톤_정글_4기_여행가담_포스터_240522.pdf](https://github.com/jungle-kang/yeohaeng-gadam/files/15414477/_._4._._._240522.pdf)
 
 ## 영상
-https://youtu.be/BaeE1DcMbxM
+https://youtu.be/ozUKwgMLO9s
 
 # 2️⃣기술스택
 - 프론트

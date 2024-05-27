@@ -9,6 +9,9 @@
 # 1️⃣소개
 온라인으로 모은 여행 동행자들과 한 장소에 있는 것처럼 같이 계획을 세울 수 있는 서비스 여행가담입니다!
 
+https://mskang.store/
+
+
 ## 포스터
 <img src = "https://github.com/jungle-kang/yeohaeng-gadam/assets/96102770/3425332d-321c-4007-9d68-a1c5ec922dfe" width="800">
 
